@@ -22,7 +22,7 @@ RAMMonitor::~RAMMonitor() {
 
 int main(int argc, char **argv) {
 
-	ros::init(argc, argv, "rammonitor");
+	ros::init(argc, argv, "ram_monitor");
 	ros::NodeHandle n;
 	ros::Publisher used_pub = n.advertise<std_msgs::Float32>("monitoring/ram/used", 1000);
 	ros::Publisher percentage_pub = n.advertise<std_msgs::Float32>("monitoring/ram/percentage", 1000);
@@ -36,14 +36,13 @@ int main(int argc, char **argv) {
 	while (ros::ok()) {
 		meminfo();
 
-		/*ROS_INFO("%-7s %10Lu %10Lu %10Lu %10Lu %10Lu %10Lu\n", "Mem:",
-				kb_main_total, kb_main_used, kb_main_free,
-				kb_main_shared, kb_main_buffers, kb_main_cached);*/
+		/*	kb_main_total, kb_main_used, kb_main_free,
+			kb_main_shared, kb_main_buffers, kb_main_cached*/
 
 		used.data=(float) kb_main_used;
 		used_pub.publish(used);
-		ROS_INFO("%f", kb_main_total);
-		percentage.data=(kb_main_used/kb_main_total);
+
+		percentage.data=(float) kb_main_used/(float) kb_main_total;
 		percentage_pub.publish(percentage);
 
 		loop_rate.sleep();
