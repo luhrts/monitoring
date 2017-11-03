@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
 		used.data=(float) kb_main_used;
 		used_pub.publish(used);
 
-		percentage.data=(float) kb_main_used/(float) kb_main_total;
+		percentage.data=((float) kb_main_used/(float) kb_main_total) *100.0;
 		percentage_pub.publish(percentage);
 
 		loop_rate.sleep();
