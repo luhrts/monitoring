@@ -8,6 +8,7 @@
 #include "cpumonitor.h"
 #include "ros/ros.h"
 #include <stdlib.h>
+#include "std_msgs/Float32.h"
 
 
 
@@ -32,11 +33,16 @@ int main( int argc, char **argv )
 
 	ros::init(argc, argv, "cpu_monitor");
 	ros::NodeHandle n;
-	ros::Rate loop_rate(10);
+	ros::Publisher avg_pub = n.advertise<std_msgs::Float32>("monitoring/cpu/avg", 1);
+	ros::Rate loop_rate(1);
 	double loadavg[3];
+	std_msgs::Float32 avg;
 	while(ros::ok()) {
 		getloadavg(loadavg, 3); //works/updates around every 5 seconds
-		ROS_INFO(" %f, %f, %f", loadavg[0],loadavg[1],loadavg[2]);
+		//ROS_INFO(" %f, %f, %f", loadavg[0],loadavg[1],loadavg[2]);
+
+		avg.data = loadavg[0];
+		avg_pub.publish(avg);
 		loop_rate.sleep();
 	}
 

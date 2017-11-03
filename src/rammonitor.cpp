@@ -24,8 +24,8 @@ int main(int argc, char **argv) {
 
 	ros::init(argc, argv, "ram_monitor");
 	ros::NodeHandle n;
-	ros::Publisher used_pub = n.advertise<std_msgs::Float32>("monitoring/ram/used", 1000);
-	ros::Publisher percentage_pub = n.advertise<std_msgs::Float32>("monitoring/ram/percentage", 1000);
+	ros::Publisher used_pub = n.advertise<std_msgs::Float32>("monitoring/ram/used", 1);
+	ros::Publisher percentage_pub = n.advertise<std_msgs::Float32>("monitoring/ram/percentage", 1);
 	ros::Rate loop_rate(10);
 
 
