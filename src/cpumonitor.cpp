@@ -6,11 +6,7 @@
  */
 
 #include "cpumonitor.h"
-#include "ros/ros.h"
-#include "std_msgs/Float32.h"
-#include "stdlib.h"
-#include "stdio.h"
-#include "string.h"
+
 
 
 CpuMonitor::CpuMonitor() {
@@ -24,7 +20,7 @@ CpuMonitor::~CpuMonitor() {
 
 
 
-void publish_load_avg( ros::Publisher pub)
+void CpuMonitor::publishLoadAvg( ros::Publisher pub)
 {
 	double loadavg[3];
 	std_msgs::Float32 avg;
@@ -40,16 +36,17 @@ void publish_load_avg( ros::Publisher pub)
 
 
 
-static unsigned long long lastTotalUser, lastTotalUserLow, lastTotalSys, lastTotalIdle;
 
-void init(){
+void CpuMonitor::init()
+{
     FILE* file = fopen("/proc/stat", "r");
     fscanf(file, "cpu %llu %llu %llu %llu", &lastTotalUser, &lastTotalUserLow,
         &lastTotalSys, &lastTotalIdle);
     fclose(file);
 }
 
-double getCurrentValue(){
+double CpuMonitor::getCurrentValue()
+{
     double percent;
     FILE* file;
     unsigned long long totalUser, totalUserLow, totalSys, totalIdle, total;
@@ -87,8 +84,11 @@ double getCurrentValue(){
     return percent;
 }
 
-void publish_cpu_usage(ros::Publisher pub)
+void CpuMonitor::publishCpuUsage(ros::Publisher pub)
 {
+	if(lastTotalUser==0) {
+		init();
+	}
 	double pCPU = getCurrentValue();
 //	ROS_INFO("Load: %f ", pCPU);
 	std_msgs::Float32 cpu_msg;
@@ -107,12 +107,13 @@ int main( int argc, char **argv )
 	ros::Publisher avg_pub = n.advertise<std_msgs::Float32>("monitoring/cpu/avg", 1);
 	ros::Publisher perc_pub = n.advertise<std_msgs::Float32>("monitoring/cpu/percentage", 1);
 	ros::Rate loop_rate(1);
+	CpuMonitor cpum;
 
-	init();
+
 	while(ros::ok()) {
 
-		publish_cpu_usage(perc_pub);
-		publish_load_avg(avg_pub);
+		cpum.publishCpuUsage(perc_pub);
+		cpum.publishLoadAvg(avg_pub);
 		loop_rate.sleep();
 	}
 
