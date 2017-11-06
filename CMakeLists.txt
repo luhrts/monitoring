@@ -9,6 +9,8 @@ project(ros_monitoring)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  std_msgs
+  message_generation
 )
 
 find_package(PkgConfig REQUIRED)
@@ -19,11 +21,17 @@ pkg_check_modules(PROCPS REQUIRED libprocps)
 
 
 
+
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES ros_monitoring
-#  CATKIN_DEPENDS other_catkin_pkg
+  CATKIN_DEPENDS message_runtime
  DEPENDS PROCPS
+)
+
+add_message_files(
+  FILES
+  Processes.msg
 )
 
 ###########
