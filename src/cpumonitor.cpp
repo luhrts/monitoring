@@ -10,7 +10,7 @@
 
 
 CpuMonitor::CpuMonitor() {
-	// TODO Auto-generated constructor stub
+	init();
 
 }
 
@@ -86,9 +86,8 @@ double CpuMonitor::getCurrentValue()
 
 void CpuMonitor::publishCpuUsage(ros::Publisher pub)
 {
-	if(lastTotalUser==0) {
-		init();
-	}
+
+
 	double pCPU = getCurrentValue();
 //	ROS_INFO("Load: %f ", pCPU);
 	std_msgs::Float32 cpu_msg;
