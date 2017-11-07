@@ -19,7 +19,17 @@ pkg_check_modules(PROCPS REQUIRED libprocps)
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
+add_message_files(
+  FILES
+  Process.msg
+  Processes.msg
+  
+)
 
+generate_messages(
+  DEPENDENCIES
+    std_msgs
+)
 
 
 catkin_package(
@@ -29,10 +39,7 @@ catkin_package(
  DEPENDS PROCPS
 )
 
-add_message_files(
-  FILES
-  Processes.msg
-)
+
 
 ###########
 ## Build ##

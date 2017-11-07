@@ -7,6 +7,7 @@
 
 #include "cpumonitor.h"
 
+
 CpuMonitor::CpuMonitor() {
 	init();
 
@@ -91,17 +92,25 @@ void CpuMonitor::publishProcessCpuUsage(ros::Publisher pub) {
 		return;
 
 	}
-	char user[128], stat[8], command[256];
+	char user[8], stat[128], command[256];
 	int pid, vsz, rss, tty, starth, startm, timem, times;
 	float pcpu, pmem;
-
+	ros_monitoring::Processes list;
+	int i=0;
 	while (fgets(buff, sizeof(buff), in) != NULL) {
 		sscanf(buff, "%s %d %f %f %d %d %s %s %d:%d %d:%d %s", &user, &pid, &pcpu, &pmem, &vsz, &rss, &tty, &stat, &starth, &startm, &timem, &times, &command);
 		ROS_INFO("Cpu %f, %s", pcpu, command);
+		ros_monitoring::Process newProc;
+		newProc.name = command;
+		newProc.pCpu = pcpu;
+		newProc.pRam = pmem;
+		newProc.pid = pid;
+		newProc.stat = stat;
+		list.processes.push_back(newProc);
+		i++;
 	}
 	pclose(in);
-
-
+	pub.publish(list);
 }
 
 //--------------------------------------------------------------
@@ -114,6 +123,8 @@ int main(int argc, char **argv) {
 			"monitoring/cpu/avg", 1);
 	ros::Publisher perc_pub = n.advertise<std_msgs::Float32>(
 			"monitoring/cpu/percentage", 1);
+	ros::Publisher proc_pub = n.advertise<ros_monitoring::Processes>(
+				"monitoring/cpu/allProcesses", 1);
 	ros::Rate loop_rate(1);
 	CpuMonitor cpum;
 
@@ -121,7 +132,7 @@ int main(int argc, char **argv) {
 
 		cpum.publishCpuUsage(perc_pub);
 		cpum.publishLoadAvg(avg_pub);
-		cpum.publishProcessCpuUsage(perc_pub);
+		cpum.publishProcessCpuUsage(proc_pub);
 		loop_rate.sleep();
 	}
 

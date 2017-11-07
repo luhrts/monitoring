@@ -13,6 +13,7 @@
 #include "stdlib.h"
 #include "stdio.h"
 #include "string.h"
+#include "ros_monitoring/Processes.h"
 
 class CpuMonitor {
 public:
