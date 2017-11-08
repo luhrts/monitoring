@@ -82,3 +82,6 @@ target_link_libraries(network_monitoring_node
  
   
 )
+
+find_package(catkin REQUIRED COMPONENTS roslaunch)
+roslaunch_add_file_check(launch)

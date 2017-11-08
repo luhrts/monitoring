@@ -7,7 +7,6 @@
 
 #include "cpumonitor.h"
 
-
 CpuMonitor::CpuMonitor() {
 	init();
 
@@ -96,9 +95,11 @@ void CpuMonitor::publishProcessCpuUsage(ros::Publisher pub) {
 	int pid, vsz, rss, tty, starth, startm, timem, times;
 	float pcpu, pmem;
 	ros_monitoring::Processes list;
-	int i=0;
+	int i = 0;
 	while (fgets(buff, sizeof(buff), in) != NULL) {
-		sscanf(buff, "%s %d %f %f %d %d %s %s %d:%d %d:%d %s", &user, &pid, &pcpu, &pmem, &vsz, &rss, &tty, &stat, &starth, &startm, &timem, &times, &command);
+		sscanf(buff, "%s %d %f %f %d %d %s %s %d:%d %d:%d %s", &user, &pid,
+				&pcpu, &pmem, &vsz, &rss, &tty, &stat, &starth, &startm, &timem,
+				&times, &command);
 		ROS_INFO("Cpu %f, %s", pcpu, command);
 		ros_monitoring::Process newProc;
 		newProc.name = command;
@@ -118,21 +119,48 @@ void CpuMonitor::publishProcessCpuUsage(ros::Publisher pub) {
 int main(int argc, char **argv) {
 
 	ros::init(argc, argv, "cpu_monitor");
-	ros::NodeHandle n;
-	ros::Publisher avg_pub = n.advertise<std_msgs::Float32>(
-			"monitoring/cpu/avg", 1);
-	ros::Publisher perc_pub = n.advertise<std_msgs::Float32>(
-			"monitoring/cpu/percentage", 1);
-	ros::Publisher proc_pub = n.advertise<ros_monitoring::Processes>(
-				"monitoring/cpu/allProcesses", 1);
-	ros::Rate loop_rate(1);
+	ros::NodeHandle n("cpu_monitor");
+	ros::Publisher avg_pub;
+	ros::Publisher perc_pub;
+	ros::Publisher proc_pub;
+
+	float freq = 1;
+	if (!n.getParam("frequency", freq))
+	{
+		ROS_WARN("No frequency supplied. Working with %d Hz.", freq);
+	}
+	bool bAvarage = false;
+	if (n.getParam("avarage", bAvarage)) {
+		if (bAvarage) {
+			avg_pub = n.advertise<std_msgs::Float32>("monitoring/cpu/avg", 1);
+		}
+	}
+
+	bool bPercent = false;
+	if (n.getParam("percent", bPercent)) {
+		if (bPercent) {
+			perc_pub = n.advertise<std_msgs::Float32>("monitoring/cpu/percent",
+					1);
+		}
+	}
+
+	bool bProcesses = false;
+	if (n.getParam("processes", bProcesses)) {
+		if (bProcesses) {
+			proc_pub = n.advertise<std_msgs::Float32>(
+					"monitoring/cpu/allProcesses", 1);
+		}
+	}
+
+
+	ros::Rate loop_rate(freq);
 	CpuMonitor cpum;
 
 	while (ros::ok()) {
 
-		cpum.publishCpuUsage(perc_pub);
-		cpum.publishLoadAvg(avg_pub);
-		cpum.publishProcessCpuUsage(proc_pub);
+		if (bAvarage) cpum.publishCpuUsage(perc_pub);
+		if (bPercent) cpum.publishLoadAvg(avg_pub);
+		if (bProcesses) cpum.publishProcessCpuUsage(proc_pub);
 		loop_rate.sleep();
 	}
 

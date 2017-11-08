@@ -57,6 +57,8 @@
   <exec_depend>message_runtime</exec_depend>
   <!-- <run_depend>message_runtime</run_depend> -->
   
+  <build_depend>roslaunch</build_depend>
+  
  
   <!-- The export tag contains other, unspecified, tags -->
   <export>

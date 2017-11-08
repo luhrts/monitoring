@@ -98,14 +98,16 @@ int main(int argc, char **argv) {
 
 	ros::init(argc, argv, "network_monitor");
 	ros::NodeHandle n;
-	ros::Publisher pub = n.advertise<std_msgs::Float32>("monitoring/network", 1);
+	ros::Publisher RXBpS_pub = n.advertise<std_msgs::Float32>("monitoring/network/rx_bytes_per_sec", 1);
+	ros::Publisher TXBpS_pub = n.advertise<std_msgs::Float32>("monitoring/network/tx_bytes_per_sec", 1);
+	ros::Publisher load_pub = n.advertise<std_msgs::Float32>("monitoring/network/load", 1);
 
 	ros::Rate loop_rate(1);
 	NetworkMonitor NWm;
 
 	while (ros::ok()) {
 
-		NWm.publishNetworkLoad(pub);
+		NWm.publishNetworkLoad(load_pub);
 		loop_rate.sleep();
 	}
 
