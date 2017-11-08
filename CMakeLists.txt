@@ -61,6 +61,7 @@ include_directories(
 
 add_executable(cpu_monitoring_node src/cpumonitor.cpp)
 add_executable(ram_monitoring_node src/rammonitor.cpp)
+add_executable(network_monitoring_node src/networkmonitor.cpp)
 
 
 ## Specify libraries to link a library or executable target against
@@ -73,5 +74,11 @@ target_link_libraries(cpu_monitoring_node
 target_link_libraries(ram_monitoring_node
   ${catkin_LIBRARIES}
   ${PROCPS_LIBRARIES}
+  
+)
+
+target_link_libraries(network_monitoring_node
+  ${catkin_LIBRARIES}
+ 
   
 )
