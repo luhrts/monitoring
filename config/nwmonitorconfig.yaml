@@ -1,0 +1,5 @@
+frequency: 1
+bytes: false
+packets: true
+load: true
+networkthroughput: 100 #in MBit/s 

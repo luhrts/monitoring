@@ -18,10 +18,11 @@
 
 class NetworkMonitor {
 public:
-	NetworkMonitor();
+	NetworkMonitor(int networkThroughput);
 	virtual ~NetworkMonitor();
 
-	void publishNetworkLoad(ros::Publisher pub);
+	void publishNetworkLoad(ros::Publisher load_pub, ros::Publisher rxbytes_pub, ros::Publisher txbytes_pub, bool bytes, bool load);
+	void publishPackets(ros::Publisher rxpackets_pub, ros::Publisher txpackets_pub);
 
 private:
 	float maxNWThroughputPS;
@@ -29,7 +30,7 @@ private:
 	unsigned int readTXbytes(char nwinterface[]);
 	unsigned int readRXpackets(char nwinterface[]);
 	unsigned int readTXpackets(char nwinterface[]);
-	ros::Time lastStamp;
+	ros::Time lastStampBytes, lastStampPackets;
 	unsigned int lastRXbytes,lastTXbytes, lastRXpackets,lastTXpackets;
 
 };
