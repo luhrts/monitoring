@@ -119,7 +119,7 @@ void CpuMonitor::publishProcessCpuUsage(ros::Publisher pub) {
 int main(int argc, char **argv) {
 
 	ros::init(argc, argv, "cpu_monitor");
-	ros::NodeHandle n("cpu_monitor");
+	ros::NodeHandle n("~");
 	ros::Publisher avg_pub;
 	ros::Publisher perc_pub;
 	ros::Publisher proc_pub;
@@ -132,23 +132,21 @@ int main(int argc, char **argv) {
 	bool bAvarage = false;
 	if (n.getParam("avarage", bAvarage)) {
 		if (bAvarage) {
-			avg_pub = n.advertise<std_msgs::Float32>("monitoring/cpu/avg", 1);
+			avg_pub = n.advertise<std_msgs::Float32>("/monitoring/cpu/avg", 1);
 		}
 	}
 
 	bool bPercent = false;
 	if (n.getParam("percent", bPercent)) {
 		if (bPercent) {
-			perc_pub = n.advertise<std_msgs::Float32>("monitoring/cpu/percent",
-					1);
+			perc_pub = n.advertise<std_msgs::Float32>("/monitoring/cpu/percent", 1);
 		}
 	}
 
 	bool bProcesses = false;
 	if (n.getParam("processes", bProcesses)) {
 		if (bProcesses) {
-			proc_pub = n.advertise<std_msgs::Float32>(
-					"monitoring/cpu/allProcesses", 1);
+			proc_pub = n.advertise<std_msgs::Float32>("/monitoring/cpu/allProcesses", 1);
 		}
 	}
 
