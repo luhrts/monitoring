@@ -36,7 +36,7 @@ void NetworkMonitor::publishNetworkLoad(ros::Publisher load_pub,
 	float timeT = (float) deltaT.sec + (deltaT.nsec / pow(10, 9));
 	float RXBpS = (float) deltaRXB / timeT;
 	float TXBpS = (float) deltaTXB / timeT;
-	float loadinP = (RXBpS + TXBpS) / maxNWThroughputPS;
+	float loadinP = (RXBpS /*+ TXBpS*/) / maxNWThroughputPS;
 
 	/*ROS_INFO("RXB pro Sec: %f", RXBpS);
 	 ROS_INFO("TXB pro Sec: %f", TXBpS);
