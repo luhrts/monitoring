@@ -29,11 +29,46 @@ void CpuMonitor::publishLoadAvg(ros::Publisher pub) {
 //-------------------------------------------------------
 
 //Quelle: https://stackoverflow.com/questions/63166/how-to-determine-cpu-and-memory-consumption-from-inside-a-process
+/**
+ * getting all values of the cpu at first because they are incremel. They are
+ * catched for every core aswell and saved to a vector.
+ */
 void CpuMonitor::init() {
+
+	int numCPU = sysconf(_SC_NPROCESSORS_ONLN);
+
+	ROS_ERROR("number: %d", numCPU);
+	unsigned long long lastTotalUser_, lastTotalUserLow_, lastTotalSys_,
+			lastTotalIdle_;
+
 	FILE* file = fopen("/proc/stat", "r");
-	fscanf(file, "cpu %llu %llu %llu %llu", &lastTotalUser, &lastTotalUserLow,
-			&lastTotalSys, &lastTotalIdle);
+	fscanf(file, "cpu %llu %llu %llu %llu", &lastTotalUser_, &lastTotalUserLow_,
+			&lastTotalSys_, &lastTotalIdle_);
+
+	lastTotalUser.push_back(lastTotalUser_);
+	lastTotalUserLow.push_back(lastTotalUserLow_);
+	lastTotalSys.push_back(lastTotalSys_);
+	lastTotalIdle.push_back(lastTotalIdle_);
+	char buff[256];
+	int n;
+
+	fgets(buff, sizeof(buff), file); //to jump over the first line (already done thatone)
+	while (fgets(buff, sizeof(buff), file) != NULL) {
+
+		sscanf(buff, "cpu%d %llu %llu %llu %llu", &n, &lastTotalUser_,
+				&lastTotalUserLow_, &lastTotalSys_, &lastTotalIdle_);
+
+		lastTotalUser.push_back(lastTotalUser_);
+		lastTotalUserLow.push_back(lastTotalUserLow_);
+		lastTotalSys.push_back(lastTotalSys_);
+		lastTotalIdle.push_back(lastTotalIdle_);
+
+		if (n == numCPU - 1) { //read last cpu, stop now
+			break;
+		}
+	}
 	fclose(file);
+
 }
 
 double CpuMonitor::getCurrentValue() {
@@ -50,27 +85,70 @@ double CpuMonitor::getCurrentValue() {
 //    ROS_INFO("cpu %llu %llu %llu %llu", totalUser, totalUserLow,
 //            totalSys, totalIdle);
 
-	if (totalUser < lastTotalUser || totalUserLow < lastTotalUserLow
-			|| totalSys < lastTotalSys || totalIdle < lastTotalIdle) {
+	if (totalUser < lastTotalUser[0] || totalUserLow < lastTotalUserLow[0]
+			|| totalSys < lastTotalSys[0] || totalIdle < lastTotalIdle[0]) {
 		//Overflow detection. Just skip this value.
 		percent = -1.0;
 	} else {
-		total = (totalUser - lastTotalUser) + (totalUserLow - lastTotalUserLow)
-				+ (totalSys - lastTotalSys);//if total is 0 a nan value is possible TODO!!!
+		//because the value is incrementel
+		total = (totalUser - lastTotalUser[0])
+				+ (totalUserLow - lastTotalUserLow[0])
+				+ (totalSys - lastTotalSys[0]);	//if total is 0 a nan value is possible TODO!!!
 //        ROS_INFO("total: %llu", total);
 		percent = total;
-		total += (totalIdle - lastTotalIdle);
+		total += (totalIdle - lastTotalIdle[0]);
 		percent /= total;
 		percent *= 100;
 
 	}
 
-	lastTotalUser = totalUser;
-	lastTotalUserLow = totalUserLow;
-	lastTotalSys = totalSys;
-	lastTotalIdle = totalIdle;
+	lastTotalUser[0] = totalUser;
+	lastTotalUserLow[0] = totalUserLow;
+	lastTotalSys[0] = totalSys;
+	lastTotalIdle[0] = totalIdle;
 
 	return percent;
+}
+
+double CpuMonitor::getCPUCoreLoad(int n) { //TODO need to test if this is the right cpu core load
+	double percent;
+	FILE* file;
+	unsigned long long totalUser, totalUserLow, totalSys, totalIdle, total;
+
+	file = fopen("/proc/stat", "r");
+
+	char buffer[256];
+	for (int i = 0; i <= n; i++) {
+		fgets(buffer, 256, file);
+	}
+	fscanf(file, "cpu%d %llu %llu %llu %llu", &n, &totalUser, &totalUserLow,
+			&totalSys, &totalIdle);
+	fclose(file);
+
+	if (totalUser < lastTotalUser[n] || totalUserLow < lastTotalUserLow[n]
+			|| totalSys < lastTotalSys[n] || totalIdle < lastTotalIdle[n]) {
+		//Overflow detection. Just skip this value.
+		percent = -1.0;
+	} else {
+		//because the value is incrementel
+		total = (totalUser - lastTotalUser[n])
+				+ (totalUserLow - lastTotalUserLow[n])
+				+ (totalSys - lastTotalSys[n]);	//if total is 0 a nan value is possible TODO!!!
+		//        ROS_INFO("total: %llu", total);
+		percent = total;
+		total += (totalIdle - lastTotalIdle[n]);
+		percent /= total;
+		percent *= 100;
+
+	}
+
+	lastTotalUser[n] = totalUser;
+	lastTotalUserLow[n] = totalUserLow;
+	lastTotalSys[n] = totalSys;
+	lastTotalIdle[n] = totalIdle;
+	ROS_ERROR("CPU %d: %f", n, percent);
+	return percent;
+
 }
 
 void CpuMonitor::publishCpuUsage(ros::Publisher pub) {
@@ -176,14 +254,20 @@ int main(int argc, char **argv) {
 
 	while (ros::ok()) {
 
-		if (bAvarage)
-			cpum.publishCpuUsage(perc_pub);
 		if (bPercent)
+			cpum.publishCpuUsage(perc_pub);
+		if (bAvarage)
 			cpum.publishLoadAvg(avg_pub);
 		if (bProcesses)
 			cpum.publishProcessCpuUsage(proc_pub);
 		if (bTemp)
 			cpum.publishCPUTemp(temp_pub);
+
+
+		cpum.getCPUCoreLoad(1);
+		cpum.getCPUCoreLoad(2);
+
+
 		loop_rate.sleep();
 	}
 

@@ -13,6 +13,7 @@
 #include "stdlib.h"
 #include "stdio.h"
 #include "string.h"
+
 #include "ros_monitoring/Processes.h"
 
 class CpuMonitor {
@@ -26,10 +27,13 @@ public:
 	void publishProcessCpuUsage(ros::Publisher pub);
 	void publishCPUTemp(ros::Publisher pub);
 
+	double getCPUCoreLoad(int n);
+
 private:
-	unsigned long long lastTotalUser, lastTotalUserLow, lastTotalSys, lastTotalIdle;
+	std::vector<unsigned long long> lastTotalUser, lastTotalUserLow, lastTotalSys, lastTotalIdle;
 	void init();
 	double getCurrentValue();
+
 };
 
 #endif /* SRC_CPUMONITOR_H_ */
