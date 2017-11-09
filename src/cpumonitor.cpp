@@ -37,7 +37,7 @@ void CpuMonitor::init() {
 
 	int numCPU = sysconf(_SC_NPROCESSORS_ONLN);
 
-	ROS_ERROR("number: %d", numCPU);
+
 	unsigned long long lastTotalUser_, lastTotalUserLow_, lastTotalSys_,
 			lastTotalIdle_;
 
@@ -146,7 +146,6 @@ double CpuMonitor::getCPUCoreLoad(int n) { //TODO need to test if this is the ri
 	lastTotalUserLow[n] = totalUserLow;
 	lastTotalSys[n] = totalSys;
 	lastTotalIdle[n] = totalIdle;
-	ROS_ERROR("CPU %d: %f", n, percent);
 	return percent;
 
 }
