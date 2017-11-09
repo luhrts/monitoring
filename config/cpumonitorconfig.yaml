@@ -1,4 +1,5 @@
 avarage: true
 percent: true
 processes: false
+temperature: true
 frequency: 2 

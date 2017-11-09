@@ -116,17 +116,29 @@ void CpuMonitor::publishProcessCpuUsage(ros::Publisher pub) {
 
 //--------------------------------------------------------------
 
+void CpuMonitor::publishCPUTemp(ros::Publisher pub) {
+	FILE* file;
+	file = fopen("/sys/class/hwmon/hwmon1/temp1_input", "r");
+	int input = 0;
+	fscanf(file, "%d", &input);
+	fclose(file);
+	float temp = input / 1000; //in °C
+	std_msgs::Float32 temp_msg;
+	temp_msg.data = temp;
+	pub.publish(temp_msg);
+
+}
+
+//-------------------------------------------------------------
+
 int main(int argc, char **argv) {
 
 	ros::init(argc, argv, "cpu_monitor");
 	ros::NodeHandle n("~");
-	ros::Publisher avg_pub;
-	ros::Publisher perc_pub;
-	ros::Publisher proc_pub;
+	ros::Publisher avg_pub, temp_pub, perc_pub, proc_pub;
 
 	float freq = 1;
-	if (!n.getParam("frequency", freq))
-	{
+	if (!n.getParam("frequency", freq)) {
 		ROS_WARN("No frequency supplied. Working with %d Hz.", freq);
 	}
 	bool bAvarage = false;
@@ -139,26 +151,39 @@ int main(int argc, char **argv) {
 	bool bPercent = false;
 	if (n.getParam("percent", bPercent)) {
 		if (bPercent) {
-			perc_pub = n.advertise<std_msgs::Float32>("/monitoring/cpu/percent", 1);
+			perc_pub = n.advertise<std_msgs::Float32>("/monitoring/cpu/percent",
+					1);
 		}
 	}
 
 	bool bProcesses = false;
 	if (n.getParam("processes", bProcesses)) {
 		if (bProcesses) {
-			proc_pub = n.advertise<std_msgs::Float32>("/monitoring/cpu/allProcesses", 1);
+			proc_pub = n.advertise<std_msgs::Float32>(
+					"/monitoring/cpu/allProcesses", 1);
 		}
 	}
-
+	bool bTemp = false;
+	if (n.getParam("temperature", bTemp)) {
+		if (bTemp) {
+			temp_pub = n.advertise<std_msgs::Float32>("/monitoring/cpu/temp",
+					1);
+		}
+	}
 
 	ros::Rate loop_rate(freq);
 	CpuMonitor cpum;
 
 	while (ros::ok()) {
 
-		if (bAvarage) cpum.publishCpuUsage(perc_pub);
-		if (bPercent) cpum.publishLoadAvg(avg_pub);
-		if (bProcesses) cpum.publishProcessCpuUsage(proc_pub);
+		if (bAvarage)
+			cpum.publishCpuUsage(perc_pub);
+		if (bPercent)
+			cpum.publishLoadAvg(avg_pub);
+		if (bProcesses)
+			cpum.publishProcessCpuUsage(proc_pub);
+		if (bTemp)
+			cpum.publishCPUTemp(temp_pub);
 		loop_rate.sleep();
 	}
 

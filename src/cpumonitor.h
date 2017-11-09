@@ -24,6 +24,7 @@ public:
 	void publishCpuUsage(ros::Publisher pub);
 	void publishLoadAvg(ros::Publisher pub);
 	void publishProcessCpuUsage(ros::Publisher pub);
+	void publishCPUTemp(ros::Publisher pub);
 
 private:
 	unsigned long long lastTotalUser, lastTotalUserLow, lastTotalSys, lastTotalIdle;
