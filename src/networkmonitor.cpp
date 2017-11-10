@@ -184,7 +184,7 @@ int main(int argc, char **argv) {
 
 	std::string nwinterface = "enp3s0";
 
-	if (!n.getParam("nwinterface", nwinterface)) {
+	if (!n.getParam("networkinterface", nwinterface)) {
 		ROS_WARN("No Network Interface configured. Using %s", nwinterface.c_str());
 	}
 
