@@ -7,12 +7,13 @@
 
 #include "networkmonitor.h"
 
-NetworkMonitor::NetworkMonitor(int networkThroughput) {
+NetworkMonitor::NetworkMonitor(float networkThroughput,  char nwit[]) {
 	maxNWThroughputPS = (float) (networkThroughput * pow(10, 6)) / 8; //TODO read config   			1GB Eth
-	lastRXbytes = readRXbytes(NETWORKINTERFACE);
-	lastTXbytes = readTXbytes(NETWORKINTERFACE);
-	lastRXpackets = readRXpackets(NETWORKINTERFACE);
-	lastTXpackets = readTXpackets(NETWORKINTERFACE);
+	networkinterface = nwit;
+	lastRXbytes = readRXbytes(networkinterface);
+	lastTXbytes = readTXbytes(networkinterface);
+	lastRXpackets = readRXpackets(networkinterface);
+	lastTXpackets = readTXpackets(networkinterface);
 	lastStampBytes = ros::Time::now();
 	lastStampPackets = ros::Time::now();
 
@@ -27,8 +28,8 @@ void NetworkMonitor::publishNetworkLoad(ros::Publisher load_pub,
 		bool load) {
 
 	ros::Time now = ros::Time::now();
-	unsigned int rxb = readRXbytes(NETWORKINTERFACE);
-	unsigned int txb = readTXbytes(NETWORKINTERFACE);
+	unsigned int rxb = readRXbytes(networkinterface);
+	unsigned int txb = readTXbytes(networkinterface);
 	unsigned int deltaRXB = rxb - lastRXbytes;
 	unsigned int deltaTXB = txb - lastTXbytes;
 	ros::Duration deltaT = now - lastStampBytes;
@@ -110,8 +111,8 @@ unsigned int NetworkMonitor::readTXpackets(char nwinterface[]) {
 void NetworkMonitor::publishPackets(ros::Publisher rxpackets_pub,
 		ros::Publisher txpackets_pub) {
 	ros::Time now = ros::Time::now();
-	unsigned int rxp = readRXpackets(NETWORKINTERFACE);
-	unsigned int txp = readTXpackets(NETWORKINTERFACE);
+	unsigned int rxp = readRXpackets(networkinterface);
+	unsigned int txp = readTXpackets(networkinterface);
 	unsigned int deltaRXP = rxp - lastRXpackets;
 	unsigned int deltaTXP = txp - lastTXpackets;
 	ros::Duration deltaT = now - lastStampPackets;
@@ -145,7 +146,7 @@ int main(int argc, char **argv) {
 
 	float freq = 1;
 	if (!n.getParam("frequency", freq)) {
-		ROS_WARN("No frequency supplied. Working with %d Hz.", freq);
+		ROS_WARN("No frequency supplied. Working with %f Hz.", freq);
 	}
 
 	bool bBytes = false;
@@ -181,9 +182,19 @@ int main(int argc, char **argv) {
 				"No Max Network Throughput configured. Working with 100Mbit/s.");
 	}
 
+	std::string nwinterface = "enp3s0";
+
+	if (!n.getParam("nwinterface", nwinterface)) {
+		ROS_WARN("No Network Interface configured. Using %s", nwinterface.c_str());
+	}
+
+	char *cnwInterface = new char[nwinterface.length() + 1];
+	strcpy(cnwInterface, nwinterface.c_str());
+
 	ros::Rate loop_rate(freq);
 
-	NetworkMonitor NWm(nwThroughput);
+	NetworkMonitor NWm(nwThroughput, cnwInterface);
+
 
 	while (ros::ok()) {
 
@@ -193,5 +204,7 @@ int main(int argc, char **argv) {
 		}
 		loop_rate.sleep();
 	}
+
+//	delete [] cnwInterface;
 
 }

@@ -9,7 +9,8 @@
 #define SRC_NETWORKMONITOR_H_
 
 #include "ros/ros.h"
-
+#include <iostream>
+#include <string>
 #include "std_msgs/Float32.h"
 
 #define NETWORKPRE "/sys/class/net/"
@@ -18,7 +19,7 @@
 
 class NetworkMonitor {
 public:
-	NetworkMonitor(int networkThroughput);
+	NetworkMonitor(float networkThroughput,  char nwit[]);
 	virtual ~NetworkMonitor();
 
 	void publishNetworkLoad(ros::Publisher load_pub, ros::Publisher rxbytes_pub, ros::Publisher txbytes_pub, bool bytes, bool load);
@@ -32,6 +33,7 @@ private:
 	unsigned int readTXpackets(char nwinterface[]);
 	ros::Time lastStampBytes, lastStampPackets;
 	unsigned int lastRXbytes,lastTXbytes, lastRXpackets,lastTXpackets;
+	char *networkinterface;
 
 };
 

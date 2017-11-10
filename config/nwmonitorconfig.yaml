@@ -3,3 +3,4 @@ bytes: false
 packets: true
 load: true
 networkthroughput: 100 #in MBit/s 
+networkinterface: "enp3s0"

@@ -43,7 +43,7 @@ void CpuMonitor::init() {
 
 	FILE* file = fopen("/proc/stat", "r");
 	fscanf(file, "cpu %llu %llu %llu %llu", &lastTotalUser_, &lastTotalUserLow_,
-			&lastTotalSys_, &lastTotalIdle_);
+			&lastTotalSys_, &lastTotalIdle_);	//read overall cpu values
 
 	lastTotalUser.push_back(lastTotalUser_);
 	lastTotalUserLow.push_back(lastTotalUserLow_);
@@ -53,7 +53,7 @@ void CpuMonitor::init() {
 	int n;
 
 	fgets(buff, sizeof(buff), file); //to jump over the first line (already done thatone)
-	while (fgets(buff, sizeof(buff), file) != NULL) {
+	while (fgets(buff, sizeof(buff), file) != NULL) {	//read for every cpu core
 
 		sscanf(buff, "cpu%d %llu %llu %llu %llu", &n, &lastTotalUser_,
 				&lastTotalUserLow_, &lastTotalSys_, &lastTotalIdle_);
@@ -90,11 +90,11 @@ double CpuMonitor::getCurrentValue() {
 		//Overflow detection. Just skip this value.
 		percent = -1.0;
 	} else {
-		//because the value is incrementel
+		//because the value is incrementel you need to get the delta values
 		total = (totalUser - lastTotalUser[0])
 				+ (totalUserLow - lastTotalUserLow[0])
 				+ (totalSys - lastTotalSys[0]);	//if total is 0 a nan value is possible TODO!!!
-//        ROS_INFO("total: %llu", total);
+
 		percent = total;
 		total += (totalIdle - lastTotalIdle[0]);
 		percent /= total;
@@ -130,7 +130,7 @@ double CpuMonitor::getCPUCoreLoad(int n) { //TODO need to test if this is the ri
 		//Overflow detection. Just skip this value.
 		percent = -1.0;
 	} else {
-		//because the value is incrementel
+		//because the value is incrementel, you need to get the deltas
 		total = (totalUser - lastTotalUser[n])
 				+ (totalUserLow - lastTotalUserLow[n])
 				+ (totalSys - lastTotalSys[n]);	//if total is 0 a nan value is possible TODO!!!
@@ -153,7 +153,6 @@ double CpuMonitor::getCPUCoreLoad(int n) { //TODO need to test if this is the ri
 void CpuMonitor::publishCpuUsage(ros::Publisher pub) {
 
 	double pCPU = getCurrentValue();
-//	ROS_INFO("Load: %f ", pCPU);
 	std_msgs::Float32 cpu_msg;
 	cpu_msg.data = pCPU;
 	pub.publish(cpu_msg);
