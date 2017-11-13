@@ -193,8 +193,29 @@ void CpuMonitor::publishProcessCpuUsage(ros::Publisher pub) {
 //--------------------------------------------------------------
 
 void CpuMonitor::publishCPUTemp(ros::Publisher pub) {
+	//check which is coretemp
+	bool corefound = false;
+	int i=-1;
+	char path[80];
+	while(!corefound && i<2) {
+		i++;
+		FILE* fname;
+		sprintf(path, "/sys/class/hwmon/hwmon%d/name",i);
+		fname = fopen(path, "r");
+		char name[30];
+		fscanf(fname, "%s", &name);
+		fclose(fname);
+		if(strcmp(name, "coretemp")==0) {
+
+			corefound=true;
+			break;
+		}
+	}
+
+
 	FILE* file;
-	file = fopen("/sys/class/hwmon/hwmon1/temp1_input", "r");
+	sprintf(path, "/sys/class/hwmon/hwmon%d/temp1_input",i);
+	file = fopen(path, "r");
 	int input = 0;
 	fscanf(file, "%d", &input);
 	fclose(file);
