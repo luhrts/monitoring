@@ -1,6 +1,6 @@
 frequency: 1
 bytes: false
 packets: true
-load: true
+load: false
 networkthroughput: 100 #in MBit/s 
-networkinterface: wlx10feed215330
+networkinterface: lo

@@ -21,8 +21,14 @@ pkg_check_modules(PROCPS REQUIRED libprocps)
 
 add_message_files(
   FILES
+  Error.msg
+  KeyValue.msg
+  Machine.msg
+  MonitoringArray.msg
+  MonitoringInfo.msg
   Process.msg
   Processes.msg
+  
   
 )
 

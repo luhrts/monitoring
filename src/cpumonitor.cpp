@@ -197,7 +197,7 @@ void CpuMonitor::publishCPUTemp(ros::Publisher pub) {
 	bool corefound = false;
 	int i=-1;
 	char path[80];
-	while(!corefound && i<2) {
+	while(!corefound && i<2) {//TODO: was wenn kein coretemp gefunden || Probleme mit i! TODO: in den construcktor verschieben.
 		i++;
 		FILE* fname;
 		sprintf(path, "/sys/class/hwmon/hwmon%d/name",i);
