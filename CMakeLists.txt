@@ -24,7 +24,6 @@ add_message_files(
   Error.msg
   KeyValue.msg
   Machine.msg
-  MonitoringArray.msg
   MonitoringInfo.msg
   Process.msg
   Processes.msg
@@ -60,9 +59,9 @@ include_directories(
 )
 
 ## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/ros_monitoring.cpp
-# )
+add_library(helpLib
+  src/help.cpp
+)
 
 
 add_executable(cpu_monitoring_node src/cpumonitor.cpp)
@@ -73,18 +72,20 @@ add_executable(network_monitoring_node src/networkmonitor.cpp)
 ## Specify libraries to link a library or executable target against
 target_link_libraries(cpu_monitoring_node
   ${catkin_LIBRARIES}
-  ${PROCPS_LIBRARIES}
+  helpLib
   
 )
 
 target_link_libraries(ram_monitoring_node
   ${catkin_LIBRARIES}
   ${PROCPS_LIBRARIES}
+  helpLib
   
 )
 
 target_link_libraries(network_monitoring_node
   ${catkin_LIBRARIES}
+  helpLib
  
   
 )
