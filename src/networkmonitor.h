@@ -12,6 +12,8 @@
 #include <iostream>
 #include <string>
 #include "std_msgs/Float32.h"
+#include "ros_monitoring/MonitoringInfo.h"
+#include "help.cpp"
 
 #define NETWORKPRE "/sys/class/net/"
 #define NETWORKSUF "/statistics"
@@ -22,8 +24,8 @@ public:
 	NetworkMonitor(float networkThroughput,  char nwit[]);
 	virtual ~NetworkMonitor();
 
-	void publishNetworkLoad(ros::Publisher load_pub, ros::Publisher rxbytes_pub, ros::Publisher txbytes_pub, bool bytes, bool load);
-	void publishPackets(ros::Publisher rxpackets_pub, ros::Publisher txpackets_pub);
+	void getNetworkLoad(float& loadinPrx, float& loadinPtx, float& RXBpS, float& TXBpS);
+	void publishPackets(ros::Publisher rxpackets_pub, ros::Publisher txpackets_pub, ros_monitoring::MonitoringInfo& mi);
 
 private:
 	float maxNWThroughputPS;
