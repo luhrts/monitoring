@@ -65,34 +65,34 @@ int main(int argc, char **argv) {
 
 		/*	kb_main_total, kb_main_used, kb_main_free,
 		 kb_main_shared, kb_main_buffers, kb_main_cached*/
-
+		char value[200];
 		if (bUsed) {
 			used.data = (float) kb_main_used;
 			used_pub.publish(used);
+
+			ros_monitoring::KeyValue used;
+			used.key = "used";
+
+			sprintf(value, "%d", (long) kb_main_used);
+
+			used.value = value;
+			mi.values.push_back(used);
 		}
 		if (bPercent) {
 			percentage.data = ((float) kb_main_used / (float) kb_main_total)
 					* 100.0;
 			percentage_pub.publish(percentage);
-		}
-		ros_monitoring::KeyValue used;
-		used.key = "used";
-		char value[200];
-		sprintf(value, "%d", (long) kb_main_used);
 
-		used.value = value;
-		mi.values.push_back(used);
-
-		ros_monitoring::KeyValue percent;
-		percent.key = "percent";
-		sprintf(value, "%f", percentage.data);
-		percent.value = value;
-		if(percentage.data > 70) {
-			percent.error.level = 0.7;
-		} else {
-			percent.error.level = 0;
+			ros_monitoring::KeyValue percent;
+			percent.key = "percent";
+			sprintf(value, "%f", percentage.data);
+			percent.value = value;
+			mi.values.push_back(percent);
 		}
-		mi.values.push_back(percent);
+
+
+
+
 
 		monitor_pub.publish(mi);
 

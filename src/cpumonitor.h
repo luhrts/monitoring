@@ -10,6 +10,9 @@
 
 #include "ros/ros.h"
 #include "std_msgs/Float32.h"
+#include "std_msgs/Float32MultiArray.h"
+#include "help.cpp"
+#include "ros_monitoring/MonitoringInfo.h"
 #include "stdlib.h"
 #include "stdio.h"
 #include "string.h"
@@ -22,10 +25,10 @@ public:
 	virtual ~CpuMonitor();
 
 
-	void publishCpuUsage(ros::Publisher pub);
-	void publishLoadAvg(ros::Publisher pub);
-	void publishProcessCpuUsage(ros::Publisher pub);
-	void publishCPUTemp(ros::Publisher pub);
+	void publishCpuUsage(ros::Publisher pub, ros_monitoring::MonitoringInfo& mi);
+	void publishLoadAvg(ros::Publisher pub, ros_monitoring::MonitoringInfo& mi);
+	void publishProcessCpuUsage(ros::Publisher pub, ros_monitoring::MonitoringInfo& mi);
+	void publishCPUTemp(ros::Publisher pub, ros_monitoring::MonitoringInfo& mi);
 
 	double getCPUCoreLoad(int n);
 
