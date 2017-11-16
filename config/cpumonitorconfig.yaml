@@ -1,5 +1,5 @@
 avarage: true
-percent: false
+percent: true
 percentPerCore: true
 processes: false
 temperature: true

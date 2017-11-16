@@ -1,6 +1,6 @@
 frequency: 1
-bytes: false
+bytes: true
 packets: true
-load: false
+load: true
 networkthroughput: 100 #in MBit/s 
 networkinterface: lo

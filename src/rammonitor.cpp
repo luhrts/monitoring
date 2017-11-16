@@ -56,6 +56,8 @@ int main(int argc, char **argv) {
 
 	ros::Rate loop_rate(freq);
 
+
+
 	while (ros::ok()) {
 		meminfo();
 		ros_monitoring::MonitoringInfo mi;
