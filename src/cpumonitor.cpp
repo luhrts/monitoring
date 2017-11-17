@@ -191,7 +191,7 @@ void CpuMonitor::publishProcessCpuUsage(ros::Publisher pub,ros_monitoring::Monit
 		sscanf(buff, "%s %d %f %f %d %d %s %s %d:%d %d:%d %s", &user, &pid,
 				&pcpu, &pmem, &vsz, &rss, &tty, &stat, &starth, &startm, &timem,
 				&times, &command);
-		ROS_INFO("Cpu %f, %s", pcpu, command);
+		//ROS_INFO("Cpu %f, %s", pcpu, command);
 		ros_monitoring::Process newProc;
 		newProc.name = command;
 		newProc.pCpu = pcpu;
@@ -302,23 +302,44 @@ int main(int argc, char **argv) {
 	ros::Rate loop_rate(freq);
 	CpuMonitor cpum;
 
+	ROS_RT_Benchmark benchmark;
+	benchmark.init();
+	ROS_RT_MeasurementDuration* measurement_percent = benchmark.createDurationMeasurement("percent");
+	ROS_RT_MeasurementDuration* measurement_loadAvg = benchmark.createDurationMeasurement("load_avg");
+	ROS_RT_MeasurementDuration* measurement_processcpuusage = benchmark.createDurationMeasurement("process_cpu_usage");
+	ROS_RT_MeasurementDuration* measurement_temp = benchmark.createDurationMeasurement("cpu_temp");
+	ROS_RT_MeasurementDuration* measurement_perCore = benchmark.createDurationMeasurement("load_per_core");
+
 	while (ros::ok()) {
 		ros_monitoring::MonitoringInfo mi;
 		mi.name = ros::this_node::getName();
 		mi.description = "A CPU-Monitor";
 		fillMachineInfo(mi);
-		if (bPercent)
+		if (bPercent) {
+			measurement_percent->start();
 			cpum.publishCpuUsage(perc_pub, mi);
-		if (bAvarage)
+			measurement_percent->stop();
+		}
+		if (bAvarage){
+			measurement_loadAvg->start();
 			cpum.publishLoadAvg(avg_pub, mi);
-		if (bProcesses)
+			measurement_loadAvg->stop();
+		}
+		if (bProcesses){
+			measurement_processcpuusage->start();
 			cpum.publishProcessCpuUsage(proc_pub, mi);
-		if (bTemp)
+			measurement_processcpuusage->stop();
+		}
+		if (bTemp){
+			measurement_temp->start();
 			cpum.publishCPUTemp(temp_pub, mi);
+			measurement_temp->stop();
+		}
 		if (bPercentPerCore) {
 			std_msgs::Float32MultiArray fma;
 			char value[20];
 			for(int i=0; i<4; i++){
+				measurement_perCore->start();
 				double pCore = cpum.getCPUCoreLoad(i);
 				fma.data.push_back(pCore);
 
@@ -328,6 +349,7 @@ int main(int argc, char **argv) {
 				sprintf(value,"percentage load CoreNo: %d",i);
 				kv.key = value;
 				mi.values.push_back(kv);
+				measurement_perCore->stop();
 			}
 			percpercore_pub.publish(fma);
 
@@ -335,8 +357,10 @@ int main(int argc, char **argv) {
 
 		monitor_pub.publish(mi);
 
-
+		benchmark.printProgress(true);
 		loop_rate.sleep();
 	}
+
+	benchmark.logData();
 
 }

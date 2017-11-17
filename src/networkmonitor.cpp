@@ -202,6 +202,13 @@ int main(int argc, char **argv) {
 
 	NetworkMonitor NWm(nwThroughput, cnwInterface);
 
+	ROS_RT_Benchmark benchmark;
+	benchmark.init();
+	ROS_RT_MeasurementDuration* measurement_networkload_bytes = benchmark.createDurationMeasurement("networkload_in_bytes");
+	ROS_RT_MeasurementDuration* measurement_network_packets = benchmark.createDurationMeasurement("network_packets");
+
+
+
 	char value[40];
 	while (ros::ok()) {
 		ros_monitoring::MonitoringInfo mi;
@@ -211,7 +218,9 @@ int main(int argc, char **argv) {
 
 		if (bBytes || bload) {
 			float loadrx, loadtx, RXBpS, TXBpS;
+			measurement_networkload_bytes->start();
 			NWm.getNetworkLoad(loadrx, loadtx, RXBpS, TXBpS);
+			measurement_networkload_bytes->stop();
 			if (bBytes) {
 				std_msgs::Float32 rx_msg, tx_msg;
 				rx_msg.data = RXBpS;
@@ -258,11 +267,14 @@ int main(int argc, char **argv) {
 
 		}
 		if (bPackets) {
+			measurement_network_packets->start();
 			NWm.publishPackets(RXPpS_pub, TXPpS_pub, mi);
+			measurement_network_packets->stop();
 		}
 		loop_rate.sleep();
 	}
 
 	delete[] cnwInterface;
 
+	benchmark.logData();
 }

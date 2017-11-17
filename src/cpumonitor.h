@@ -19,6 +19,8 @@
 
 #include "ros_monitoring/Processes.h"
 
+#include "ros_rt_benchmark_lib/benchmark.h"
+
 class CpuMonitor {
 public:
 	CpuMonitor();

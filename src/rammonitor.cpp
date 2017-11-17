@@ -11,6 +11,8 @@
 #include "ros_monitoring/MonitoringInfo.h"
 #include "string.h"
 
+#include "ros_rt_benchmark_lib/benchmark.h"
+
 
 #include "help.cpp"
 
@@ -35,7 +37,7 @@ int main(int argc, char **argv) {
 
 	float freq = 1;
 	if (!n.getParam("frequency", freq)) {
-		ROS_WARN("No frequency supplied. Working with %d Hz.", freq);
+		ROS_WARN("No frequency supplied. Working with %f Hz.", freq);
 	}
 
 	bool bUsed = false;
@@ -55,11 +57,14 @@ int main(int argc, char **argv) {
 	}
 
 	ros::Rate loop_rate(freq);
-
-
+	ROS_RT_Benchmark benchmark;
+	benchmark.init();
+	ROS_RT_MeasurementDuration* measurement_meminfo = benchmark.createDurationMeasurement("meminfo");
 
 	while (ros::ok()) {
+		measurement_meminfo->start();
 		meminfo();
+		measurement_meminfo->stop();
 		ros_monitoring::MonitoringInfo mi;
 		mi.name = ros::this_node::getName();
 		mi.description = "A RAM-Monitor";
@@ -69,6 +74,7 @@ int main(int argc, char **argv) {
 		 kb_main_shared, kb_main_buffers, kb_main_cached*/
 		char value[200];
 		if (bUsed) {
+
 			used.data = (float) kb_main_used;
 			used_pub.publish(used);
 
@@ -79,8 +85,10 @@ int main(int argc, char **argv) {
 
 			used.value = value;
 			mi.values.push_back(used);
+
 		}
 		if (bPercent) {
+
 			percentage.data = ((float) kb_main_used / (float) kb_main_total)
 					* 100.0;
 			percentage_pub.publish(percentage);
@@ -90,6 +98,7 @@ int main(int argc, char **argv) {
 			sprintf(value, "%f", percentage.data);
 			percent.value = value;
 			mi.values.push_back(percent);
+
 		}
 
 
@@ -102,4 +111,5 @@ int main(int argc, char **argv) {
 
 	}
 
+	benchmark.logData();
 }
