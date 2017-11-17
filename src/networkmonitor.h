@@ -26,7 +26,7 @@ public:
 	virtual ~NetworkMonitor();
 
 	void getNetworkLoad(float& loadinPrx, float& loadinPtx, float& RXBpS, float& TXBpS);
-	void publishPackets(ros::Publisher rxpackets_pub, ros::Publisher txpackets_pub, ros_monitoring::MonitoringInfo& mi);
+	void getPackets(float& RXPpS, float& TXPpS);
 
 private:
 	float maxNWThroughputPS;

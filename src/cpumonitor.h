@@ -27,17 +27,17 @@ public:
 	virtual ~CpuMonitor();
 
 
-	void publishCpuUsage(ros::Publisher pub, ros_monitoring::MonitoringInfo& mi);
-	void publishLoadAvg(ros::Publisher pub, ros_monitoring::MonitoringInfo& mi);
+	float getCurrentCpuLoad();
+	float getLoadAvg();
 	void publishProcessCpuUsage(ros::Publisher pub, ros_monitoring::MonitoringInfo& mi);
-	void publishCPUTemp(ros::Publisher pub, ros_monitoring::MonitoringInfo& mi);
+	float getCPUTemp();
 
 	double getCPUCoreLoad(int n);
 
 private:
 	std::vector<unsigned long long> lastTotalUser, lastTotalUserLow, lastTotalSys, lastTotalIdle;
 	void init();
-	double getCurrentValue();
+
 
 };
 

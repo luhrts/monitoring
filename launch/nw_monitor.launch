@@ -1,5 +1,5 @@
 <launch>
-	<node pkg="ros_monitoring" type="network_monitoring_node" name="network_monitor" output="screen">
+	<node pkg="ros_monitoring" type="network_monitoring_node" name="network_monitor" output="screen" launch-prefix="chrt -f 50">
 		<rosparam command="load" file="$(find ros_monitoring)/config/nwmonitorconfig.yaml" />
 		
 	</node>

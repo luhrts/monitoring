@@ -16,21 +16,13 @@ CpuMonitor::~CpuMonitor() {
 	// TODO Auto-generated destructor stub
 }
 
-void CpuMonitor::publishLoadAvg(ros::Publisher pub, ros_monitoring::MonitoringInfo& mi) {
+float CpuMonitor::getLoadAvg() {
 	double loadavg[3];
 	std_msgs::Float32 avg;
 	getloadavg(loadavg, 3); //works/updates around every 5 seconds
 	//ROS_INFO(" %f, %f, %f", loadavg[0],loadavg[1],loadavg[2]);
+	return loadavg[0];
 
-	avg.data = loadavg[0];
-	pub.publish(avg);
-
-	ros_monitoring::KeyValue kv;
-	kv.key = "cpu load avg";
-	char value[20];
-	sprintf(value, "%f", loadavg[0]);
-	kv.value = value;
-	mi.values.push_back(kv);
 }
 
 //-------------------------------------------------------
@@ -78,8 +70,8 @@ void CpuMonitor::init() {
 
 }
 
-double CpuMonitor::getCurrentValue() {
-	double percent;
+float CpuMonitor::getCurrentCpuLoad() {
+	float percent;
 	FILE* file;
 	unsigned long long totalUser, totalUserLow, totalSys, totalIdle, total;
 
@@ -157,21 +149,6 @@ double CpuMonitor::getCPUCoreLoad(int n) { //TODO need to test if this is the ri
 
 }
 
-void CpuMonitor::publishCpuUsage(ros::Publisher pub, ros_monitoring::MonitoringInfo& mi) {
-
-	ros_monitoring::KeyValue kv;
-	double pCPU = getCurrentValue();
-	std_msgs::Float32 cpu_msg;
-	cpu_msg.data = pCPU;
-	pub.publish(cpu_msg);
-
-	kv.key = "overall cpu load";
-	char value[20];
-	sprintf(value, "%f", pCPU);
-	kv.value= value;
-	mi.values.push_back(kv);
-
-}
 
 //--------------------------------------------------------------
 
@@ -207,7 +184,7 @@ void CpuMonitor::publishProcessCpuUsage(ros::Publisher pub,ros_monitoring::Monit
 
 //--------------------------------------------------------------
 
-void CpuMonitor::publishCPUTemp(ros::Publisher pub, ros_monitoring::MonitoringInfo& mi) {
+float CpuMonitor::getCPUTemp() {
 	//check which is coretemp
 	bool corefound = false;
 	int i=-1;
@@ -235,18 +212,8 @@ void CpuMonitor::publishCPUTemp(ros::Publisher pub, ros_monitoring::MonitoringIn
 	fscanf(file, "%d", &input);
 	fclose(file);
 	float temp = input / 1000; //in °C
-	std_msgs::Float32 temp_msg;
-	temp_msg.data = temp;
-	pub.publish(temp_msg);
 
-	ros_monitoring::KeyValue kv;
-	kv.key = "CPU Temperatur";
-
-	char value[20];
-	sprintf(value, "%f", temp);
-	kv.value= value;
-	mi.values.push_back(kv);
-
+	return temp;
 }
 
 //-------------------------------------------------------------
@@ -310,6 +277,8 @@ int main(int argc, char **argv) {
 	ROS_RT_MeasurementDuration* measurement_temp = benchmark.createDurationMeasurement("cpu_temp");
 	ROS_RT_MeasurementDuration* measurement_perCore = benchmark.createDurationMeasurement("load_per_core");
 
+	char value[50];
+
 	while (ros::ok()) {
 		ros_monitoring::MonitoringInfo mi;
 		mi.name = ros::this_node::getName();
@@ -317,31 +286,50 @@ int main(int argc, char **argv) {
 		fillMachineInfo(mi);
 		if (bPercent) {
 			measurement_percent->start();
-			cpum.publishCpuUsage(perc_pub, mi);
+			float cpuload = cpum.getCurrentCpuLoad();
 			measurement_percent->stop();
+
+			ros_monitoring::KeyValue kv;
+			kv.key = "overall cpu load";
+			sprintf(value, "%f", cpuload);
+			kv.value= value;
+			mi.values.push_back(kv);
 		}
 		if (bAvarage){
 			measurement_loadAvg->start();
-			cpum.publishLoadAvg(avg_pub, mi);
+			float cpuavg = cpum.getLoadAvg();
 			measurement_loadAvg->stop();
+
+			ros_monitoring::KeyValue kv;
+			kv.key = "cpu load avg";
+			sprintf(value, "%f", cpuavg);
+			kv.value = value;
+			mi.values.push_back(kv);
 		}
 		if (bProcesses){
 			measurement_processcpuusage->start();
-			cpum.publishProcessCpuUsage(proc_pub, mi);
+			//cpum.publishProcessCpuUsage(proc_pub, mi);
 			measurement_processcpuusage->stop();
 		}
 		if (bTemp){
 			measurement_temp->start();
-			cpum.publishCPUTemp(temp_pub, mi);
+			float temp = cpum.getCPUTemp();
 			measurement_temp->stop();
+
+			ros_monitoring::KeyValue kv;
+			kv.key = "CPU Temperatur";
+			sprintf(value, "%f", temp);
+			kv.value= value;
+			mi.values.push_back(kv);
 		}
 		if (bPercentPerCore) {
-			std_msgs::Float32MultiArray fma;
-			char value[20];
+//			std_msgs::Float32MultiArray fma;
+
 			for(int i=0; i<4; i++){
 				measurement_perCore->start();
 				double pCore = cpum.getCPUCoreLoad(i);
-				fma.data.push_back(pCore);
+				measurement_perCore->stop();
+//				fma.data.push_back(pCore);
 
 				ros_monitoring::KeyValue kv;
 				sprintf(value, "%f", pCore);
@@ -349,9 +337,9 @@ int main(int argc, char **argv) {
 				sprintf(value,"percentage load CoreNo: %d",i);
 				kv.key = value;
 				mi.values.push_back(kv);
-				measurement_perCore->stop();
+
 			}
-			percpercore_pub.publish(fma);
+//			percpercore_pub.publish(fma);
 
 		}
 

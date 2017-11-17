@@ -75,8 +75,8 @@ int main(int argc, char **argv) {
 		char value[200];
 		if (bUsed) {
 
-			used.data = (float) kb_main_used;
-			used_pub.publish(used);
+//			used.data = (float) kb_main_used;
+//			used_pub.publish(used);
 
 			ros_monitoring::KeyValue used;
 			used.key = "used";
@@ -89,13 +89,13 @@ int main(int argc, char **argv) {
 		}
 		if (bPercent) {
 
-			percentage.data = ((float) kb_main_used / (float) kb_main_total)
-					* 100.0;
-			percentage_pub.publish(percentage);
+			float perc = ((float) kb_main_used / (float) kb_main_total) *100.0;
+			/*percentage.data = perc
+			percentage_pub.publish(percentage);*/
 
 			ros_monitoring::KeyValue percent;
-			percent.key = "percent";
-			sprintf(value, "%f", percentage.data);
+			percent.key = "percent used";
+			sprintf(value, "%f", perc);
 			percent.value = value;
 			mi.values.push_back(percent);
 

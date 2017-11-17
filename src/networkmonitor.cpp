@@ -95,8 +95,7 @@ unsigned int NetworkMonitor::readTXpackets(char nwinterface[]) {
 	return tx_packets;
 }
 
-void NetworkMonitor::publishPackets(ros::Publisher rxpackets_pub,
-		ros::Publisher txpackets_pub, ros_monitoring::MonitoringInfo& mi) {
+void NetworkMonitor::getPackets(float& RXPpS, float& TXPpS) {
 	ros::Time now = ros::Time::now();
 	unsigned int rxp = readRXpackets(networkinterface);
 	unsigned int txp = readTXpackets(networkinterface);
@@ -105,35 +104,16 @@ void NetworkMonitor::publishPackets(ros::Publisher rxpackets_pub,
 	ros::Duration deltaT = now - lastStampPackets;
 
 	float timeT = (float) deltaT.sec + (deltaT.nsec / pow(10, 9));
-	float RXPpS = (float) deltaRXP / timeT;
-	float TXPpS = (float) deltaTXP / timeT;
+	RXPpS = (float) deltaRXP / timeT;
+	TXPpS = (float) deltaTXP / timeT;
 
 	lastRXpackets = rxp;
 	lastTXpackets = txp;
 	lastStampPackets = now;
 
-	std_msgs::Float32 rxpackets, txpackets;
-	rxpackets.data = RXPpS;
-	txpackets.data = TXPpS;
+	return;
 
-	txpackets_pub.publish(txpackets);
-	rxpackets_pub.publish(rxpackets);
 
-	char value[40];
-	ros_monitoring::KeyValue rxkv, txkv;
-
-	sprintf(value, "rx in Packets per Second (%s)", networkinterface);
-	rxkv.key = value;
-	sprintf(value, "%f", RXPpS);
-	rxkv.value = value;
-
-	sprintf(value, "tx in Packets per Second (%s)", networkinterface);
-	txkv.key = value;
-	sprintf(value, "%f", TXPpS);
-	txkv.value = value;
-
-	mi.values.push_back(rxkv);
-	mi.values.push_back(txkv);
 
 }
 
@@ -267,9 +247,25 @@ int main(int argc, char **argv) {
 
 		}
 		if (bPackets) {
+			float RXPpS, TXPpS;
 			measurement_network_packets->start();
-			NWm.publishPackets(RXPpS_pub, TXPpS_pub, mi);
+			NWm.getPackets(RXPpS, TXPpS);
 			measurement_network_packets->stop();
+
+			ros_monitoring::KeyValue rxkv, txkv;
+
+			sprintf(value, "rx in Packets per Second (%s)", cnwInterface);
+			rxkv.key = value;
+			sprintf(value, "%f", RXPpS);
+			rxkv.value = value;
+
+			sprintf(value, "tx in Packets per Second (%s)", cnwInterface);
+			txkv.key = value;
+			sprintf(value, "%f", TXPpS);
+			txkv.value = value;
+
+			mi.values.push_back(rxkv);
+			mi.values.push_back(txkv);
 		}
 		loop_rate.sleep();
 	}
