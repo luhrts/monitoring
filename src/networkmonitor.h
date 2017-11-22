@@ -22,10 +22,11 @@
 
 class NetworkMonitor {
 public:
-	NetworkMonitor(float networkThroughput,  char nwit[]);
+	NetworkMonitor(float networkThroughput, char nwit[]);
 	virtual ~NetworkMonitor();
 
-	void getNetworkLoad(float& loadinPrx, float& loadinPtx, float& RXBpS, float& TXBpS);
+	void getNetworkLoad(float& loadinPrx, float& loadinPtx, float& RXBpS,
+			float& TXBpS);
 	void getPackets(float& RXPpS, float& TXPpS);
 
 private:
@@ -35,7 +36,7 @@ private:
 	unsigned int readRXpackets(char nwinterface[]);
 	unsigned int readTXpackets(char nwinterface[]);
 	ros::Time lastStampBytes, lastStampPackets;
-	unsigned int lastRXbytes,lastTXbytes, lastRXpackets,lastTXpackets;
+	unsigned int lastRXbytes, lastTXbytes, lastRXpackets, lastTXpackets;
 	char *networkinterface;
 
 };

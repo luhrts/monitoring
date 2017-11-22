@@ -8,21 +8,23 @@
 #include "networkmonitor.h"
 
 NetworkMonitor::NetworkMonitor(float networkThroughput, char nwit[]) {
-	maxNWThroughputPS = (float) (networkThroughput * pow(10, 6)) / 8; //TODO read config   			1GB Eth
+	maxNWThroughputPS = (float) (networkThroughput * pow(10, 6)) / 8; //transforms MBit/s to Byte/s
 	networkinterface = nwit;
+	//reading inital values, because the values are given incrementel
 	lastRXbytes = readRXbytes(networkinterface);
 	lastTXbytes = readTXbytes(networkinterface);
 	lastRXpackets = readRXpackets(networkinterface);
 	lastTXpackets = readTXpackets(networkinterface);
 	lastStampBytes = ros::Time::now();
 	lastStampPackets = ros::Time::now();
-
 }
 
 NetworkMonitor::~NetworkMonitor() {
-	// TODO Auto-generated destructor stub
 }
 
+/*
+ * Calculates the network trafic per second in bytes and network load in scala 0..1 for rx and tx
+ */
 void NetworkMonitor::getNetworkLoad(float& loadinPrx, float& loadinPtx,
 		float& RXBpS, float& TXBpS) {
 
@@ -49,6 +51,9 @@ void NetworkMonitor::getNetworkLoad(float& loadinPrx, float& loadinPtx,
 
 }
 
+/*
+ * Reads the RXbytes
+ */
 unsigned int NetworkMonitor::readRXbytes(char nwinterface[]) {
 	unsigned int rx_bytes;
 	char path[256];
@@ -61,6 +66,9 @@ unsigned int NetworkMonitor::readRXbytes(char nwinterface[]) {
 	return rx_bytes;
 }
 
+/*
+ * Reads the TXbytes
+ */
 unsigned int NetworkMonitor::readTXbytes(char nwinterface[]) {
 	unsigned int tx_bytes;
 	char path[256];
@@ -72,6 +80,10 @@ unsigned int NetworkMonitor::readTXbytes(char nwinterface[]) {
 	fclose(file);
 	return tx_bytes;
 }
+
+/*
+ * Reads the RXpackets
+ */
 unsigned int NetworkMonitor::readRXpackets(char nwinterface[]) {
 	unsigned int rx_packets;
 	char path[256];
@@ -83,6 +95,9 @@ unsigned int NetworkMonitor::readRXpackets(char nwinterface[]) {
 	fclose(file);
 	return rx_packets;
 }
+/*
+ * Reads the TXpackets
+ */
 unsigned int NetworkMonitor::readTXpackets(char nwinterface[]) {
 	unsigned int tx_packets;
 	char path[256];
@@ -95,6 +110,9 @@ unsigned int NetworkMonitor::readTXpackets(char nwinterface[]) {
 	return tx_packets;
 }
 
+/*
+ * calculates the networktrafic per second for packets
+ */
 void NetworkMonitor::getPackets(float& RXPpS, float& TXPpS) {
 	ros::Time now = ros::Time::now();
 	unsigned int rxp = readRXpackets(networkinterface);
@@ -113,20 +131,14 @@ void NetworkMonitor::getPackets(float& RXPpS, float& TXPpS) {
 
 	return;
 
-
-
 }
 
 int main(int argc, char **argv) {
 
 	ros::init(argc, argv, "network_monitor");
 	ros::NodeHandle n("~");
-	ros::Publisher RXBpS_pub;
-	ros::Publisher TXBpS_pub;
-	ros::Publisher RXPpS_pub;
-	ros::Publisher TXPpS_pub;
-	ros::Publisher loadrx_pub;
-	ros::Publisher loadtx_pub;
+	ros::Publisher RXBpS_pub, TXBpS_pub, RXPpS_pub, TXPpS_pub, loadrx_pub,
+			loadtx_pub;
 
 	float freq = 1;
 	if (!n.getParam("frequency", freq)) {
@@ -135,32 +147,32 @@ int main(int argc, char **argv) {
 
 	bool bBytes = false;
 	if (n.getParam("bytes", bBytes)) {
-		if (bBytes) {
-			RXBpS_pub = n.advertise<std_msgs::Float32>(
-					"/monitoring/network/rx_bytes_per_sec", 1);
-			TXBpS_pub = n.advertise<std_msgs::Float32>(
-					"/monitoring/network/tx_bytes_per_sec", 1);
-		}
+//		if (bBytes) {
+//			RXBpS_pub = n.advertise<std_msgs::Float32>(
+//					"/monitoring/network/rx_bytes_per_sec", 1);
+//			TXBpS_pub = n.advertise<std_msgs::Float32>(
+//					"/monitoring/network/tx_bytes_per_sec", 1);
+//		}
 	}
 
 	bool bPackets = false;
 	if (n.getParam("packets", bPackets)) {
-		if (bPackets) {
-			RXPpS_pub = n.advertise<std_msgs::Float32>(
-					"/monitoring/network/rx_packets_per_sec", 1);
-			TXPpS_pub = n.advertise<std_msgs::Float32>(
-					"/monitoring/network/tx_packets_per_sec", 1);
-		}
+//		if (bPackets) {
+//			RXPpS_pub = n.advertise<std_msgs::Float32>(
+//					"/monitoring/network/rx_packets_per_sec", 1);
+//			TXPpS_pub = n.advertise<std_msgs::Float32>(
+//					"/monitoring/network/tx_packets_per_sec", 1);
+//		}
 	}
 
 	bool bload = false;
 	if (n.getParam("load", bload)) {
-		if (bload) {
-			loadrx_pub = n.advertise<std_msgs::Float32>(
-					"/monitoring/network/loadrx", 1);
-			loadtx_pub = n.advertise<std_msgs::Float32>(
-					"/monitoring/network/loadtx", 1);
-		}
+//		if (bload) {
+//			loadrx_pub = n.advertise<std_msgs::Float32>(
+//					"/monitoring/network/loadrx", 1);
+//			loadtx_pub = n.advertise<std_msgs::Float32>(
+//					"/monitoring/network/loadtx", 1);
+//		}
 	}
 	float nwThroughput = 100;
 	if (!n.getParam("networkthroughput", nwThroughput)) {
@@ -182,12 +194,13 @@ int main(int argc, char **argv) {
 
 	NetworkMonitor NWm(nwThroughput, cnwInterface);
 
+	//benchmark init things
 	ROS_RT_Benchmark benchmark;
 	benchmark.init();
-	ROS_RT_MeasurementDuration* measurement_networkload_bytes = benchmark.createDurationMeasurement("networkload_in_bytes");
-	ROS_RT_MeasurementDuration* measurement_network_packets = benchmark.createDurationMeasurement("network_packets");
-
-
+	ROS_RT_MeasurementDuration* measurement_networkload_bytes =
+			benchmark.createDurationMeasurement("networkload_in_bytes");
+	ROS_RT_MeasurementDuration* measurement_network_packets =
+			benchmark.createDurationMeasurement("network_packets");
 
 	char value[40];
 	while (ros::ok()) {
@@ -202,11 +215,11 @@ int main(int argc, char **argv) {
 			NWm.getNetworkLoad(loadrx, loadtx, RXBpS, TXBpS);
 			measurement_networkload_bytes->stop();
 			if (bBytes) {
-				std_msgs::Float32 rx_msg, tx_msg;
-				rx_msg.data = RXBpS;
-				RXBpS_pub.publish(rx_msg);
-				tx_msg.data = TXBpS;
-				TXBpS_pub.publish(tx_msg);
+//				std_msgs::Float32 rx_msg, tx_msg;
+//				rx_msg.data = RXBpS;
+//				RXBpS_pub.publish(rx_msg);
+//				tx_msg.data = TXBpS;
+//				TXBpS_pub.publish(tx_msg);
 				ros_monitoring::KeyValue rx_kv, tx_kv;
 				sprintf(value, "rx in Bytes per Second (%s)", cnwInterface);
 				rx_kv.key = value;
@@ -224,11 +237,11 @@ int main(int argc, char **argv) {
 			}
 
 			if (bload) {
-				std_msgs::Float32 rx_load_msg, tx_load_msg;
-				rx_load_msg.data = loadrx;
-				tx_load_msg.data = loadtx;
-				loadrx_pub.publish(rx_load_msg);
-				loadtx_pub.publish(tx_load_msg);
+//				std_msgs::Float32 rx_load_msg, tx_load_msg;
+//				rx_load_msg.data = loadrx;
+//				tx_load_msg.data = loadtx;
+//				loadrx_pub.publish(rx_load_msg);
+//				loadtx_pub.publish(tx_load_msg);
 
 				ros_monitoring::KeyValue loadrx_kv, loadtx_kv;
 				sprintf(value, "Network Load RX on %s", cnwInterface);

@@ -9,27 +9,22 @@
 
 CpuMonitor::CpuMonitor() {
 	init();
-
 }
 
-CpuMonitor::~CpuMonitor() {
-	// TODO Auto-generated destructor stub
-}
+CpuMonitor::~CpuMonitor() {}
 
 float CpuMonitor::getLoadAvg() {
 	double loadavg[3];
 	std_msgs::Float32 avg;
 	getloadavg(loadavg, 3); //works/updates around every 5 seconds
-	//ROS_INFO(" %f, %f, %f", loadavg[0],loadavg[1],loadavg[2]);
 	return loadavg[0];
-
 }
 
 //-------------------------------------------------------
 
 //Quelle: https://stackoverflow.com/questions/63166/how-to-determine-cpu-and-memory-consumption-from-inside-a-process
 /**
- * getting all starting values of the cpu at first because they are incremel, so we need them for the delta. They are
+ * getting all starting values of the cpu at first because they are incrementel, so we need them for the delta. They are
  * catched for every core and overall cpu and saved to a vector.
  */
 void CpuMonitor::init() {
@@ -68,8 +63,31 @@ void CpuMonitor::init() {
 	}
 	fclose(file);
 
+	//tempreature file init
+	bool corefound = false;
+	int i=-1;
+	char path[80];
+	while(!corefound && i<2) {//TODO: was wenn kein coretemp gefunden || Probleme mit i! TODO: in den construcktor verschieben.
+		i++;
+		FILE* fname;
+		sprintf(path, "/sys/class/hwmon/hwmon%d/name",i);
+		fname = fopen(path, "r");
+		char name[30];
+		fscanf(fname, "%s", &name);
+		fclose(fname);
+		if(strcmp(name, "coretemp")==0) {	//check which is coretemp
+
+			corefound=true;
+			break;
+		}
+	}
+	temp_index = i;
+
 }
 
+/*
+ * Reads values in jiffies and calculates the Load of the overall Cpu in percent
+ */
 float CpuMonitor::getCurrentCpuLoad() {
 	float percent;
 	FILE* file;
@@ -108,7 +126,9 @@ float CpuMonitor::getCurrentCpuLoad() {
 
 	return percent;
 }
-
+/*
+ * Reads values in jiffies and calculates the Load of the n-th Cpu core in percent
+ */
 double CpuMonitor::getCPUCoreLoad(int n) { //TODO need to test if this is the right cpu core load
 	double percent;
 	FILE* file;
@@ -152,6 +172,11 @@ double CpuMonitor::getCPUCoreLoad(int n) { //TODO need to test if this is the ri
 
 //--------------------------------------------------------------
 
+/*
+ * This gets information from ps aux, parses it and publishes every process
+ *
+ * DOES NOT WORK ATM
+ */
 void CpuMonitor::publishProcessCpuUsage(ros::Publisher pub,ros_monitoring::MonitoringInfo& mi) {
 	FILE *in;
 	char buff[512];
@@ -184,29 +209,15 @@ void CpuMonitor::publishProcessCpuUsage(ros::Publisher pub,ros_monitoring::Monit
 
 //--------------------------------------------------------------
 
+/*
+ *	reads the tempreature from a file and transforms it to °C
+ */
+
 float CpuMonitor::getCPUTemp() {
-	//check which is coretemp
-	bool corefound = false;
-	int i=-1;
+
 	char path[80];
-	while(!corefound && i<2) {//TODO: was wenn kein coretemp gefunden || Probleme mit i! TODO: in den construcktor verschieben.
-		i++;
-		FILE* fname;
-		sprintf(path, "/sys/class/hwmon/hwmon%d/name",i);
-		fname = fopen(path, "r");
-		char name[30];
-		fscanf(fname, "%s", &name);
-		fclose(fname);
-		if(strcmp(name, "coretemp")==0) {
-
-			corefound=true;
-			break;
-		}
-	}
-
-
 	FILE* file;
-	sprintf(path, "/sys/class/hwmon/hwmon%d/temp1_input",i);
+	sprintf(path, "/sys/class/hwmon/hwmon%d/temp1_input",temp_index);
 	file = fopen(path, "r");
 	int input = 0;
 	fscanf(file, "%d", &input);
@@ -222,7 +233,7 @@ int main(int argc, char **argv) {
 
 	ros::init(argc, argv, "cpu_monitor");
 	ros::NodeHandle n("~");
-	ros::Publisher avg_pub, temp_pub, perc_pub, percpercore_pub, proc_pub;
+//	ros::Publisher avg_pub, temp_pub, perc_pub, percpercore_pub, proc_pub;
 	ros::Publisher monitor_pub = n.advertise<ros_monitoring::MonitoringInfo>("/monitoring/all", 1);
 
 	float freq = 1;
@@ -231,44 +242,45 @@ int main(int argc, char **argv) {
 	}
 	bool bAvarage = false;
 	if (n.getParam("avarage", bAvarage)) {
-		if (bAvarage) {
-			avg_pub = n.advertise<std_msgs::Float32>("/monitoring/cpu/avg", 1);
-		}
+//		if (bAvarage) {
+//			avg_pub = n.advertise<std_msgs::Float32>("/monitoring/cpu/avg", 1);
+//		}
 	}
 
 	bool bPercent = false;
 	if (n.getParam("percent", bPercent)) {
-		if (bPercent) {
-			perc_pub = n.advertise<std_msgs::Float32>("/monitoring/cpu/percent",
-					1);
-		}
+//		if (bPercent) {
+//			perc_pub = n.advertise<std_msgs::Float32>("/monitoring/cpu/percent",
+//					1);
+//		}
 	}
 	bool bPercentPerCore = false;
 	if (n.getParam("percentPerCore", bPercentPerCore)) {
-		if (bPercentPerCore) {
-			percpercore_pub = n.advertise<std_msgs::Float32MultiArray>("/monitoring/cpu/percentpercore",
-					1);
-		}
+//		if (bPercentPerCore) {
+//			percpercore_pub = n.advertise<std_msgs::Float32MultiArray>("/monitoring/cpu/percentpercore",
+//					1);
+//		}
 	}
 
 	bool bProcesses = false;
 	if (n.getParam("processes", bProcesses)) {
-		if (bProcesses) {
-			proc_pub = n.advertise<std_msgs::Float32>(
-					"/monitoring/cpu/allProcesses", 1);
-		}
+//		if (bProcesses) {
+//			proc_pub = n.advertise<std_msgs::Float32>(
+//					"/monitoring/cpu/allProcesses", 1);
+//		}
 	}
 	bool bTemp = false;
 	if (n.getParam("temperature", bTemp)) {
-		if (bTemp) {
-			temp_pub = n.advertise<std_msgs::Float32>("/monitoring/cpu/temp",
-					1);
-		}
+//		if (bTemp) {
+//			temp_pub = n.advertise<std_msgs::Float32>("/monitoring/cpu/temp",
+//					1);
+//		}
 	}
 
 	ros::Rate loop_rate(freq);
 	CpuMonitor cpum;
 
+	//inti benchmark things
 	ROS_RT_Benchmark benchmark;
 	benchmark.init();
 	ROS_RT_MeasurementDuration* measurement_percent = benchmark.createDurationMeasurement("percent");
@@ -279,6 +291,8 @@ int main(int argc, char **argv) {
 
 	char value[50];
 
+
+	//starting looping over the options and publishing at the end
 	while (ros::ok()) {
 		ros_monitoring::MonitoringInfo mi;
 		mi.name = ros::this_node::getName();
@@ -345,7 +359,7 @@ int main(int argc, char **argv) {
 
 		monitor_pub.publish(mi);
 
-		benchmark.printProgress(true);
+//		benchmark.printProgress(true);
 		loop_rate.sleep();
 	}
 
