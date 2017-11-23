@@ -1,0 +1,7 @@
+<launch>
+	
+	<node pkg="ros_monitoring" type="nodemonitor.py" name="node_monitor" output="screen">
+		<rosparam command="load" file="$(find ros_monitoring)/config/nodemonitorconfig.yaml" />
+	</node>
+	
+</launch>

@@ -74,6 +74,9 @@ add_executable(cpu_monitoring_node src/cpumonitor.cpp)
 add_executable(ram_monitoring_node src/rammonitor.cpp)
 add_executable(network_monitoring_node src/networkmonitor.cpp)
 
+add_executable(rosnode_monitoring_node src/nodemonitor.cpp)
+add_executable(rostopic_monitoring_node src/topicmonitor.cpp)
+
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(cpu_monitoring_node
@@ -92,9 +95,16 @@ target_link_libraries(ram_monitoring_node
 target_link_libraries(network_monitoring_node
   ${catkin_LIBRARIES}
   helpLib
- 
-  
 )
+
+target_link_libraries(rosnode_monitoring_node
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(rostopic_monitoring_node
+  ${catkin_LIBRARIES}
+)
+
 
 find_package(catkin REQUIRED COMPONENTS roslaunch)
 roslaunch_add_file_check(launch)

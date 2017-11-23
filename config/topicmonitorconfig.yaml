@@ -1,0 +1,2 @@
+frequency: 0.5
+topics: [{name: /monitoring/all, frequency: 5}, {name: /networkload, frequency: 1}]

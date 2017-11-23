@@ -1,0 +1,2 @@
+frequency: 0.5
+nodes: [/cpu_monitor, /networkload_sender]
