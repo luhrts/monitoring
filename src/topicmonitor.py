@@ -33,7 +33,7 @@ def topicmonitor():
         
         for entry in topics:
             n = len(hzMonitors[entry['name']].times) 
-            if(n<lastXvaluesForCalc):
+            if(n<lastXvaluesForCalc):       #TODO was ist wenn keine MSGS gesendet werden. Dann wird nichts überprüft und somit keine Fehlermeldung rausgegeben!!!
                 continue
             if(n==0):   #no msgs received, division by 0 catching
                 rospy.logwarn("no new MSGS for topic %s", entry['name'] )
