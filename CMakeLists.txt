@@ -66,16 +66,14 @@ include_directories(
 
 ## Declare a C++ library
 add_library(helpLib
-  src/help.cpp
+  src/monitors/help.cpp
 )
 
-
-add_executable(cpu_monitoring_node src/cpumonitor.cpp)
-add_executable(ram_monitoring_node src/rammonitor.cpp)
-add_executable(network_monitoring_node src/networkmonitor.cpp)
-
-add_executable(rosnode_monitoring_node src/nodemonitor.cpp)
-add_executable(rostopic_monitoring_node src/topicmonitor.cpp)
+add_executable(cpu_monitoring_node src/monitors/cpumonitor.cpp)
+add_executable(ram_monitoring_node src/monitors/rammonitor.cpp)
+add_executable(network_monitoring_node src/monitors/networkmonitor.cpp)
+add_executable(rosnode_monitoring_node src/monitors/nodemonitor.cpp)
+add_executable(rostopic_monitoring_node src/monitors/topicmonitor.cpp)
 
 
 ## Specify libraries to link a library or executable target against
@@ -84,23 +82,19 @@ target_link_libraries(cpu_monitoring_node
   helpLib
   
 )
-
 target_link_libraries(ram_monitoring_node
   ${catkin_LIBRARIES}
   ${PROCPS_LIBRARIES}
   helpLib
   
 )
-
 target_link_libraries(network_monitoring_node
   ${catkin_LIBRARIES}
   helpLib
 )
-
 target_link_libraries(rosnode_monitoring_node
   ${catkin_LIBRARIES}
 )
-
 target_link_libraries(rostopic_monitoring_node
   ${catkin_LIBRARIES}
 )

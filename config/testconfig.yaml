@@ -1,0 +1,3 @@
+
+
+faultdetection: [{message: CPU Temperatur, operator: '>', value: 60, error: cpu overheating, errorlevel: 0.9}]

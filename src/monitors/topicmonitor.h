@@ -11,15 +11,16 @@
 #include "ros/ros.h"
 #include "ros_monitoring/MonitoringInfo.h"
 
-class TopicMonitor {
+class TopicMonitor
+{
 public:
-	TopicMonitor();
-	virtual ~TopicMonitor();
+  TopicMonitor();
+  virtual ~TopicMonitor();
 
-	std::vector<std::string> getTopics();
+  std::vector<std::string> getTopics();
 
 private:
-	std::vector<std::string> topicList;
+  std::vector<std::string> topicList;
 };
 
 #endif /* SRC_TOPICMONITOR_H_ */

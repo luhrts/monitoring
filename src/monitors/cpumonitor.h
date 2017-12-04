@@ -16,27 +16,28 @@
 #include "stdlib.h"
 #include "stdio.h"
 #include "string.h"
+#include <vector>
 
 #include "ros_monitoring/Processes.h"
 
 #include "ros_rt_benchmark_lib/benchmark.h"
 
-class CpuMonitor {
+class CpuMonitor
+{
 public:
-	CpuMonitor();
-	virtual ~CpuMonitor();
+  CpuMonitor();
+  virtual ~CpuMonitor();
 
-	float getCurrentCpuLoad();
-	float getLoadAvg();
-	void publishProcessCpuUsage(ros::Publisher pub, ros_monitoring::MonitoringInfo& mi);
-	float getCPUTemp();
-	double getCPUCoreLoad(int n);
+  float getCurrentCpuLoad();
+  float getLoadAvg();
+  void publishProcessCpuUsage(ros::Publisher pub, ros_monitoring::MonitoringInfo& mi);
+  float getCPUTemp();
+  double getCPUCoreLoad(int n);
 
 private:
-	std::vector<unsigned long long> lastTotalUser, lastTotalUserLow, lastTotalSys, lastTotalIdle;
-	int temp_index;
-	void init();
-
+  std::vector<unsigned long long> lastTotalUser, lastTotalUserLow, lastTotalSys, lastTotalIdle;
+  int temp_index;
+  void init();
 
 };
 

@@ -12,18 +12,17 @@
 #include "ros_monitoring/MonitoringInfo.h"
 #include <XmlRpcValue.h>
 
-
-
-class NodeMonitor {
+class NodeMonitor
+{
 public:
-	NodeMonitor();
-	NodeMonitor(std::string filename);
-	virtual ~NodeMonitor();
-	std::vector<std::string> getNodeList();
+  NodeMonitor();
+  NodeMonitor(std::string filename);
+  virtual ~NodeMonitor();
+  std::vector<std::string> getNodeList();
 
 private:
-	std::vector<std::string> readFile(std::string filename);
-	std::vector<std::string> nodesList;
+  std::vector<std::string> readFile(std::string filename);
+  std::vector<std::string> nodesList;
 };
 
 #endif /* SRC_NODEMONITOR_H_ */
