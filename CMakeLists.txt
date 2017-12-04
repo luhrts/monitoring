@@ -69,24 +69,23 @@ add_library(helpLib
   src/monitors/help.cpp
 )
 
+
+####################### MONITOR NODES #########################
+
 add_executable(cpu_monitoring_node src/monitors/cpumonitor.cpp)
 add_executable(ram_monitoring_node src/monitors/rammonitor.cpp)
 add_executable(network_monitoring_node src/monitors/networkmonitor.cpp)
 add_executable(rosnode_monitoring_node src/monitors/nodemonitor.cpp)
 add_executable(rostopic_monitoring_node src/monitors/topicmonitor.cpp)
 
-
-## Specify libraries to link a library or executable target against
 target_link_libraries(cpu_monitoring_node
   ${catkin_LIBRARIES}
   helpLib
-  
 )
 target_link_libraries(ram_monitoring_node
   ${catkin_LIBRARIES}
   ${PROCPS_LIBRARIES}
   helpLib
-  
 )
 target_link_libraries(network_monitoring_node
   ${catkin_LIBRARIES}
@@ -99,6 +98,17 @@ target_link_libraries(rostopic_monitoring_node
   ${catkin_LIBRARIES}
 )
 
+
+
+
+####################### FDIR NODES #########################
+
+add_executable(user_fdi_node src/fdir/userfaultdetection.cpp)
+
+
+target_link_libraries(user_fdi_node
+  ${catkin_LIBRARIES}
+)
 
 find_package(catkin REQUIRED COMPONENTS roslaunch)
 roslaunch_add_file_check(launch)

@@ -1,3 +1,8 @@
+frequency: 1
 
+faultdetection: [error1, error2]
 
-faultdetection: [{message: CPU Temperatur, operator: '>', value: 60, error: cpu overheating, errorlevel: 0.9}]
+test: [1,2,3,4]
+
+error1: {message: CPU Temperatur, operator: '>', value: 60, error: cpu overheating, errorlevel: 0.9}
+error2: {message: overall cpu load, operator: '>', value: 80, error: high cpu load, errorlevel: 0.9}
