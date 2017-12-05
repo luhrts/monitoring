@@ -11,7 +11,6 @@ UserFaultDetection::UserFaultDetection(ros::NodeHandle& n)
 {
   sub = n.subscribe("/monitoring/all", 1000, &UserFaultDetection::monitorCallback, this);
   pub = n.advertise<ros_monitoring::Error>("/monitoring/errors", 1000);
-
 }
 
 UserFaultDetection::~UserFaultDetection()
@@ -34,7 +33,6 @@ void UserFaultDetection::load_config(ros::NodeHandle& n)
   if (n.getParam("faultdetection", faultdetection))
   {
   }
-
   for (int i = 0; i < faultdetection.size(); i++)
   {
     ROS_INFO("%s", faultdetection[i].c_str());
@@ -44,7 +42,6 @@ void UserFaultDetection::load_config(ros::NodeHandle& n)
       ROS_ERROR("The supplied Type \"%s\" is not available!", faultdetection[i].c_str());
       continue;
     }
-
     if (!n.getParam(faultdetection[i] + "/value", newConfig.value))
     {
       ROS_ERROR("value error");
@@ -62,10 +59,8 @@ void UserFaultDetection::load_config(ros::NodeHandle& n)
     {
       ROS_ERROR("message error");
     }
-
     user_config[message] = newConfig;
   }
-
 }
 
 void UserFaultDetection::fdi()
@@ -78,17 +73,15 @@ void UserFaultDetection::fdi()
     if (!(user_config.find(kv.key) == user_config.end()))
     {
       //TODO check the config and publish msg if error
-      fdiconfig config = user_config[kv.key];
+      fdiconfig config = user_config[kv.key]; //TODO austausch von config durch eine Liste welche die Objekte beinhaltet die die msgs brauchen. aufruf der check fkt mit der message
       //ROS_INFO("For message: \'%s\' following config", kv.key.c_str());
       if(kv.value>config.value) {
 
       }
-
     }
     else {
 //      ROS_INFO("No Key found");
     }
-
     msgBuffer.pop();
   }
 }
@@ -97,7 +90,6 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "user_fdi");
   ros::NodeHandle n("~");
-
   float freq = 1;
   if (!n.getParam("frequency", freq))
   {
@@ -105,7 +97,6 @@ int main(int argc, char **argv)
   }
 
   UserFaultDetection userFDI(n);
-
   ros::Rate loop_rate(freq);
 
   userFDI.load_config(n);
@@ -115,6 +106,5 @@ int main(int argc, char **argv)
     loop_rate.sleep();
     ros::spinOnce();
   }
-
 }
 
