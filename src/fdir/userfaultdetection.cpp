@@ -5,6 +5,7 @@
  *      Author: matthias
  */
 
+
 #include "userfaultdetection.h"
 
 UserFaultDetection::UserFaultDetection(ros::NodeHandle& n)
@@ -59,9 +60,16 @@ void UserFaultDetection::load_config(ros::NodeHandle& n)
     {
       ROS_ERROR("message error");
     }
-    user_config[message] = newConfig;
+    //fdiConfigList[message] = ;
   }
 }
+
+void UserFaultDetection::registerFDIObject(ConfigInterface object, std::string msg) {
+
+  fdiConfigList[msg].push_back(object);
+
+}
+
 
 void UserFaultDetection::fdi()
 {
@@ -70,12 +78,16 @@ void UserFaultDetection::fdi()
   {
     ros_monitoring::KeyValue kv = msgBuffer.front();
 //    ROS_INFO("Key: %s", kv.key.c_str());
-    if (!(user_config.find(kv.key) == user_config.end()))
+    if (!(fdiConfigList.find(kv.key) == fdiConfigList.end()))
     {
       //TODO check the config and publish msg if error
-      fdiconfig config = user_config[kv.key]; //TODO austausch von config durch eine Liste welche die Objekte beinhaltet die die msgs brauchen. aufruf der check fkt mit der message
+      std::vector<ConfigInterface> fdiObjectList = fdiConfigList[kv.key]; //TODO austausch von config durch eine Liste welche die Objekte beinhaltet die die msgs brauchen. aufruf der check fkt mit der message
       //ROS_INFO("For message: \'%s\' following config", kv.key.c_str());
-      std::string::size_type sz;
+
+      for(int i=0;i<fdiObjectList.size();i++) {
+        fdiObjectList[i].check(kv);
+      }
+      /*      std::string::size_type sz;
       float value = std::stof (kv.value,&sz);
       if(value>config.value) {
         ros_monitoring::Error er;
@@ -85,10 +97,9 @@ void UserFaultDetection::fdi()
         char hostname[30];
         getHostname(hostname);
         er.pc.Hostname = hostname;
-        pub.publish(er);
-      }
-    }
-    else {
+        pub.publish(er);c
+        }*/
+    } else {
 //      ROS_INFO("No Key found");
     }
     msgBuffer.pop();

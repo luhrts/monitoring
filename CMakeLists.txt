@@ -69,6 +69,9 @@ add_library(helpLib
   src/monitors/help.cpp
 )
 
+add_library(fdiconfigInterface
+  src/fdir/configinterface.cpp
+)
 
 ####################### MONITOR NODES #########################
 
@@ -109,7 +112,8 @@ add_executable(user_fdi_node src/fdir/userfaultdetection.cpp)
 target_link_libraries(user_fdi_node
   ${catkin_LIBRARIES}
   helpLib
-)
+  fdiconfigInterface
+  )
 
 find_package(catkin REQUIRED COMPONENTS roslaunch)
 roslaunch_add_file_check(launch)

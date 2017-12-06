@@ -5,6 +5,10 @@
  *      Author: matthias
  */
 
+#ifndef SRC_HELP_CPP_
+#define SRC_HELP_CPP_
+
+
 #include "ros/ros.h"
 #include "ros_monitoring/MonitoringArray.h"
 #include <unistd.h>
@@ -37,3 +41,4 @@ void fillMachineInfo(ros_monitoring::MonitoringInfo& mi)
 }
 
 
+#endif /* SRC_HELP_CPP_ */

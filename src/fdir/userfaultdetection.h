@@ -14,6 +14,7 @@
 #include "ros_monitoring/Error.h"
 #include "../monitors/help.cpp"
 #include "string"
+#include "configinterface.h"
 
 struct fdiconfig{
   std::string op;
@@ -29,6 +30,7 @@ public:
   virtual ~UserFaultDetection();
 
   void load_config(ros::NodeHandle& n);
+  void registerFDIObject(ConfigInterface object, std::string msg);
   void fdi();
 
 private:
@@ -37,7 +39,7 @@ private:
   ros::Subscriber sub;
   ros::Publisher pub;
 
-  std::map<std::string, fdiconfig> user_config;
+  std::map<std::string, std::vector<ConfigInterface>> fdiConfigList;
 };
 
 #endif /* SRC_FDIR_USERFAULTDETECTION_H_ */
