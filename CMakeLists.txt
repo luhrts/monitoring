@@ -108,6 +108,7 @@ add_executable(user_fdi_node src/fdir/userfaultdetection.cpp)
 
 target_link_libraries(user_fdi_node
   ${catkin_LIBRARIES}
+  helpLib
 )
 
 find_package(catkin REQUIRED COMPONENTS roslaunch)

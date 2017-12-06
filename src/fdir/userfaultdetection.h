@@ -12,6 +12,7 @@
 #include <queue>
 #include "ros_monitoring/MonitoringInfo.h"
 #include "ros_monitoring/Error.h"
+#include "../monitors/help.cpp"
 #include "string"
 
 struct fdiconfig{

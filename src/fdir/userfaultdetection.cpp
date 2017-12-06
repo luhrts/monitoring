@@ -80,8 +80,17 @@ void UserFaultDetection::fdi()
       //TODO check the config and publish msg if error
       fdiconfig config = user_config[kv.key];
       //ROS_INFO("For message: \'%s\' following config", kv.key.c_str());
-      if(kv.value>config.value) {
-
+      std::string::size_type sz;
+      float value = std::stof (kv.value,&sz);
+      if(value>config.value) {
+        ros_monitoring::Error er;
+        er.key = config.error;
+        er.value = kv.value;
+        er.level = config.errorlevel;
+        char hostname[30];
+        getHostname(hostname);
+        er.pc.Hostname = hostname;
+        pub.publish(er);
       }
 
     }
