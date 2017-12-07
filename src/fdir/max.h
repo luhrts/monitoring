@@ -7,25 +7,26 @@
  *    Author:matthias
  */
 
-#ifndef SRC_MAX_H_
-#define SRC_MAX_H_
+#ifndef SRC_FDIR_MAX_H_
+#define SRC_FDIR_MAX_H_
 
 
 #include "ros/ros.h"
 #include "ros_monitoring/MonitoringInfo.h"
 #include "configinterface.h"
 
-class Max : Public ConfigInterface
+class Max : public ConfigInterface
 {
  public:
-  Max(float maxValue, float errorLevel, ros::Publisher pub);
+  Max(float maxValue, std::string errormsg, float errorLevel, ros::Publisher& pub);
   virtual ~Max();
 
   void check(ros_monitoring::KeyValue newMsg);
 
  private:
   float maxValue, errorlevel;
+  std::string msg;
 
-}
+};
 
-#endif /* SRC_MAX_H_ */
+#endif /* SRC_FDIR_MAX_H_ */

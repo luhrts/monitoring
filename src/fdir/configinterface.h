@@ -11,7 +11,6 @@
 #include "ros/ros.h"
 #include "ros_monitoring/KeyValue.h"
 #include "ros_monitoring/Error.h"
-#include "../monitors/help.cpp"
 
 class ConfigInterface
 {
@@ -21,9 +20,8 @@ public:
 
   virtual void check(ros_monitoring::KeyValue newMsg);
 
-private:
+protected:
   ros::Publisher pub;
-
   void publishError(ros_monitoring::Error errormsg);
 };
 

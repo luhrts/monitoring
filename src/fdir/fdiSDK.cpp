@@ -1,25 +1,25 @@
 /*
- * userfaultdetection.cpp
+ * FdiSDK.cpp
  *
  *  Created on: Dec 4, 2017
  *      Author: matthias
  */
 
 
-#include "userfaultdetection.h"
+#include "fdiSDK.h"
 
-UserFaultDetection::UserFaultDetection(ros::NodeHandle& n)
+FdiSDK::FdiSDK(ros::NodeHandle& n)
 {
-  sub = n.subscribe("/monitoring/all", 1000, &UserFaultDetection::monitorCallback, this);
+  sub = n.subscribe("/monitoring/all", 1000, &FdiSDK::monitorCallback, this);
   pub = n.advertise<ros_monitoring::Error>("/monitoring/errors", 1000);
 }
 
-UserFaultDetection::~UserFaultDetection()
+FdiSDK::~FdiSDK()
 {
   // TODO Auto-generated destructor stub
 }
 
-void UserFaultDetection::monitorCallback(ros_monitoring::MonitoringInfo mi)
+void FdiSDK::monitorCallback(ros_monitoring::MonitoringInfo mi)
 {
   ROS_INFO("CALLBACK");
   for (int i = 0; i < mi.values.size(); i++)
@@ -28,7 +28,7 @@ void UserFaultDetection::monitorCallback(ros_monitoring::MonitoringInfo mi)
   }
 }
 
-void UserFaultDetection::load_config(ros::NodeHandle& n)
+void FdiSDK::load_config(ros::NodeHandle& n)
 {
   std::vector < std::string > faultdetection;
   if (n.getParam("faultdetection", faultdetection))
@@ -64,14 +64,14 @@ void UserFaultDetection::load_config(ros::NodeHandle& n)
   }
 }
 
-void UserFaultDetection::registerFDIObject(ConfigInterface object, std::string msg) {
+void FdiSDK::registerFDIObject(ConfigInterface object, std::string msg) {
 
   fdiConfigList[msg].push_back(object);
 
 }
 
 
-void UserFaultDetection::fdi()
+void FdiSDK::fdi()
 {
   ROS_INFO("FDI:");
   while (!msgBuffer.empty())
@@ -82,49 +82,16 @@ void UserFaultDetection::fdi()
     {
       //TODO check the config and publish msg if error
       std::vector<ConfigInterface> fdiObjectList = fdiConfigList[kv.key]; //TODO austausch von config durch eine Liste welche die Objekte beinhaltet die die msgs brauchen. aufruf der check fkt mit der message
-      //ROS_INFO("For message: \'%s\' following config", kv.key.c_str());
+      ROS_INFO("Found %d obejcts that test this msg", fdiObjectList.size());
 
       for(int i=0;i<fdiObjectList.size();i++) {
+        ROS_INFO("Working on %d obejct", i);
         fdiObjectList[i].check(kv);
       }
-      /*      std::string::size_type sz;
-      float value = std::stof (kv.value,&sz);
-      if(value>config.value) {
-        ros_monitoring::Error er;
-        er.key = config.error;
-        er.value = kv.value;
-        er.level = config.errorlevel;
-        char hostname[30];
-        getHostname(hostname);
-        er.pc.Hostname = hostname;
-        pub.publish(er);c
-        }*/
     } else {
 //      ROS_INFO("No Key found");
     }
     msgBuffer.pop();
-  }
-}
-
-int main(int argc, char **argv)
-{
-  ros::init(argc, argv, "user_fdi");
-  ros::NodeHandle n("~");
-  float freq = 1;
-  if (!n.getParam("frequency", freq))
-  {
-    ROS_WARN("No frequency supplied. Working with %d Hz.", freq);
-  }
-
-  UserFaultDetection userFDI(n);
-  ros::Rate loop_rate(freq);
-
-  userFDI.load_config(n);
-  while (ros::ok())
-  {
-    userFDI.fdi();
-    loop_rate.sleep();
-    ros::spinOnce();
   }
 }
 

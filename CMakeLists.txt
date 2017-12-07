@@ -59,19 +59,21 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+ include
  ${catkin_INCLUDE_DIRS}
  ${PROCPS_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
-add_library(helpLib
-  src/monitors/help.cpp
-)
 
-add_library(fdiconfigInterface
+add_library(fdiSDK
+  src/fdir/fdiSDK.cpp
   src/fdir/configinterface.cpp
+  src/fdir/max.cpp
 )
+#target_link_libraries(fdiconfigInterface
+#    ${catkin_LIBRARIES}
+# )
 
 ####################### MONITOR NODES #########################
 
@@ -83,16 +85,16 @@ add_executable(rostopic_monitoring_node src/monitors/topicmonitor.cpp)
 
 target_link_libraries(cpu_monitoring_node
   ${catkin_LIBRARIES}
-  helpLib
+
 )
 target_link_libraries(ram_monitoring_node
   ${catkin_LIBRARIES}
   ${PROCPS_LIBRARIES}
-  helpLib
+
 )
 target_link_libraries(network_monitoring_node
   ${catkin_LIBRARIES}
-  helpLib
+
 )
 target_link_libraries(rosnode_monitoring_node
   ${catkin_LIBRARIES}
@@ -106,14 +108,14 @@ target_link_libraries(rostopic_monitoring_node
 
 ####################### FDIR NODES #########################
 
-add_executable(user_fdi_node src/fdir/userfaultdetection.cpp)
+add_executable(fdi_example_node src/fdir/configExample.cpp)
 
 
-target_link_libraries(user_fdi_node
+target_link_libraries(fdi_example_node
   ${catkin_LIBRARIES}
-  helpLib
-  fdiconfigInterface
-  )
+
+  fdiSDK
+)
 
 find_package(catkin REQUIRED COMPONENTS roslaunch)
 roslaunch_add_file_check(launch)

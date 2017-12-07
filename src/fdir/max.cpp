@@ -7,22 +7,26 @@
 
 #include "max.h"
 
-Max::Max(float value, std::string errormsg; float errorLevel, ros::Publisher& publisher)
+Max::Max(float value, std::string errormsg, float errorLevel, ros::Publisher& publisher)
+  :maxValue(value)
+  ,msg(errormsg)
+  ,errorlevel(errorLevel)
+  ,ConfigInterface(publisher)
 {
-  maxValue = value;
-  msg= errormsg;
-  pub = publisher;
-  errorlevel = errorLevel;
 }
 
 Max::~Max() {}
 
 
 void Max::check(ros_monitoring::KeyValue newMsg) {
-  if(maxValue< newMsg.value) {
+  ROS_INFO("Checking CPU TEMP %s", newMsg.value);
+
+  std::string::size_type sz;
+  float value = std::stof (newMsg.value,&sz);
+  if(maxValue< value) {
     ROS_ERROR("ERROR: %s is higher then expected, Errorlevel to %f", newMsg.key, errorlevel);
     ros_monitoring::Error errormsg;
-    errormsg.key=msg;
+    errormsg.key = msg;
     errormsg.value = newMsg.value;
     errormsg.level = errorlevel;
     publishError(errormsg);

@@ -12,7 +12,7 @@
 
 #include "ros_rt_benchmark_lib/benchmark.h"
 
-#include "help.cpp"
+#include "ros_monitoring/help.h"
 
 int main(int argc, char **argv)
 {

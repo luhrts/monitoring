@@ -7,6 +7,13 @@
 
 #include "configinterface.h"
 
+
+#include "ros/ros.h"
+#include "ros_monitoring/MonitoringArray.h"
+#include <unistd.h>
+
+
+
 ConfigInterface::ConfigInterface(ros::Publisher& publisher) {
   pub = publisher;
 }
@@ -24,7 +31,12 @@ void ConfigInterface::check(ros_monitoring::KeyValue newMsg) {
 
 void ConfigInterface::publishError(ros_monitoring::Error errormsg) {
   char hostname[30];
-  getHostname(hostname);
+  size_t len;
+  if (gethostname(hostname, len))
+  {
+    ROS_ERROR("Could not read Hostname!");
+  }
   errormsg.pc.Hostname = hostname;
   pub.publish(errormsg);
 }
+

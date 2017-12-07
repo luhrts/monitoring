@@ -1,20 +1,20 @@
 /*
- * userfaultdetection.h
+ * FdiSDK.h
  *
  *  Created on: Dec 4, 2017
  *      Author: matthias
  */
 
-#ifndef SRC_FDIR_USERFAULTDETECTION_H_
-#define SRC_FDIR_USERFAULTDETECTION_H_
+#ifndef SRC_FDIR_FDISDK_H_
+#define SRC_FDIR_FDISDK_H_
 
 #include "ros/ros.h"
 #include <queue>
 #include "ros_monitoring/MonitoringInfo.h"
 #include "ros_monitoring/Error.h"
-#include "../monitors/help.cpp"
 #include "string"
 #include "configinterface.h"
+#include "max.h"
 
 struct fdiconfig{
   std::string op;
@@ -23,11 +23,11 @@ struct fdiconfig{
   float errorlevel;
 };
 
-class UserFaultDetection
+class FdiSDK
 {
 public:
-  UserFaultDetection(ros::NodeHandle& n);
-  virtual ~UserFaultDetection();
+  FdiSDK(ros::NodeHandle& n);
+  virtual ~FdiSDK();
 
   void load_config(ros::NodeHandle& n);
   void registerFDIObject(ConfigInterface object, std::string msg);
@@ -42,4 +42,4 @@ private:
   std::map<std::string, std::vector<ConfigInterface>> fdiConfigList;
 };
 
-#endif /* SRC_FDIR_USERFAULTDETECTION_H_ */
+#endif /* SRC_FDIR_FDISDK_H_ */

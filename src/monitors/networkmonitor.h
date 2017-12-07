@@ -13,7 +13,7 @@
 #include <string>
 #include "std_msgs/Float32.h"
 #include "ros_monitoring/MonitoringInfo.h"
-#include "help.cpp"
+#include "ros_monitoring/help.h"
 #include "ros_rt_benchmark_lib/benchmark.h"
 
 #define NETWORKPRE "/sys/class/net/"

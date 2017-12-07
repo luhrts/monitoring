@@ -11,7 +11,7 @@
 #include "ros/ros.h"
 #include "std_msgs/Float32.h"
 #include "std_msgs/Float32MultiArray.h"
-#include "help.cpp"
+#include "ros_monitoring/help.h"
 #include "ros_monitoring/MonitoringInfo.h"
 #include "stdlib.h"
 #include "stdio.h"
