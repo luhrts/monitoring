@@ -77,7 +77,7 @@ int main(int argc, char **argv)
       ros_monitoring::KeyValue used;
       used.key = "used";
 
-      sprintf(value, "%d", (long)kb_main_used);
+      sprintf(value, "%ld", (long)kb_main_used);
 
       used.value = value;
       mi.values.push_back(used);

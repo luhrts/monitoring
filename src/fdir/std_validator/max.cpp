@@ -19,12 +19,12 @@ Max::~Max() {}
 
 
 void Max::check(ros_monitoring::KeyValue newMsg) {
-  ROS_INFO("Checking CPU TEMP %s", newMsg.value);
+//  ROS_INFO("Checking CPU TEMP %s", newMsg.value.c_str());
 
   std::string::size_type sz;
   float value = std::stof (newMsg.value,&sz);
   if(maxValue< value) {
-    ROS_ERROR("ERROR: %s is higher then expected, Errorlevel to %f", newMsg.key, errorlevel);
+    ROS_ERROR("ERROR: Value: %f is higher then expected (%f), Errorlevel to %f", value, maxValue, errorlevel);
     ros_monitoring::Error errormsg;
     errormsg.key = msg;
     errormsg.value = newMsg.value;

@@ -13,13 +13,13 @@
 
 #include "ros/ros.h"
 #include "ros_monitoring/MonitoringInfo.h"
-#include "configinterface.h"
+#include "../configinterface.h"
 
 class Max : public ConfigInterface
 {
  public:
-  Max(float maxValue, std::string errormsg, float errorLevel, ros::Publisher& pub);
-  virtual ~Max();
+  Max(float maxValue, std::string errormsg, float errorLevel, ros::Publisher& publisher);
+  ~Max();
 
   void check(ros_monitoring::KeyValue newMsg);
 

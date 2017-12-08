@@ -18,7 +18,7 @@ public:
   ConfigInterface(ros::Publisher& publisher);
   virtual ~ConfigInterface();
 
-  virtual void check(ros_monitoring::KeyValue newMsg);
+  virtual void check(ros_monitoring::KeyValue newMsg) = 0;
 
 protected:
   ros::Publisher pub;

@@ -247,6 +247,8 @@ int main(int argc, char **argv)
 //	ros::Publisher avg_pub, temp_pub, perc_pub, percpercore_pub, proc_pub;
   ros::Publisher monitor_pub = n.advertise<ros_monitoring::MonitoringInfo>("/monitoring/all", 1);
 
+  int numCPU = sysconf(_SC_NPROCESSORS_ONLN);
+
   float freq = 1;
   if (!n.getParam("frequency", freq))
   {
@@ -361,7 +363,7 @@ int main(int argc, char **argv)
     {
 //			std_msgs::Float32MultiArray fma;
 
-      for (int i = 0; i < 4; i++)
+      for (int i = 0; i < numCPU; i++)
       {
         measurement_perCore->start();
         double pCore = cpum.getCPUCoreLoad(i);

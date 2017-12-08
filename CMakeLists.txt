@@ -69,7 +69,9 @@ include_directories(
 add_library(fdiSDK
   src/fdir/fdiSDK.cpp
   src/fdir/configinterface.cpp
-  src/fdir/max.cpp
+  src/fdir/std_validator/max.cpp
+  src/fdir/std_validator/min.cpp
+  src/fdir/std_validator/between.cpp
 )
 #target_link_libraries(fdiconfigInterface
 #    ${catkin_LIBRARIES}

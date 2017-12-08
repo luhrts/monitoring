@@ -21,7 +21,7 @@ FdiSDK::~FdiSDK()
 
 void FdiSDK::monitorCallback(ros_monitoring::MonitoringInfo mi)
 {
-  ROS_INFO("CALLBACK");
+//  ROS_INFO("CALLBACK");
   for (int i = 0; i < mi.values.size(); i++)
   {
     msgBuffer.push(mi.values[i]);
@@ -60,38 +60,33 @@ void FdiSDK::load_config(ros::NodeHandle& n)
     {
       ROS_ERROR("message error");
     }
-    //fdiConfigList[message] = ;
+    //fdiConfigList[message] = newConfig;
   }
 }
 
-void FdiSDK::registerFDIObject(ConfigInterface object, std::string msg) {
-
+void FdiSDK::registerFDIObject(ConfigInterface* object, std::string msg) {
   fdiConfigList[msg].push_back(object);
-
 }
 
 
-void FdiSDK::fdi()
+void FdiSDK::checkForFDI()
 {
-  ROS_INFO("FDI:");
+//  ROS_INFO("FDI:");
   while (!msgBuffer.empty())
   {
     ros_monitoring::KeyValue kv = msgBuffer.front();
-//    ROS_INFO("Key: %s", kv.key.c_str());
     if (!(fdiConfigList.find(kv.key) == fdiConfigList.end()))
     {
-      //TODO check the config and publish msg if error
-      std::vector<ConfigInterface> fdiObjectList = fdiConfigList[kv.key]; //TODO austausch von config durch eine Liste welche die Objekte beinhaltet die die msgs brauchen. aufruf der check fkt mit der message
-      ROS_INFO("Found %d obejcts that test this msg", fdiObjectList.size());
+      std::vector<ConfigInterface *> fdiObjectList = fdiConfigList[kv.key]; //get the list with objects that are registered on this message
 
       for(int i=0;i<fdiObjectList.size();i++) {
-        ROS_INFO("Working on %d obejct", i);
-        fdiObjectList[i].check(kv);
+        fdiObjectList[i]->check(kv);
       }
     } else {
 //      ROS_INFO("No Key found");
     }
     msgBuffer.pop();
   }
+//  ROS_INFO("FDI END;");
 }
 
