@@ -3,6 +3,11 @@
  *
  *  Created on: Dec 4, 2017
  *      Author: matthias
+ *
+ * This SDK allows you to build your own fault detection and identification.
+ * You need to register the validators you like. there are some standard ones like max, min.
+ * But you can write your own for complex behaiviour.
+ * Inheried the ConfigInterface for new Validators
  */
 
 
@@ -64,11 +69,18 @@ void FdiSDK::load_config(ros::NodeHandle& n)
   }
 }
 
+/**
+ * @brief FdiSDK::registerFDIObject to register validators to check for errors in the system
+ * @param object
+ * @param msg
+ */
 void FdiSDK::registerFDIObject(ConfigInterface* object, std::string msg) {
   fdiConfigList[msg].push_back(object);
 }
 
-
+/**
+ * @brief FdiSDK::checkForFDI forwards all new messages in msgBuffer depending on the registery msg to let them check for errors
+ */
 void FdiSDK::checkForFDI()
 {
 //  ROS_INFO("FDI:");
