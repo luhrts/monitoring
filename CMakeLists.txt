@@ -73,6 +73,12 @@ add_library(fdiSDK
   src/fdir/std_validator/min.cpp
   src/fdir/std_validator/between.cpp
 )
+
+add_library(recoverySDK
+  src/recovery/recoverysdk.cpp
+  src/recovery/errorhandlerinterface.cpp
+  src/recovery/std_handler/restartnodehandler.cpp
+)
 #target_link_libraries(fdiconfigInterface
 #    ${catkin_LIBRARIES}
 # )
@@ -112,12 +118,20 @@ target_link_libraries(rostopic_monitoring_node
 
 add_executable(fdi_example_node src/fdir/configExample.cpp)
 
-
 target_link_libraries(fdi_example_node
   ${catkin_LIBRARIES}
 
   fdiSDK
 )
+
+add_executable(recovery_example_node src/recovery/recoveryExample.cpp)
+
+target_link_libraries(recovery_example_node
+  ${catkin_LIBRARIES}
+
+  recoverySDK
+)
+
 
 find_package(catkin REQUIRED COMPONENTS roslaunch)
 roslaunch_add_file_check(launch)
