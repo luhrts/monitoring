@@ -28,8 +28,8 @@ def nodemonitor():
             if(not rosnode_ping(node, 1)):
                 rospy.logwarn("Can not ping node: %s", node)
                 kv = KeyValue()
-                kv.key = "node missing"
-                str = "node " + node + " is unavailable"
+                kv.key = "node unavailable"
+                str = node
                 kv.value = str
                 msg.values.append(kv)
             

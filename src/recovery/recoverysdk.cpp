@@ -2,7 +2,7 @@
 
 RecoverySDK::RecoverySDK(ros::NodeHandle& n)
 {
-  pub = n.advertise<ros_monitoring::Error>("monitoring/errors", 100);
+  sub = n.subscribe("monitoring/errors", 100, &RecoverySDK::errorCallback, this);
 }
 
 void RecoverySDK::registerErrorHandling(ErrorHandlerInterface* errorHandler, std::string msg) {
