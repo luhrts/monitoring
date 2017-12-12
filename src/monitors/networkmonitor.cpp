@@ -145,6 +145,7 @@ int main(int argc, char **argv)
 
   ros::init(argc, argv, "network_monitor");
   ros::NodeHandle n("~");
+  ros::Publisher pub = n.advertise<ros_monitoring::MonitoringInfo>("/monitoring/all", 1);
   ros::Publisher RXBpS_pub, TXBpS_pub, RXPpS_pub, TXPpS_pub, loadrx_pub, loadtx_pub;
 
   float freq = 1;
@@ -295,6 +296,7 @@ int main(int argc, char **argv)
       mi.values.push_back(rxkv);
       mi.values.push_back(txkv);
     }
+    pub.publish(mi);
     loop_rate.sleep();
   }
 
