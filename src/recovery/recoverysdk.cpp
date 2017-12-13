@@ -22,6 +22,7 @@ void RecoverySDK::checkErrors() {
     }
     msgBuffer.pop();
   }
+  ROS_INFO("Ended check");
 }
 
 void RecoverySDK::errorCallback(ros_monitoring::Error error) {

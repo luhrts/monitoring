@@ -124,13 +124,13 @@ target_link_libraries(fdi_example_node
   fdiSDK
 )
 
-#add_executable(recovery_example_node src/recovery/recoveryExample.cpp)
+add_executable(recovery_example_node src/recovery/recoveryExample.cpp)
 
-#target_link_libraries(recovery_example_node
-#  ${catkin_LIBRARIES}
+target_link_libraries(recovery_example_node
+  ${catkin_LIBRARIES}
 
-#  recoverySDK
-#)
+  recoverySDK
+)
 
 
 find_package(catkin REQUIRED COMPONENTS roslaunch)

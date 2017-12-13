@@ -2,6 +2,7 @@
 #define RESTARTNODEHANDLER_H
 
 #include "../errorhandlerinterface.h"
+#include <stdlib.h>
 
 class RestartNodeHandler : public ErrorHandlerInterface
 {
