@@ -133,14 +133,6 @@ target_link_libraries(recovery_example_node
 
 ####################### TOOL NODES #########################
 
-add_executable(datalogger_node src/tools/logging/loggernode.cpp)
-
-target_link_libraries(datalogger_node
-  ${catkin_LIBRARIES}
-
-  
-)
-
 
 
 find_package(catkin REQUIRED COMPONENTS roslaunch)
