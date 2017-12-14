@@ -13,8 +13,6 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   message_generation
-  
-  
 )
 
 find_package(PkgConfig REQUIRED)
@@ -132,6 +130,17 @@ target_link_libraries(recovery_example_node
 
   recoverySDK
 )
+
+####################### TOOL NODES #########################
+
+add_executable(datalogger_node src/tools/logging/loggernode.cpp)
+
+target_link_libraries(datalogger_node
+  ${catkin_LIBRARIES}
+
+  
+)
+
 
 
 find_package(catkin REQUIRED COMPONENTS roslaunch)
