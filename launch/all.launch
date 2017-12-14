@@ -1,0 +1,6 @@
+<launch>
+  
+  	<include file="$(find ros_monitoring)/launch/monitors.launch" />
+  	<include file="$(find ros_monitoring)/launch/fdir_example.launch" />
+ 
+</launch>

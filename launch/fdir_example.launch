@@ -1,0 +1,11 @@
+<launch>
+	
+    <node pkg="ros_monitoring" type="fdi_example_node" name="fdi_system" output="screen" respawn="true">
+		<rosparam command="load" file="$(find ros_monitoring)/config/fdiexample.yaml" />
+	</node>
+	
+	<node pkg="ros_monitoring" type="recovery_example_node" name="recovery_system" output="screen" respawn="true">
+		<rosparam command="load" file="$(find ros_monitoring)/config/recoveryexample.yaml" />
+	</node>
+	
+</launch>
