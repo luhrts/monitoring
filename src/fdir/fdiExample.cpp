@@ -16,15 +16,21 @@ int main(int argc, char **argv)
   ros::Rate loop_rate(freq);
 
 
-//  Max maxtemp1(30,"CPU Overheating", 0.3, pub);
-  Between betweentemp1(40, "CPU Hot", 0.4, 30, "Getting Cold", 0.1, pub);
-  Max maxtemp1(60,"CPU Overheating", 0.7, pub);
-  Min mintemp1(20,"CPU to Cold", 0.2, pub);
 
-  userFDI.registerFDIObject(&maxtemp1, "CPU Temperatur");
-//  userFDI.registerFDIObject(&maxtemp2, "CPU Temperatur");
-  userFDI.registerFDIObject(&betweentemp1, "CPU Temperatur");
-  userFDI.registerFDIObject(&mintemp1, "CPU Temperatur");
+  Between betweentemp(40, "CPU Hot", 0.4, 30, "Getting Cold", 0.1, pub);
+  Max maxtemp(60,"CPU Overheating", 0.7, pub);
+  Min mintemp(20,"CPU to Cold", 0.2, pub);
+
+  userFDI.registerFDIObject(&maxtemp, "CPU Temperatur");
+  userFDI.registerFDIObject(&betweentemp, "CPU Temperatur");
+  userFDI.registerFDIObject(&mintemp, "CPU Temperatur");
+
+  NodeAvailable nodefdi(0.5, pub);
+
+  userFDI.registerFDIObject(&nodefdi, "node unavailable");
+
+
+
   while (ros::ok())
   {
     userFDI.checkForFDI();

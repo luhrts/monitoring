@@ -17,6 +17,7 @@
 #include "std_validator/max.h"
 #include "std_validator/min.h"
 #include "std_validator/between.h"
+#include "std_validator/nodeavailable.h"
 
 struct fdiconfig{
   std::string op;

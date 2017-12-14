@@ -6,7 +6,7 @@
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "recoveryExample");
-  ros::NodeHandle n;
+  ros::NodeHandle n("~");
 
   float freq = 1;
   if (!n.getParam("frequency", freq))

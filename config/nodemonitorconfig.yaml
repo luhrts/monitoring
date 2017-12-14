@@ -1,2 +1,2 @@
 frequency: 0.5
-nodes: [/cpu_monitor, /networkload_sender]
+nodes: [/cpu_monitor, /ram_monitor, /topic_monitor, /node_monitor, /fdi_system, /network_monitor, /recovery_system]

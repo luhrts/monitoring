@@ -1,7 +1,0 @@
-<launch>
-	
-        <node pkg="ros_monitoring" type="user_fdi_node" name="topic_monitor" output="screen" respawn="true">
-		<rosparam command="load" file="$(find ros_monitoring)/config/testconfig.yaml" />
-	</node>
-	
-</launch>

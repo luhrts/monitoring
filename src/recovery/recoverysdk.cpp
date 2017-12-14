@@ -2,7 +2,7 @@
 
 RecoverySDK::RecoverySDK(ros::NodeHandle& n)
 {
-  sub = n.subscribe("monitoring/errors", 100, &RecoverySDK::errorCallback, this);
+  sub = n.subscribe("/monitoring/errors", 100, &RecoverySDK::errorCallback, this);
 }
 
 void RecoverySDK::registerErrorHandling(ErrorHandlerInterface* errorHandler, std::string msg) {
@@ -22,7 +22,6 @@ void RecoverySDK::checkErrors() {
     }
     msgBuffer.pop();
   }
-  ROS_INFO("Ended check");
 }
 
 void RecoverySDK::errorCallback(ros_monitoring::Error error) {

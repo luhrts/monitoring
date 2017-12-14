@@ -6,7 +6,7 @@
 class NodeAvailable : public ConfigInterface
 {
 public:
-  NodeAvailable();
+  NodeAvailable(float errorwert, ros::Publisher pub);
 
   void check(ros_monitoring::KeyValue newMsg);
 private:

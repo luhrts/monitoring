@@ -72,6 +72,7 @@ add_library(fdiSDK
   src/fdir/std_validator/max.cpp
   src/fdir/std_validator/min.cpp
   src/fdir/std_validator/between.cpp
+  src/fdir/std_validator/nodeavailable.cpp
 )
 
 add_library(recoverySDK
@@ -116,7 +117,7 @@ target_link_libraries(rostopic_monitoring_node
 
 ####################### FDIR NODES #########################
 
-add_executable(fdi_example_node src/fdir/configExample.cpp)
+add_executable(fdi_example_node src/fdir/fdiExample.cpp)
 
 target_link_libraries(fdi_example_node
   ${catkin_LIBRARIES}
