@@ -7,6 +7,9 @@ NodeAvailable::NodeAvailable(float errorwert, ros::Publisher pub)
 
 }
 
+/**
+ * redirects the keyvalue pair if the msg node unavailable is read, so the recovery system can restart it.
+ */
 void NodeAvailable::check(ros_monitoring::KeyValue newMsg)
 {
   if(newMsg.key == "node unavailable") {

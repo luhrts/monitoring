@@ -10,13 +10,13 @@ class RecoverySDK
 public:
   RecoverySDK(ros::NodeHandle& n);
 
-  void registerErrorHandling(ErrorHandlerInterface* errorHandler, std::string msg);
+  void registerErrorHandler(ErrorHandlerInterface* errorHandler, std::string msg);
   void checkErrors();
 
 private:
   void errorCallback(ros_monitoring::Error error);
 
-  std::queue<ros_monitoring::Error> msgBuffer;
+  std::queue<ros_monitoring::Error> msgBuffer; //Fifo, so that it gets processed in the original order
   ros::Subscriber sub;
 
   std::map<std::string, std::vector<ErrorHandlerInterface *>> recoveryHandler;

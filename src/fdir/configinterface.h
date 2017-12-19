@@ -12,12 +12,20 @@
 #include "ros_monitoring/KeyValue.h"
 #include "ros_monitoring/Error.h"
 
+
+/**
+ * Interface for the implementation of fdi validators. This allows to create classes that can be used with the fdiSDK.
+ */
 class ConfigInterface
 {
 public:
   ConfigInterface(ros::Publisher& publisher);
   virtual ~ConfigInterface();
 
+  /**
+   * check will be called by the fdiSDK to validate if the key-value pair is a error.
+   * You need to check if this is so and publish an error with the function publishError
+   */
   virtual void check(ros_monitoring::KeyValue newMsg) = 0;
 
 protected:

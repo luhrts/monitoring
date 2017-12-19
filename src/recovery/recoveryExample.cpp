@@ -2,6 +2,7 @@
 
 #include "recoverysdk.h"
 #include "std_handler/restartnodehandler.h"
+#include "std_handler/stoplaunchfile.h"
 
 int main(int argc, char **argv)
 {
@@ -20,7 +21,10 @@ int main(int argc, char **argv)
   RecoverySDK example(n);
 
   RestartNodeHandler rnh;
-  example.registerErrorHandling(&rnh, "node dead");
+  StopLaunchFile slf;
+
+  example.registerErrorHandler(&rnh, "node dead");
+  example.registerErrorHandler(&slf, "CPU Overheating");
 
   while (ros::ok())
   {

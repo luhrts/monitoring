@@ -12,7 +12,9 @@ Min::Min(float value, std::string errormsg, float errorLevel, ros::Publisher& pu
 
 Min::~Min() {}
 
-
+/**
+ * checks if the keyvalue pair is under the configured value
+ */
 void Min::check(ros_monitoring::KeyValue newMsg)
 {
   std::string::size_type sz;

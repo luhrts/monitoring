@@ -13,7 +13,9 @@ Between::Between(float maxValue, std::string maxErrorMsg, float maxerrorLevel, f
 }
 Between::~Between() {}
 
-
+/**
+ * checks the message if keyvalue pair is between the configured values(min/max), sends out a errormessage if not.
+ */
 void Between::check(ros_monitoring::KeyValue newMsg) {
 //  ROS_INFO("Checking CPU TEMP %s", newMsg.value.c_str());
 

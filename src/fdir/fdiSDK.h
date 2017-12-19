@@ -19,6 +19,9 @@
 #include "std_validator/between.h"
 #include "std_validator/nodeavailable.h"
 
+/**
+ * this struct is deprecated and was used befor the configinterface.h
+ */
 struct fdiconfig{
   std::string op;
   float value;
@@ -26,6 +29,11 @@ struct fdiconfig{
   float errorlevel;
 };
 
+
+/**
+ * This SDK allows you to setup a Fault detection and identification system for your Robot.
+ * Use the Register function to setup your own or pre-developt validators.
+ */
 class FdiSDK
 {
 public:

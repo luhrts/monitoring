@@ -17,7 +17,9 @@ Max::Max(float value, std::string errormsg, float errorLevel, ros::Publisher& pu
 
 Max::~Max() {}
 
-
+/**
+ * Checks if the keyvalue pair is over the configured value.
+ */
 void Max::check(ros_monitoring::KeyValue newMsg) {
 //  ROS_INFO("Checking CPU TEMP %s", newMsg.value.c_str());
 

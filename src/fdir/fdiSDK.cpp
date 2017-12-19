@@ -10,7 +10,6 @@
  * Inheried the ConfigInterface for new Validators
  */
 
-
 #include "fdiSDK.h"
 
 FdiSDK::FdiSDK(ros::NodeHandle& n)
@@ -24,15 +23,23 @@ FdiSDK::~FdiSDK()
   // TODO Auto-generated destructor stub
 }
 
+/**
+ * this callback will automaticly buffer the messages.
+ * Which will be handled in the checkforFDI function.
+ */
 void FdiSDK::monitorCallback(ros_monitoring::MonitoringInfo mi)
 {
-//  ROS_INFO("CALLBACK");
   for (int i = 0; i < mi.values.size(); i++)
   {
     msgBuffer.push(mi.values[i]);
   }
 }
 
+/**
+ * this functions allows the user to make a configuration via the parameter server.
+ *
+ * NOT IN USE!!!
+ */
 void FdiSDK::load_config(ros::NodeHandle& n)
 {
   std::vector < std::string > faultdetection;
@@ -74,7 +81,8 @@ void FdiSDK::load_config(ros::NodeHandle& n)
  * @param object
  * @param msg
  */
-void FdiSDK::registerFDIObject(ConfigInterface* object, std::string msg) {
+void FdiSDK::registerFDIObject(ConfigInterface* object, std::string msg)
+{
   fdiConfigList[msg].push_back(object);
 }
 
@@ -83,22 +91,24 @@ void FdiSDK::registerFDIObject(ConfigInterface* object, std::string msg) {
  */
 void FdiSDK::checkForFDI()
 {
-//  ROS_INFO("FDI:");
   while (!msgBuffer.empty())
   {
     ros_monitoring::KeyValue kv = msgBuffer.front();
     if (!(fdiConfigList.find(kv.key) == fdiConfigList.end()))
     {
-      std::vector<ConfigInterface *> fdiObjectList = fdiConfigList[kv.key]; //get the list with objects that are registered on this message
+      //get the list with objects that are registered on this message
+      std::vector<ConfigInterface *> fdiObjectList = fdiConfigList[kv.key];
 
-      for(int i=0;i<fdiObjectList.size();i++) {
+      for (int i = 0; i < fdiObjectList.size(); i++)
+      {
         fdiObjectList[i]->check(kv);
       }
-    } else {
+    }
+    else
+    {
 //      ROS_INFO("No Key found");
     }
     msgBuffer.pop();
   }
-//  ROS_INFO("FDI END;");
 }
 
