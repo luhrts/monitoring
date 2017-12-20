@@ -219,7 +219,7 @@ void CpuMonitor::publishProcessCpuUsage(ros::Publisher pub, ros_monitoring::Moni
 //--------------------------------------------------------------
 
 /*
- *	reads the tempreature from a file and transforms it to °C
+ *	reads the temperature from a file and transforms it to °C
  */
 
 float CpuMonitor::getCPUTemp()
