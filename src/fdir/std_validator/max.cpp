@@ -26,8 +26,9 @@ void Max::check(ros_monitoring::KeyValue newMsg) {
   std::string::size_type sz;
   float value = std::stof (newMsg.value,&sz);
   if(maxValue< value) {
-    ROS_ERROR("ERROR: Value: %f is higher then expected (%f), Errorlevel to %f", value, maxValue, errorlevel);
+    ROS_WARN("ERROR: Value: %f is higher then expected (%f), Errorlevel to %f", value, maxValue, errorlevel);
     ros_monitoring::Error errormsg;
+    errormsg.header.stamp = ros::Time::now();
     errormsg.key = msg;
     errormsg.value = newMsg.value;
     errormsg.level = errorlevel;

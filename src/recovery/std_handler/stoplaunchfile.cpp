@@ -7,15 +7,13 @@
 
 #include "stoplaunchfile.h"
 
-StopLaunchFile::StopLaunchFile()
-{
-  // TODO Auto-generated constructor stub
+StopLaunchFile::StopLaunchFile() {
+	// TODO Auto-generated constructor stub
 
 }
 
-StopLaunchFile::~StopLaunchFile()
-{
-  // TODO Auto-generated destructor stub
+StopLaunchFile::~StopLaunchFile() {
+	// TODO Auto-generated destructor stub
 }
 
 /**
@@ -23,7 +21,8 @@ StopLaunchFile::~StopLaunchFile()
  * Only use in emergencys.
  */
 void StopLaunchFile::checkError(ros_monitoring::Error msg) {
-  char cmd[80];
-  sprintf(cmd, "killall roslaunch");
-  system(cmd);
+	ROS_ERROR("------------------- CPU OVERHEATING!!! KILLING ALL ROSLAUNCH --------------------");
+	char cmd[80];
+	sprintf(cmd, "killall roslaunch");
+	system (cmd);
 }

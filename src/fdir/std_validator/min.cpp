@@ -20,8 +20,9 @@ void Min::check(ros_monitoring::KeyValue newMsg)
   std::string::size_type sz;
   float value = std::stof (newMsg.value,&sz);
   if(minValue>=value) {
-    ROS_ERROR("ERROR: Value: %f is lower then expected (%f), Errorlevel to %f", value, minValue, errorlevel);
+    ROS_WARN("ERROR: Value: %f is lower then expected (%f), Errorlevel to %f", value, minValue, errorlevel);
     ros_monitoring::Error errormsg;
+    errormsg.header.stamp = ros::Time::now();
     errormsg.key = msg;
     errormsg.value = newMsg.value;
     errormsg.level = errorlevel;

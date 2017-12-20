@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 
   //Initializising the validators
   Between betweentemp(40, "CPU Hot", 0.4, 30, "Getting Cold", 0.1, pub);
-  Max maxtemp(60,"CPU Overheating", 0.7, pub);
+  Max maxtemp(70,"CPU Overheating", 1.0, pub);
   Min mintemp(20,"CPU to Cold", 0.2, pub);
   NodeAvailable nodefdi(0.5, pub);
 

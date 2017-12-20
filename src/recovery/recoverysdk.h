@@ -5,6 +5,10 @@
 #include "errorhandlerinterface.h"
 #include <queue>
 
+#include "std_handler/restartnodehandler.h"
+#include "std_handler/stoplaunchfile.h"
+#include "std_handler/outputerrormessage.h"
+
 class RecoverySDK
 {
 public:

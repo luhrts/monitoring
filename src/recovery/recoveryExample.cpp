@@ -1,8 +1,7 @@
 #include <ros/ros.h>
 
 #include "recoverysdk.h"
-#include "std_handler/restartnodehandler.h"
-#include "std_handler/stoplaunchfile.h"
+
 
 int main(int argc, char **argv)
 {
@@ -22,9 +21,11 @@ int main(int argc, char **argv)
 
   RestartNodeHandler rnh;
   StopLaunchFile slf;
+  OutputErrorMessage oem;
 
   example.registerErrorHandler(&rnh, "node dead");
   example.registerErrorHandler(&slf, "CPU Overheating");
+  example.registerErrorHandler(&oem, "CPU Hot");
 
   while (ros::ok())
   {

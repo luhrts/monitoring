@@ -22,15 +22,17 @@ void Between::check(ros_monitoring::KeyValue newMsg) {
   std::string::size_type sz;
   float value = std::stof (newMsg.value,&sz);
   if(maxValue<value) {
-    ROS_ERROR("ERROR: Value: %f is higher then expected (%f), Errorlevel to %f", value, maxValue, maxlevel);
+    ROS_WARN("ERROR: Value: %f is higher then expected (%f), Errorlevel to %f", value, maxValue, maxlevel);
     ros_monitoring::Error maxerrormsg;
+    maxerrormsg.header.stamp = ros::Time::now();
     maxerrormsg.key = maxmsg;
     maxerrormsg.value = newMsg.value;
     maxerrormsg.level = maxlevel;
     publishError(maxerrormsg);
   } else if(minValue>=value) {
-    ROS_ERROR("ERROR: Value: %f is lower then expected (%f), Errorlevel to %f", value, minValue, minlevel);
+    ROS_WARN("ERROR: Value: %f is lower then expected (%f), Errorlevel to %f", value, minValue, minlevel);
     ros_monitoring::Error minerrormsg;
+    minerrormsg.header.stamp = ros::Time::now();
     minerrormsg.key = minmsg;
     minerrormsg.value = newMsg.value;
     minerrormsg.level = minlevel;

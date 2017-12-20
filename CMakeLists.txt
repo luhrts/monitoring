@@ -78,6 +78,7 @@ add_library(recoverySDK
   src/recovery/errorhandlerinterface.cpp
   src/recovery/std_handler/restartnodehandler.cpp
   src/recovery/std_handler/stoplaunchfile.cpp
+  src/recovery/std_handler/outputerrormessage.cpp
 )
 #target_link_libraries(fdiconfigInterface
 #    ${catkin_LIBRARIES}
