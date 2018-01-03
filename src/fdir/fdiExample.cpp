@@ -3,7 +3,7 @@
 
 
 /*
- * this is a excample how you can implement a fdi for your ros system.
+ * this is a example how you can implement a fdi for your ros system.
  */
 int main(int argc, char **argv)
 {

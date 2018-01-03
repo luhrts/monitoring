@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 //			used_pub.publish(used);
 
       ros_monitoring::KeyValue used;
-      used.key = "used";
+      used.key = "ram used";
 
       sprintf(value, "%ld", (long)kb_main_used);
 
@@ -91,7 +91,7 @@ int main(int argc, char **argv)
        percentage_pub.publish(percentage);*/
 
       ros_monitoring::KeyValue percent;
-      percent.key = "percent used";
+      percent.key = "ram percentage used";
       sprintf(value, "%f", perc);
       percent.value = value;
       mi.values.push_back(percent);

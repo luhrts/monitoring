@@ -7,7 +7,7 @@ import matplotlib.animation as animation
 from matplotlib import style
 
 #TODO CLASSE!
-class FloatGraph:
+class LiveFloatGraph:
     
              
             
@@ -60,7 +60,7 @@ class FloatGraph:
 
 if __name__ == '__main__':
     try:
-        fg = FloatGraph("CPU Temperatur", 20, 65, 80, 100)
+        fg = LiveFloatGraph("CPU Temperatur", 20, 65, 80, 100)
         
         rospy.init_node("floatview")
         sub = rospy.Subscriber('/monitoring/all', MonitoringInfo, fg.callback)

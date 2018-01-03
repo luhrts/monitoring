@@ -28,4 +28,6 @@ int main(int argc, char **argv) {
 		ROS_WARN("No frequency supplied. Working with %f Hz.", freq);
 	}
 
+
+
 }
