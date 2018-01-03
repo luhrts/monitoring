@@ -16,7 +16,6 @@
 
 int main(int argc, char **argv)
 {
-
   ros::init(argc, argv, "ram_monitor");
   ros::NodeHandle n("~");
   ros::Publisher monitor_pub = n.advertise<ros_monitoring::MonitoringInfo>("/monitoring/all", 1);
