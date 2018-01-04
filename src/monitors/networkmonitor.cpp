@@ -208,7 +208,7 @@ int main(int argc, char **argv) {
 	while (ros::ok()) {
 		ros_monitoring::MonitoringArray ma;
 		ros_monitoring::MonitoringInfo mi;
-		ma.info.push_back(mi);
+
 		mi.name = ros::this_node::getName();
 		mi.description = "A Network-Monitor";
 		fillMachineInfo(mi);
@@ -284,6 +284,7 @@ int main(int argc, char **argv) {
 			mi.values.push_back(rxkv);
 			mi.values.push_back(txkv);
 		}
+		ma.info.push_back(mi);
 		pub.publish(ma);
 		loop_rate.sleep();
 	}

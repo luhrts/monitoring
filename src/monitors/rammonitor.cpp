@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 
     ros_monitoring::MonitoringArray ma;
 	ros_monitoring::MonitoringInfo mi;
-	ma.info.push_back(mi);
+
     mi.name = ros::this_node::getName();
     mi.description = "A RAM-Monitor";
     fillMachineInfo(mi);
@@ -98,7 +98,7 @@ int main(int argc, char **argv)
       mi.values.push_back(percent);
 
     }
-
+    ma.info.push_back(mi);
     monitor_pub.publish(ma);
 
     loop_rate.sleep();

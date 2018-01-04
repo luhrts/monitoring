@@ -17,7 +17,7 @@ void NodeAvailable::check(ros_monitoring::KeyValue newMsg)
     errormsg.header.stamp = ros::Time::now();
     errormsg.key = "node dead";
     errormsg.value = newMsg.value;
-    errormsg.level = errorlevel;
+    errormsg.errorlevel = errorlevel;
     publishError(errormsg);
   }
 }

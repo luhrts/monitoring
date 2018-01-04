@@ -23,7 +23,6 @@ void getHostname( char* name) {
   {
     ROS_ERROR("Could not read Hostname! " );
   }
-  printf("%s", name);
 
 }
 

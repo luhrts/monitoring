@@ -18,5 +18,5 @@ OutputErrorMessage::~OutputErrorMessage() {
 
 void OutputErrorMessage::checkError(ros_monitoring::Error msg)
 {
-	ROS_ERROR("ERROR: %s  occured. Time: %d.%d \n Value = %s , Errorlevel: %f ", msg.key.c_str(), msg.header.stamp.sec, msg.header.stamp.nsec, msg.value.c_str(), msg.level);
+	ROS_ERROR("ERROR: %s  occured. Time: %d.%d \n Value = %s , Errorlevel: %f ", msg.key.c_str(), msg.header.stamp.sec, msg.header.stamp.nsec, msg.value.c_str(), msg.errorlevel);
 }

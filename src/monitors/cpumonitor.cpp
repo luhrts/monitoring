@@ -315,7 +315,7 @@ int main(int argc, char **argv)
   {
     ros_monitoring::MonitoringArray ma;
     ros_monitoring::MonitoringInfo mi;
-    ma.info.push_back(mi);
+
     mi.name = ros::this_node::getName();
     mi.description = "A CPU-Monitor";
     fillMachineInfo(mi);
@@ -383,7 +383,7 @@ int main(int argc, char **argv)
 //			percpercore_pub.publish(fma);
 
     }
-
+    ma.info.push_back(mi);
     monitor_pub.publish(ma);
 
 //		benchmark.printProgress(true);
