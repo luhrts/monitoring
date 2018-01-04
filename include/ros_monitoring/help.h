@@ -21,8 +21,9 @@ void getHostname( char* name) {
   size_t len;
   if (gethostname(name, len))
   {
-    ROS_ERROR("Could not read Hostname!");
+    ROS_ERROR("Could not read Hostname! " );
   }
+  printf("%s", name);
 
 }
 
@@ -34,7 +35,7 @@ void getHostname( char* name) {
 void fillMachineInfo(ros_monitoring::MonitoringInfo& mi)
 {
   mi.header.stamp = ros::Time::now();
-  char name[30];
+  char name[40];
   getHostname(name);
   mi.pc.Hostname = name;
   mi.pc.ip = "";

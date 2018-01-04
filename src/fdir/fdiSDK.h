@@ -10,7 +10,7 @@
 
 #include "ros/ros.h"
 #include <queue>
-#include "ros_monitoring/MonitoringInfo.h"
+#include "ros_monitoring/MonitoringArray.h"
 #include "ros_monitoring/Error.h"
 #include "string"
 #include "configinterface.h"
@@ -45,7 +45,7 @@ public:
   void checkForFDI();
 
 private:
-  void monitorCallback(ros_monitoring::MonitoringInfo mi);
+  void monitorCallback(ros_monitoring::MonitoringArray ma);
   std::queue<ros_monitoring::KeyValue> msgBuffer;
   ros::Subscriber sub;
   ros::Publisher pub;

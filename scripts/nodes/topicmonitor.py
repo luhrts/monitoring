@@ -23,26 +23,28 @@ def topicmonitor():
         
         hzMonitors[entry['name']] = rthz
              
-    pub = rospy.Publisher('/monitoring/all', MonitoringInfo, queue_size=1)
+    pub = rospy.Publisher('/monitoring/all', MonitoringArray, queue_size=1)
     startTimestamp = time.time()
     while not rospy.is_shutdown():  # main loop
-        msg = MonitoringInfo()
-        msg.header.stamp = rospy.Time.now()
-        msg.name = rospy.get_name()
-        msg.description = "A Topic-Monitor"
-        fillMachineInfo(msg)
+        ma = MonitoringArray()
+        mi = MonitoringInfo()
+        ma.info.append(mi)
+        mi.header.stamp = rospy.Time.now()
+        mi.name = rospy.get_name()
+        mi.description = "A Topic-Monitor"
+        fillMachineInfo(mi)
         print
         for entry in topics:
             n = len(hzMonitors[entry['name']].times) 
-            if(n < lastXvaluesForCalc):  # TODO was ist wenn keine MSGS gesendet werden. Dann wird nichts ueberprueft und somit keine Fehlermeldung rausgegeben!!! && Wenn bereits 10 narchichten da, aber keine neuen mehr ankommen?!?
+            if(n < lastXvaluesForCalc):  # TODO was ist wenn keine miS gesendet werden. Dann wird nichts ueberprueft und somit keine Fehlermeldung rausgegeben!!! && Wenn bereits 10 narchichten da, aber keine neuen mehr ankommen?!?
                 if(time.time()-startTimestamp <=10): #nach 10 sekunden wird durchgeschaltet
                     continue
-            if(n == 0):  # no msgs received, division by 0 catching
-                rospy.logwarn("no new MSGS for topic %s", entry['name'])
+            if(n == 0):  # no mis received, division by 0 catching
+                rospy.logwarn("no new miS for topic %s", entry['name'])
                 kv = KeyValue()
                 kv.key = "no topic"
                 kv.value = "Topic " + entry['name'] + " sends no data"
-                msg.values.append(kv)
+                mi.values.append(kv)
                 continue
             mean = sum(hzMonitors[entry['name']].times[-lastXvaluesForCalc:]) / lastXvaluesForCalc  # TODO this is mean overall time. Needs mean over since last seconds
             freq = 1. / mean if mean > 0. else 0 
@@ -51,10 +53,10 @@ def topicmonitor():
                 kv = KeyValue()
                 kv.key = "slow Topic"
                 kv.value = "Topic " + entry['name'] + " is on " + str(freq) + "Hz, Expected: " + str(entry['frequency'])
-                msg.values.append(kv)
+                mi.values.append(kv)
                 
-        if(not len(msg.values) == 0):  # stops publishing if there are no missing nodes
-            pub.publish(msg)
+        if(not len(mi.values) == 0):  # stops publishing if there are no missing nodes
+            pub.publish(ma)
         rate.sleep()
 
 

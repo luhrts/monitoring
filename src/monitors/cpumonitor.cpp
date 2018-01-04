@@ -245,7 +245,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "cpu_monitor");
   ros::NodeHandle n("~");
 //	ros::Publisher avg_pub, temp_pub, perc_pub, percpercore_pub, proc_pub;
-  ros::Publisher monitor_pub = n.advertise<ros_monitoring::MonitoringInfo>("/monitoring/all", 1);
+  ros::Publisher monitor_pub = n.advertise<ros_monitoring::MonitoringArray>("/monitoring/all", 1);
 
   int numCPU = sysconf(_SC_NPROCESSORS_ONLN);
 
@@ -313,7 +313,9 @@ int main(int argc, char **argv)
   //starting looping over the options and publishing at the end
   while (ros::ok())
   {
+    ros_monitoring::MonitoringArray ma;
     ros_monitoring::MonitoringInfo mi;
+    ma.info.push_back(mi);
     mi.name = ros::this_node::getName();
     mi.description = "A CPU-Monitor";
     fillMachineInfo(mi);
@@ -382,7 +384,7 @@ int main(int argc, char **argv)
 
     }
 
-    monitor_pub.publish(mi);
+    monitor_pub.publish(ma);
 
 //		benchmark.printProgress(true);
     loop_rate.sleep();

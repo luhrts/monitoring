@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
 
 	ros::init(argc, argv, "youbot_batterie_monitor");
 	ros::NodeHandle n("~");
-	ros::Publisher monitor_pub = n.advertise < ros_monitoring::MonitoringInfo
+	ros::Publisher monitor_pub = n.advertise < ros_monitoring::MonitoringArray
 			> ("/monitoring/all", 1);
 
 	float freq = 1;

@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "ram_monitor");
   ros::NodeHandle n("~");
-  ros::Publisher monitor_pub = n.advertise<ros_monitoring::MonitoringInfo>("/monitoring/all", 1);
+  ros::Publisher monitor_pub = n.advertise<ros_monitoring::MonitoringArray>("/monitoring/all", 1);
   ros::Publisher used_pub, percentage_pub;
   std_msgs::Float32 percentage, used;
 
@@ -59,7 +59,9 @@ int main(int argc, char **argv)
     meminfo();		//geting ram info via sysinfo lib
     measurement_meminfo->stop();
 
-    ros_monitoring::MonitoringInfo mi;
+    ros_monitoring::MonitoringArray ma;
+	ros_monitoring::MonitoringInfo mi;
+	ma.info.push_back(mi);
     mi.name = ros::this_node::getName();
     mi.description = "A RAM-Monitor";
     fillMachineInfo(mi);
@@ -97,7 +99,7 @@ int main(int argc, char **argv)
 
     }
 
-    monitor_pub.publish(mi);
+    monitor_pub.publish(ma);
 
     loop_rate.sleep();
 

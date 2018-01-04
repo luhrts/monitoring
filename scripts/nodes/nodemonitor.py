@@ -11,14 +11,16 @@ def nodemonitor():
     nodes = set(rospy.get_param(rospy.get_name() + '/nodes'))
     rate = rospy.Rate(frequency)
     
-    pub = rospy.Publisher('/monitoring/all', MonitoringInfo, queue_size=1)
+    pub = rospy.Publisher('/monitoring/all', MonitoringArray, queue_size=1)
     
     while not rospy.is_shutdown():  # main loop
-        msg = MonitoringInfo()
-        msg.header.stamp = rospy.Time.now()
-        msg.name = rospy.get_name()
-        msg.description = "A Node-Monitor"
-        fillMachineInfo(msg)
+        mi = MonitoringInfo()
+        ma = MonitoringArray()
+        ma.info.append(mi)
+        mi.header.stamp = rospy.Time.now()
+        mi.name = rospy.get_name()
+        mi.description = "A Node-Monitor"
+        fillMachineInfo(mi)
         
         currentNodes = set(get_node_names())
         if(not nodes.issubset(currentNodes)):
@@ -31,10 +33,10 @@ def nodemonitor():
                 kv.key = "node unavailable"
                 str = node
                 kv.value = str
-                msg.values.append(kv)
+                mi.values.append(kv)
             
-        if(not len(msg.values) == 0):  # stops publishing if there are no missing nodes
-            pub.publish(msg)
+        if(not len(mi.values) == 0):  # stops publishing if there are no missing nodes
+            pub.publish(ma)
         rate.sleep()
 
 

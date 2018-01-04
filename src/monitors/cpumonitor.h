@@ -12,7 +12,7 @@
 #include "std_msgs/Float32.h"
 #include "std_msgs/Float32MultiArray.h"
 #include "ros_monitoring/help.h"
-#include "ros_monitoring/MonitoringInfo.h"
+#include "ros_monitoring/MonitoringArray.h"
 #include "stdlib.h"
 #include "stdio.h"
 #include "string.h"
