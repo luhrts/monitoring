@@ -32,6 +32,8 @@ add_message_files(
   Processes.msg
   Error.msg
   
+  Gui.msg
+  GuiInfo.msg
   
 )
 
@@ -134,6 +136,11 @@ target_link_libraries(recovery_example_node
 )
 
 ####################### TOOL NODES #########################
+add_executable(gui_msg_concat_node src/guiconcatenation.cpp)
+
+target_link_libraries(gui_msg_concat_node
+  ${catkin_LIBRARIES}
+)
 
 
 
