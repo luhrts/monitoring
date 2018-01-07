@@ -329,6 +329,7 @@ int main(int argc, char **argv)
       kv.key = "overall cpu load";
       sprintf(value, "%f", cpuload);
       kv.value = value;
+      kv.unit = "%";
       mi.values.push_back(kv);
     }
     if (bAvarage)
@@ -359,6 +360,7 @@ int main(int argc, char **argv)
       kv.key = "CPU Temperatur";
       sprintf(value, "%f", temp);
       kv.value = value;
+      kv.unit = "°C";
       mi.values.push_back(kv);
     }
     if (bPercentPerCore)
@@ -377,6 +379,7 @@ int main(int argc, char **argv)
         kv.value = value;
         sprintf(value, "percentage load CoreNo: %d", i);
         kv.key = value;
+        kv.unit = "%";
         mi.values.push_back(kv);
 
       }

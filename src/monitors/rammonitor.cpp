@@ -81,6 +81,7 @@ int main(int argc, char **argv)
       sprintf(value, "%ld", (long)kb_main_used);
 
       used.value = value;
+      used.unit = "kb";
       mi.values.push_back(used);
 
     }
@@ -95,6 +96,7 @@ int main(int argc, char **argv)
       percent.key = "ram percentage used";
       sprintf(value, "%f", perc);
       percent.value = value;
+      percent.unit = "%";
       mi.values.push_back(percent);
 
     }

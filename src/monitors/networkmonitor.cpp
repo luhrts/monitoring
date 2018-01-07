@@ -229,11 +229,13 @@ int main(int argc, char **argv) {
 				rx_kv.key = value;
 				sprintf(value, "%f", RXBpS);
 				rx_kv.value = value;
+				rx_kv.unit = "B/s";
 
 				sprintf(value, "tx in Bytes per Second (%s)", cnwInterface);
 				tx_kv.key = value;
 				sprintf(value, "%f", TXBpS);
 				tx_kv.value = value;
+				tx_kv.unit = "B/s";
 
 				mi.values.push_back(rx_kv);
 				mi.values.push_back(tx_kv);
@@ -252,11 +254,13 @@ int main(int argc, char **argv) {
 				loadrx_kv.key = value;
 				sprintf(value, "%f", loadrx);
 				loadrx_kv.value = value;
+				loadrx_kv.unit = "%";
 
 				sprintf(value, "Network Load TX on %s", cnwInterface);
 				loadtx_kv.key = value;
 				sprintf(value, "%f", loadtx);
 				loadtx_kv.value = value;
+				loadtx_kv.unit = "%";
 
 				mi.values.push_back(loadrx_kv);
 				mi.values.push_back(loadtx_kv);
@@ -275,11 +279,13 @@ int main(int argc, char **argv) {
 			rxkv.key = value;
 			sprintf(value, "%f", RXPpS);
 			rxkv.value = value;
+			rxkv.unit = "P/s";
 
 			sprintf(value, "tx in Packets per Second (%s)", cnwInterface);
 			txkv.key = value;
 			sprintf(value, "%f", TXPpS);
 			txkv.value = value;
+			txkv.unit = "P/s";
 
 			mi.values.push_back(rxkv);
 			mi.values.push_back(txkv);

@@ -27,6 +27,8 @@ int main(int argc, char **argv)
   example.registerErrorHandler(&slf, "CPU Overheating");
   example.registerErrorHandler(&oem, "CPU Hot");
 
+
+  ROS_WARN("Setup finished");
   while (ros::ok())
   {
     example.checkErrors();

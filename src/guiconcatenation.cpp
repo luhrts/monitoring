@@ -36,8 +36,7 @@ void GuiConcatenation::monitor_cb(ros_monitoring::MonitoringArray ma) {
 	ros_monitoring::GuiInfo gi1;
 	gi1.name = mi.name;
 	gi1.value = "";
-	gi1.errorlevel = 0.0;
-	msg.infos.push_back(gi1);
+
 	float meanerror = 0;
 	for(int i=0; i<mi.values.size(); i++) {
 		ros_monitoring::GuiInfo gi;
@@ -47,12 +46,14 @@ void GuiConcatenation::monitor_cb(ros_monitoring::MonitoringArray ma) {
 		//gi.description = mi.values[i].;
 		gi.value = mi.values[i].value;
 		gi.errorlevel = mi.values[i].errorlevel;
+		gi.unit = mi.values[i].unit;
 		meanerror+= mi.values[i].errorlevel;
 
 		msg.infos.push_back(gi);
 	}
 	meanerror = meanerror/mi.values.size();
-
+	gi1.errorlevel = meanerror;		//TODO ist die reihenfolge wichtig???
+	msg.infos.push_back(gi1);
 
 }
 

@@ -21,7 +21,7 @@ StopLaunchFile::~StopLaunchFile() {
  * Only use in emergencys.
  */
 void StopLaunchFile::checkError(ros_monitoring::Error msg) {
-	ROS_ERROR("------------------- CPU OVERHEATING!!! KILLING ALL ROSLAUNCH --------------------");
+	ROS_ERROR("------------------- KILLING ALL ROSLAUNCH --------------------");
 	char cmd[80];
 	sprintf(cmd, "killall roslaunch");
 	system (cmd);
