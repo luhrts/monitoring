@@ -27,14 +27,17 @@ void Between::check(ros_monitoring::KeyValue newMsg) {
     maxerrormsg.header.stamp = ros::Time::now();
     maxerrormsg.key = maxmsg;
     maxerrormsg.value = newMsg.value;
+    maxerrormsg.unit = newMsg.unit;
     maxerrormsg.errorlevel = maxlevel;
     publishError(maxerrormsg);
+
   } else if(minValue>=value) {
     ROS_WARN("ERROR: Value: %f is lower then expected (%f), Errorlevel to %f", value, minValue, minlevel);
     ros_monitoring::Error minerrormsg;
     minerrormsg.header.stamp = ros::Time::now();
     minerrormsg.key = minmsg;
     minerrormsg.value = newMsg.value;
+    minerrormsg.unit = newMsg.unit;
     minerrormsg.errorlevel = minlevel;
     publishError(minerrormsg);
   }

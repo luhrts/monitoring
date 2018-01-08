@@ -17,11 +17,50 @@ NetworkMonitor::NetworkMonitor(float networkThroughput, char nwit[]) {
 	lastTXpackets = readTXpackets(networkinterface);
 	lastStampBytes = ros::Time::now();
 	lastStampPackets = ros::Time::now();
+
+
+	float rx_crc_errors, rx_dropped, rx_errors, rx_fifo_errors, rx_frame_errors,
+			rx_length_errors, rx_missed_errors, rx_over_errors, tx_crc_errors,
+			tx_dropped, tx_errors, tx_fifo_errors, tx_frame_errors,
+			tx_length_errors, tx_missed_errors, tx_over_errors;
+	readNetworkErrors(rx_crc_errors, rx_dropped, rx_errors, rx_fifo_errors,
+			rx_frame_errors, rx_length_errors, rx_missed_errors, rx_over_errors,
+			tx_crc_errors, tx_dropped, tx_errors, tx_fifo_errors,
+			tx_frame_errors, tx_length_errors, tx_missed_errors,
+			tx_over_errors);
+	lastErrorsVector.push_back(rx_crc_errors);
+	lastErrorsVector.push_back(rx_dropped);
+	lastErrorsVector.push_back(rx_errors);
+	lastErrorsVector.push_back(rx_fifo_errors);
+	lastErrorsVector.push_back(rx_frame_errors);
+	lastErrorsVector.push_back(rx_length_errors);
+	lastErrorsVector.push_back(rx_missed_errors);
+	lastErrorsVector.push_back(rx_over_errors);
+	lastErrorsVector.push_back(tx_crc_errors);
+	lastErrorsVector.push_back(tx_dropped);
+	lastErrorsVector.push_back(tx_errors);
+	lastErrorsVector.push_back(tx_fifo_errors);
+	lastErrorsVector.push_back(tx_frame_errors);
+	lastErrorsVector.push_back(tx_length_errors);
+	lastErrorsVector.push_back(tx_missed_errors);
+	lastErrorsVector.push_back(tx_over_errors);
+
 }
 
 NetworkMonitor::~NetworkMonitor() {
 }
 
+unsigned int NetworkMonitor::readNetworkInfo(char nwinterface[], char info[]) {
+	char path[256];
+	sprintf(path, "/%s/%s/%s/", NETWORKPRE, nwinterface, NETWORKSUF);
+
+	FILE* file;
+	file = fopen(path, "r");
+	int ret;
+	fscanf(file, "%d", ret);
+	fclose(file);
+	return ret;
+}
 /*
  * Calculates the network trafic per second in bytes and network load in scala 0..1 for rx and tx
  */
@@ -55,59 +94,27 @@ void NetworkMonitor::getNetworkLoad(float& loadinPrx, float& loadinPtx,
  * Reads the RXbytes
  */
 unsigned int NetworkMonitor::readRXbytes(char nwinterface[]) {
-	unsigned int rx_bytes;
-	char path[256];
-	sprintf(path, "%s%s%s/rx_bytes", NETWORKPRE, nwinterface, NETWORKSUF);
-
-	FILE* file;
-	file = fopen(path, "r");
-	fscanf(file, "%d", &rx_bytes);
-	fclose(file);
-	return rx_bytes;
+	return readNetworkInfo(nwinterface, "rx_bytes");
 }
 
 /*
  * Reads the TXbytes
  */
 unsigned int NetworkMonitor::readTXbytes(char nwinterface[]) {
-	unsigned int tx_bytes;
-	char path[256];
-	sprintf(path, "%s%s%s/tx_bytes", NETWORKPRE, nwinterface, NETWORKSUF);
-
-	FILE* file;
-	file = fopen(path, "r");
-	fscanf(file, "%d", &tx_bytes);
-	fclose(file);
-	return tx_bytes;
+	return readNetworkInfo(nwinterface, "tx_bytes");
 }
 
 /*
  * Reads the RXpackets
  */
 unsigned int NetworkMonitor::readRXpackets(char nwinterface[]) {
-	unsigned int rx_packets;
-	char path[256];
-	sprintf(path, "%s%s%s/rx_packets", NETWORKPRE, nwinterface, NETWORKSUF);
-
-	FILE* file;
-	file = fopen(path, "r");
-	fscanf(file, "%d", &rx_packets);
-	fclose(file);
-	return rx_packets;
+	return readNetworkInfo(nwinterface, "rx_packets");
 }
 /*
  * Reads the TXpackets
  */
 unsigned int NetworkMonitor::readTXpackets(char nwinterface[]) {
-	unsigned int tx_packets;
-	char path[256];
-	sprintf(path, "%s%s%s/tx_packets", NETWORKPRE, nwinterface, NETWORKSUF);
-
-	FILE* file;
-	file = fopen(path, "r");
-	fscanf(file, "%d", &tx_packets);
-	fclose(file);
-	return tx_packets;
+	return readNetworkInfo(nwinterface, "tx_packets");
 }
 
 /*
@@ -132,6 +139,84 @@ void NetworkMonitor::getPackets(float& RXPpS, float& TXPpS) {
 	return;
 
 }
+void NetworkMonitor::readNetworkErrors(float& rx_crc_errors, float& rx_dropped,
+		float& rx_errors, float& rx_fifo_errors, float& rx_frame_errors,
+		float& rx_length_errors, float& rx_missed_errors, float& rx_over_errors,
+		float& tx_crc_errors, float& tx_dropped, float& tx_errors,
+		float& tx_fifo_errors, float& tx_frame_errors, float& tx_length_errors,
+		float& tx_missed_errors, float& tx_over_errors) {
+	rx_crc_errors = readNetworkInfo(networkinterface, "rx_crc_errors");
+	rx_dropped = readNetworkInfo(networkinterface, "rx_dropped");
+	rx_errors = readNetworkInfo(networkinterface, "rx_errors");
+	rx_fifo_errors = readNetworkInfo(networkinterface, "rx_fifo_errors");
+	rx_frame_errors = readNetworkInfo(networkinterface, "rx_frame_errors");
+	rx_length_errors = readNetworkInfo(networkinterface, "rx_length_errors");
+	rx_missed_errors = readNetworkInfo(networkinterface, "rx_missed_errors");
+	rx_over_errors = readNetworkInfo(networkinterface, "rx_over_errors");
+
+	tx_crc_errors = readNetworkInfo(networkinterface, "tx_crc_errors");
+	tx_dropped = readNetworkInfo(networkinterface, "tx_dropped");
+	tx_errors = readNetworkInfo(networkinterface, "tx_errors");
+	tx_fifo_errors = readNetworkInfo(networkinterface, "tx_fifo_errors");
+	tx_frame_errors = readNetworkInfo(networkinterface, "tx_frame_errors");
+	tx_length_errors = readNetworkInfo(networkinterface, "tx_length_errors");
+	tx_missed_errors = readNetworkInfo(networkinterface, "tx_missed_errors");
+	tx_over_errors = readNetworkInfo(networkinterface, "tx_over_errors");
+}
+void NetworkMonitor::getErrors(float& rx_crc_errors, float& rx_dropped,
+		float& rx_errors, float& rx_fifo_errors, float& rx_frame_errors,
+		float& rx_length_errors, float& rx_missed_errors, float& rx_over_errors,
+		float& tx_crc_errors, float& tx_dropped, float& tx_errors,
+		float& tx_fifo_errors, float& tx_frame_errors, float& tx_length_errors,
+		float& tx_missed_errors, float& tx_over_errors) {
+
+	float a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p;
+
+	readNetworkErrors(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p);
+
+	std::vector<float> newErrorsVector;
+
+	//rx
+	rx_crc_errors = a - lastErrorsVector[0];
+	newErrorsVector.push_back(a);
+	rx_dropped = b - lastErrorsVector[1];
+	newErrorsVector.push_back(b);
+	rx_errors = c - lastErrorsVector[2];
+	newErrorsVector.push_back(c);
+	rx_fifo_errors = d - lastErrorsVector[3];
+	newErrorsVector.push_back(d);
+	rx_frame_errors = e - lastErrorsVector[4];
+	newErrorsVector.push_back(e);
+	rx_length_errors = f - lastErrorsVector[5];
+	newErrorsVector.push_back(f);
+	rx_missed_errors = g - lastErrorsVector[6];
+	newErrorsVector.push_back(g);
+	rx_over_errors = h - lastErrorsVector[7];
+	newErrorsVector.push_back(h);
+
+	//tx
+	tx_crc_errors = i - lastErrorsVector[8];
+	newErrorsVector.push_back(i);
+	tx_dropped = j - lastErrorsVector[9];
+	newErrorsVector.push_back(j);
+	tx_errors = k - lastErrorsVector[10];
+	newErrorsVector.push_back(k);
+	tx_fifo_errors = l - lastErrorsVector[11];
+	newErrorsVector.push_back(l);
+	tx_frame_errors = m - lastErrorsVector[12];
+	newErrorsVector.push_back(m);
+	tx_length_errors = n - lastErrorsVector[13];
+	newErrorsVector.push_back(n);
+	tx_missed_errors = o - lastErrorsVector[14];
+	newErrorsVector.push_back(o);
+	tx_over_errors = p - lastErrorsVector[15];
+	newErrorsVector.push_back(p);
+
+	lastErrorsVector = newErrorsVector;
+
+	return;
+
+}
 
 int main(int argc, char **argv) {
 
@@ -139,8 +224,6 @@ int main(int argc, char **argv) {
 	ros::NodeHandle n("~");
 	ros::Publisher pub = n.advertise<ros_monitoring::MonitoringArray>(
 			"/monitoring/all", 1);
-	ros::Publisher RXBpS_pub, TXBpS_pub, RXPpS_pub, TXPpS_pub, loadrx_pub,
-			loadtx_pub;
 
 	float freq = 1;
 	if (!n.getParam("frequency", freq)) {
@@ -149,40 +232,28 @@ int main(int argc, char **argv) {
 
 	bool bBytes = false;
 	if (n.getParam("bytes", bBytes)) {
-//		if (bBytes) {
-//			RXBpS_pub = n.advertise<std_msgs::Float32>(
-//					"/monitoring/network/rx_bytes_per_sec", 1);
-//			TXBpS_pub = n.advertise<std_msgs::Float32>(
-//					"/monitoring/network/tx_bytes_per_sec", 1);
-//		}
 	}
 
 	bool bPackets = false;
 	if (n.getParam("packets", bPackets)) {
-//		if (bPackets) {
-//			RXPpS_pub = n.advertise<std_msgs::Float32>(
-//					"/monitoring/network/rx_packets_per_sec", 1);
-//			TXPpS_pub = n.advertise<std_msgs::Float32>(
-//					"/monitoring/network/tx_packets_per_sec", 1);
-//		}
 	}
 
 	bool bload = false;
 	if (n.getParam("load", bload)) {
-//		if (bload) {
-//			loadrx_pub = n.advertise<std_msgs::Float32>(
-//					"/monitoring/network/loadrx", 1);
-//			loadtx_pub = n.advertise<std_msgs::Float32>(
-//					"/monitoring/network/loadtx", 1);
-//		}
-	}
-	float nwThroughput = 100;
-	if (!n.getParam("networkthroughput", nwThroughput)) {
-		ROS_WARN(
-				"No Max Network Throughput configured. Working with 100Mbit/s.");
 	}
 
-	std::string nwinterface = "enp3s0";
+	bool bErrors = false;
+	if (n.getParam("networkerrors", bErrors)) {
+	}
+
+	float nwThroughput = 100;
+	if (!n.getParam("networkthroughput", nwThroughput)) {
+		ROS_WARN("No Max Network Throughput configured. Working with %fMbit/s.",
+				nwThroughput);
+
+	}
+
+	std::string nwinterface = "lo";
 
 	if (!n.getParam("networkinterface", nwinterface)) {
 		ROS_WARN("No Network Interface configured. Using %s",
@@ -208,8 +279,9 @@ int main(int argc, char **argv) {
 	while (ros::ok()) {
 		ros_monitoring::MonitoringArray ma;
 		ros_monitoring::MonitoringInfo mi;
-
-		mi.name = ros::this_node::getName();
+		char name[256];
+		sprintf(name, "%s (%s)", ros::this_node::getName().c_str(), cnwInterface);
+		mi.name = std::string(name);
 		mi.description = "A Network-Monitor";
 		fillMachineInfo(mi);
 
@@ -219,11 +291,6 @@ int main(int argc, char **argv) {
 			NWm.getNetworkLoad(loadrx, loadtx, RXBpS, TXBpS);
 			measurement_networkload_bytes->stop();
 			if (bBytes) {
-//				std_msgs::Float32 rx_msg, tx_msg;
-//				rx_msg.data = RXBpS;
-//				RXBpS_pub.publish(rx_msg);
-//				tx_msg.data = TXBpS;
-//				TXBpS_pub.publish(tx_msg);
 				ros_monitoring::KeyValue rx_kv, tx_kv;
 				sprintf(value, "rx in Bytes per Second (%s)", cnwInterface);
 				rx_kv.key = value;
@@ -243,11 +310,6 @@ int main(int argc, char **argv) {
 			}
 
 			if (bload) {
-//				std_msgs::Float32 rx_load_msg, tx_load_msg;
-//				rx_load_msg.data = loadrx;
-//				tx_load_msg.data = loadtx;
-//				loadrx_pub.publish(rx_load_msg);
-//				loadtx_pub.publish(tx_load_msg);
 
 				ros_monitoring::KeyValue loadrx_kv, loadtx_kv;
 				sprintf(value, "Network Load RX on %s", cnwInterface);
@@ -289,6 +351,133 @@ int main(int argc, char **argv) {
 
 			mi.values.push_back(rxkv);
 			mi.values.push_back(txkv);
+		}
+
+		if (bErrors) {
+			float rx_crc_errors, rx_dropped, rx_errors, rx_fifo_errors,
+					rx_frame_errors, rx_length_errors, rx_missed_errors,
+					rx_over_errors, tx_crc_errors, tx_dropped, tx_errors,
+					tx_fifo_errors, tx_frame_errors, tx_length_errors,
+					tx_missed_errors, tx_over_errors;
+			NWm.getErrors(rx_crc_errors, rx_dropped, rx_errors, rx_fifo_errors,
+					rx_frame_errors, rx_length_errors, rx_missed_errors,
+					rx_over_errors, tx_crc_errors, tx_dropped, tx_errors,
+					tx_fifo_errors, tx_frame_errors, tx_length_errors,
+					tx_missed_errors, tx_over_errors);
+
+			ros_monitoring::KeyValue a_kv, b_kv, c_kv, d_kv, e_kv, f_kv, g_kv,
+					h_kv, i_kv, j_kv, k_kv, l_kv, m_kv, n_kv, o_kv, p_kv;
+			sprintf(value, "rx_crc_errors (%s)", cnwInterface);
+			a_kv.key = value;
+			sprintf(value, "%f", rx_crc_errors);
+			a_kv.value = value;
+			a_kv.unit = "B";
+			mi.values.push_back(a_kv);
+
+			sprintf(value, "rx_dropped (%s)", cnwInterface);
+			b_kv.key = value;
+			sprintf(value, "%f", rx_dropped);
+			b_kv.value = value;
+			b_kv.unit = "B";
+			mi.values.push_back(b_kv);
+
+			sprintf(value, "rx_errors (%s)", cnwInterface);
+			c_kv.key = value;
+			sprintf(value, "%f", rx_errors);
+			c_kv.value = value;
+			c_kv.unit = "B";
+			mi.values.push_back(c_kv);
+
+			sprintf(value, "rx_fifo_errors (%s)", cnwInterface);
+			d_kv.key = value;
+			sprintf(value, "%f", rx_fifo_errors);
+			d_kv.value = value;
+			d_kv.unit = "B";
+			mi.values.push_back(d_kv);
+
+			sprintf(value, "rx_frame_errors (%s)", cnwInterface);
+			e_kv.key = value;
+			sprintf(value, "%f", rx_frame_errors);
+			e_kv.value = value;
+			e_kv.unit = "B";
+			mi.values.push_back(e_kv);
+
+			sprintf(value, "rx_length_errors (%s)", cnwInterface);
+			f_kv.key = value;
+			sprintf(value, "%f", rx_length_errors);
+			f_kv.value = value;
+			f_kv.unit = "B";
+			mi.values.push_back(f_kv);
+
+			sprintf(value, "rx_missed_errors (%s)", cnwInterface);
+			g_kv.key = value;
+			sprintf(value, "%f", rx_missed_errors);
+			g_kv.value = value;
+			g_kv.unit = "B";
+			mi.values.push_back(g_kv);
+
+			sprintf(value, "rx_over_errors (%s)", cnwInterface);
+			h_kv.key = value;
+			sprintf(value, "%f", rx_over_errors);
+			h_kv.value = value;
+			h_kv.unit = "B";
+			mi.values.push_back(h_kv);
+
+			sprintf(value, "tx_crc_errors (%s)", cnwInterface);
+			i_kv.key = value;
+			sprintf(value, "%f", tx_crc_errors);
+			i_kv.value = value;
+			i_kv.unit = "B";
+			mi.values.push_back(i_kv);
+
+			sprintf(value, "tx_dropped (%s)", cnwInterface);
+			j_kv.key = value;
+			sprintf(value, "%f", tx_dropped);
+			j_kv.value = value;
+			j_kv.unit = "B";
+			mi.values.push_back(j_kv);
+
+			sprintf(value, "tx_errors (%s)", cnwInterface);
+			k_kv.key = value;
+			sprintf(value, "%f", tx_errors);
+			k_kv.value = value;
+			k_kv.unit = "B";
+			mi.values.push_back(k_kv);
+
+			sprintf(value, "tx_fifo_errors (%s)", cnwInterface);
+			l_kv.key = value;
+			sprintf(value, "%f", tx_fifo_errors);
+			l_kv.value = value;
+			l_kv.unit = "B";
+			mi.values.push_back(l_kv);
+
+			sprintf(value, "tx_frame_errors (%s)", cnwInterface);
+			m_kv.key = value;
+			sprintf(value, "%f", tx_frame_errors);
+			m_kv.value = value;
+			m_kv.unit = "B";
+			mi.values.push_back(m_kv);
+
+			sprintf(value, "tx_length_errors (%s)", cnwInterface);
+			n_kv.key = value;
+			sprintf(value, "%f", tx_length_errors);
+			n_kv.value = value;
+			n_kv.unit = "B";
+			mi.values.push_back(n_kv);
+
+			sprintf(value, "tx_missed_errors (%s)", cnwInterface);
+			o_kv.key = value;
+			sprintf(value, "%f", tx_missed_errors);
+			o_kv.value = value;
+			o_kv.unit = "B";
+			mi.values.push_back(o_kv);
+
+			sprintf(value, "tx_over_errors (%s)", cnwInterface);
+			p_kv.key = value;
+			sprintf(value, "%f", tx_over_errors);
+			p_kv.value = value;
+			p_kv.unit = "B";
+			mi.values.push_back(p_kv);
 		}
 		ma.info.push_back(mi);
 		pub.publish(ma);

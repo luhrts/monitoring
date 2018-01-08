@@ -26,6 +26,7 @@ void GuiConcatenation::error_cb(ros_monitoring::Error er) {
 	info.description = er.description;
 	info.value = er.value;
 	info.errorlevel = er.errorlevel;
+	info.unit = er.unit;
 
 	msg.infos.push_back(info);
 

@@ -25,6 +25,7 @@ void Min::check(ros_monitoring::KeyValue newMsg)
     errormsg.header.stamp = ros::Time::now();
     errormsg.key = msg;
     errormsg.value = newMsg.value;
+    errormsg.unit = newMsg.unit;
     errormsg.errorlevel = errorlevel;
     publishError(errormsg);
   }
