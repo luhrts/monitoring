@@ -28,12 +28,5 @@ int main(int argc, char **argv)
   example.registerErrorHandler(&oem, "CPU Hot");
 
 
-  ROS_WARN("Setup finished");
-  while (ros::ok())
-  {
-    example.checkErrors();
-    loop_rate.sleep();
-    ros::spinOnce();
-  }
-
+  ros::spin();
 }

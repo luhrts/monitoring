@@ -44,13 +44,13 @@ class LiveFloatGraph:
         plt.axhspan(self.warning, self.critical, color='yellow', alpha=0.3)
         plt.axhspan(self.critical, self.max, color='red', alpha=0.3)
         
-    def callback(self, mi):
+    def callback(self, ma):
 #         print self.floatbuffer
-        for kv in mi.values:
+        for kv in ma.info[0].values:
             if(kv.key == self.msgvalue):
                     
                 self.floatbuffer.append(float(kv.value))
-                self.timestamp.append(float(mi.header.stamp.secs + (mi.header.stamp.nsecs / 10**9)))
+                self.timestamp.append(float(ma.info[0].header.stamp.secs + (ma.info[0].header.stamp.nsecs / 10**9)))
                 self.counterlist.append(self.counter)
                 
                 self.counter = self.counter+1
@@ -63,7 +63,7 @@ if __name__ == '__main__':
         fg = LiveFloatGraph("CPU Temperatur", 20, 65, 80, 100)
         
         rospy.init_node("floatview")
-        sub = rospy.Subscriber('/monitoring/all', MonitoringInfo, fg.callback)
+        sub = rospy.Subscriber('/monitoring/all', MonitoringArray, fg.callback)
         rate = rospy.Rate(1)
         
         fg.initPlot()

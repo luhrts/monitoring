@@ -36,11 +36,6 @@ int main(int argc, char **argv)
 
 
   //ROS loop for checking the messages.
-  while (ros::ok())
-  {
-    userFDI.checkForFDI();
-    loop_rate.sleep();
-    ros::spinOnce();
-  }
+  ros::spin();
 }
 

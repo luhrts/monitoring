@@ -28,7 +28,16 @@ FdiSDK::~FdiSDK() {
 void FdiSDK::monitorCallback(ros_monitoring::MonitoringArray ma) {
 	for (int j = 0; j < ma.info.size(); j++) {
 		for (int i = 0; i < ma.info[j].values.size(); i++) {
-			msgBuffer.push(ma.info[j].values[i]);
+			ros_monitoring::KeyValue kv = ma.info[j].values[i];
+			if (!(fdiConfigList.find(kv.key) == fdiConfigList.end())) {
+				//get the list with objects that are registered on this message
+				std::vector<ConfigInterface *> fdiObjectList =
+						fdiConfigList[kv.key];
+
+				for (int i = 0; i < fdiObjectList.size(); i++) {
+					fdiObjectList[i]->check(kv);
+				}
+			}
 		}
 	}
 
@@ -80,6 +89,8 @@ void FdiSDK::registerFDIObject(ConfigInterface* object, std::string msg) {
 
 /**
  * @brief FdiSDK::checkForFDI forwards all new messages in msgBuffer depending on the registery msg to let them check for errors
+ *
+ * NOT IN USE
  */
 void FdiSDK::checkForFDI() {
 	while (!msgBuffer.empty()) {
