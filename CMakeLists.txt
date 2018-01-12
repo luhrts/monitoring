@@ -142,6 +142,12 @@ target_link_libraries(gui_msg_concat_node
   ${catkin_LIBRARIES}
 )
 
+add_executable(monitoring_to_diagnostics src/monitoringtodiagnostics.cpp)
+
+target_link_libraries(monitoring_to_diagnostics
+  ${catkin_LIBRARIES}
+)
+
 
 
 find_package(catkin REQUIRED COMPONENTS roslaunch)
