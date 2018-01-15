@@ -5,7 +5,7 @@
  *      Author: matthias
  */
 
-#include "outputerrormessage.h"
+#include "ros_monitoring/recovery/std_handler/outputerrormessage.h"
 
 OutputErrorMessage::OutputErrorMessage() {
 	// TODO Auto-generated constructor stub

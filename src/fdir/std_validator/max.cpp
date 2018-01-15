@@ -5,7 +5,7 @@
  *      Author: matthias
  */
 
-#include "max.h"
+#include "ros_monitoring/fdi/std_validator/max.h"
 
 Max::Max(float value, std::string errormsg, float errorLevel, ros::Publisher& publisher)
   :maxValue(value)

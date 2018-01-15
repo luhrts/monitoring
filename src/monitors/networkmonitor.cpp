@@ -5,7 +5,7 @@
  *      Author: matthias
  */
 
-#include "networkmonitor.h"
+#include "ros_monitoring/monitors/networkmonitor.h"
 
 NetworkMonitor::NetworkMonitor(float networkThroughput, char nwit[]) {
 	maxNWThroughputPS = (float) (networkThroughput * pow(10, 6)) / 8; //transforms MBit/s to Byte/s

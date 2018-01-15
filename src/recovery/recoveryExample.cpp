@@ -1,6 +1,6 @@
 #include <ros/ros.h>
 
-#include "recoverysdk.h"
+#include "ros_monitoring/recovery/recoverysdk.h"
 
 
 int main(int argc, char **argv)

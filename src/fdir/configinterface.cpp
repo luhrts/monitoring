@@ -5,7 +5,7 @@
  *      Author: matthias
  */
 
-#include "configinterface.h"
+#include "ros_monitoring/fdi/configinterface.h"
 
 
 #include "ros/ros.h"

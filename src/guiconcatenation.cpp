@@ -5,7 +5,7 @@
  *      Author: matthias
  */
 
-#include "guiconcatenation.h"
+#include "ros_monitoring/guiconcatenation.h"
 
 GuiConcatenation::GuiConcatenation(ros::NodeHandle& n) {
 	monitor_sub = n.subscribe("/monitoring/all", 10, &GuiConcatenation::monitor_cb, this);

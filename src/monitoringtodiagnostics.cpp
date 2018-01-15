@@ -5,7 +5,7 @@
  *      Author: matthias
  */
 
-#include "monitoringtodiagnostics.h"
+#include "ros_monitoring/monitoringtodiagnostics.h"
 
 MonitoringToDiagnostics::MonitoringToDiagnostics(ros::NodeHandle& n) {
 	diag_pub = n.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics_agg", 1);

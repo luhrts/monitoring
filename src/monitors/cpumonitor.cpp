@@ -5,7 +5,7 @@
  *      Author: matthias
  */
 
-#include "cpumonitor.h"
+#include "ros_monitoring/monitors/cpumonitor.h"
 
 CpuMonitor::CpuMonitor()
 {

@@ -1,4 +1,4 @@
-#include "nodeavailable.h"
+#include "ros_monitoring/fdi/std_validator/nodeavailable.h"
 
 NodeAvailable::NodeAvailable(float errorwert, ros::Publisher pub)
   :ConfigInterface(pub)

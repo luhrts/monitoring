@@ -10,7 +10,7 @@
  * Inheried the ConfigInterface for new Validators
  */
 
-#include "fdiSDK.h"
+#include "ros_monitoring/fdi/fdiSDK.h"
 
 FdiSDK::FdiSDK(ros::NodeHandle& n) {
 	sub = n.subscribe("/monitoring/all", 1000, &FdiSDK::monitorCallback, this);

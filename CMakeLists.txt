@@ -91,8 +91,6 @@ add_library(recoverySDK
 add_executable(cpu_monitoring_node src/monitors/cpumonitor.cpp)
 add_executable(ram_monitoring_node src/monitors/rammonitor.cpp)
 add_executable(network_monitoring_node src/monitors/networkmonitor.cpp)
-add_executable(rosnode_monitoring_node src/monitors/nodemonitor.cpp)
-add_executable(rostopic_monitoring_node src/monitors/topicmonitor.cpp)
 
 target_link_libraries(cpu_monitoring_node
   ${catkin_LIBRARIES}
@@ -106,12 +104,6 @@ target_link_libraries(ram_monitoring_node
 target_link_libraries(network_monitoring_node
   ${catkin_LIBRARIES}
 
-)
-target_link_libraries(rosnode_monitoring_node
-  ${catkin_LIBRARIES}
-)
-target_link_libraries(rostopic_monitoring_node
-  ${catkin_LIBRARIES}
 )
 
 
