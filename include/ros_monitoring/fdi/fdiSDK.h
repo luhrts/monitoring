@@ -50,7 +50,7 @@ private:
   ros::Subscriber sub;
   ros::Publisher pub;
 
-  std::map<std::string, std::vector<ConfigInterface *>> fdiConfigList;
+  std::map<std::string, std::vector<ConfigInterface *> > fdiConfigList;
 };
 
 #endif /* SRC_FDIR_FDISDK_H_ */

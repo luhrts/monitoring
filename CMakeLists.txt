@@ -44,8 +44,8 @@ generate_messages(
 
 
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES ros_monitoring
+  INCLUDE_DIRS include
+  LIBRARIES fdiSDK recoverySDK
   CATKIN_DEPENDS message_runtime
  DEPENDS PROCPS
 )
@@ -75,6 +75,11 @@ add_library(fdiSDK
   src/fdir/std_validator/nodeavailable.cpp
 )
 
+target_link_libraries(fdiSDK
+    ${catkin_LIBRARIES}
+ )
+add_dependencies(fdiSDK ros_monitoring_generate_messages_cpp)
+
 add_library(recoverySDK
   src/recovery/recoverysdk.cpp
   src/recovery/errorhandlerinterface.cpp
@@ -82,9 +87,10 @@ add_library(recoverySDK
   src/recovery/std_handler/stoplaunchfile.cpp
   src/recovery/std_handler/outputerrormessage.cpp
 )
-#target_link_libraries(fdiconfigInterface
-#    ${catkin_LIBRARIES}
-# )
+target_link_libraries(recoverySDK
+    ${catkin_LIBRARIES}
+ )
+add_dependencies(recoverySDK ros_monitoring_generate_messages_cpp)
 
 ####################### MONITOR NODES #########################
 
@@ -96,15 +102,20 @@ target_link_libraries(cpu_monitoring_node
   ${catkin_LIBRARIES}
 
 )
+add_dependencies(cpu_monitoring_node ros_monitoring_generate_messages_cpp)
+
 target_link_libraries(ram_monitoring_node
   ${catkin_LIBRARIES}
   ${PROCPS_LIBRARIES}
 
 )
+add_dependencies(ram_monitoring_node ros_monitoring_generate_messages_cpp)
+
 target_link_libraries(network_monitoring_node
   ${catkin_LIBRARIES}
-
 )
+add_dependencies(network_monitoring_node ros_monitoring_generate_messages_cpp)
+
 
 
 
