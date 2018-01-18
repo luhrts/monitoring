@@ -360,7 +360,7 @@ int main(int argc, char **argv)
       kv.key = "CPU Temperatur";
       sprintf(value, "%f", temp);
       kv.value = value;
-      kv.unit = "°C";
+      kv.unit = "C";
       mi.values.push_back(kv);
     }
     if (bPercentPerCore)

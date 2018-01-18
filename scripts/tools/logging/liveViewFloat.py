@@ -26,11 +26,9 @@ class LiveFloatGraph:
         
      
     def initPlot(self):
-#         style.use('fivethirtyeight')
         self.fig = plt.figure()
         self.ax1 = self.fig.add_subplot(1,1,1)
         self.axes = plt.gca()
-#         plt.axvspan(7, 10, color='red', alpha=0.5)
         
     def updatePlot(self):
         ani = animation.FuncAnimation(self.fig, self.animate, interval=1000)
@@ -40,9 +38,9 @@ class LiveFloatGraph:
     def animate(self, i):
         self.ax1.clear()
         self.ax1.plot(self.timestamp, self.floatbuffer)
-        self.axes.set_ylim([self.min,self.max])
-        plt.axhspan(self.warning, self.critical, color='yellow', alpha=0.3)
-        plt.axhspan(self.critical, self.max, color='red', alpha=0.3)
+        #self.axes.set_ylim([self.min,self.max])
+        #plt.axhspan(self.warning, self.critical, color='yellow', alpha=0.3)
+        #plt.axhspan(self.critical, self.max, color='red', alpha=0.3)
         
     def callback(self, ma):
 #         print self.floatbuffer
@@ -60,7 +58,7 @@ class LiveFloatGraph:
 
 if __name__ == '__main__':
     try:
-        fg = LiveFloatGraph("CPU Temperatur", 20, 65, 80, 100)
+        fg = LiveFloatGraph("Joint 0", 20, 65, 80, 100)
         
         rospy.init_node("floatview")
         sub = rospy.Subscriber('/monitoring/all', MonitoringArray, fg.callback)
