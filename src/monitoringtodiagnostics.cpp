@@ -9,7 +9,7 @@
 
 MonitoringToDiagnostics::MonitoringToDiagnostics(ros::NodeHandle& n) {
 	diag_pub = n.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics_agg", 1);
-	monitor_sub = n.subscribe("/monitoring/all", 50, &MonitoringToDiagnostics::monitor_callback, this);
+	monitor_sub = n.subscribe("/monitoring", 50, &MonitoringToDiagnostics::monitor_callback, this);
 
 }
 

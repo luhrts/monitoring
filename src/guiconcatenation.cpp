@@ -8,8 +8,10 @@
 #include "ros_monitoring/guiconcatenation.h"
 
 GuiConcatenation::GuiConcatenation(ros::NodeHandle& n) {
-	monitor_sub = n.subscribe("/monitoring/all", 10, &GuiConcatenation::monitor_cb, this);
-	error_sub = n.subscribe("/monitoring/errors", 10, &GuiConcatenation::error_cb, this);
+	monitor_sub = n.subscribe("/monitoring", 10,
+			&GuiConcatenation::monitor_cb, this);
+	error_sub = n.subscribe("/monitoring/errors", 10,
+			&GuiConcatenation::error_cb, this);
 
 }
 
@@ -18,7 +20,6 @@ GuiConcatenation::~GuiConcatenation() {
 }
 
 void GuiConcatenation::error_cb(ros_monitoring::Error er) {
-
 
 	ros_monitoring::GuiInfo info;
 
@@ -39,7 +40,7 @@ void GuiConcatenation::monitor_cb(ros_monitoring::MonitoringArray ma) {
 	gi1.value = "";
 
 	float meanerror = 0;
-	for(int i=0; i<mi.values.size(); i++) {
+	for (int i = 0; i < mi.values.size(); i++) {
 		ros_monitoring::GuiInfo gi;
 		char name[100];
 		sprintf(name, "%s/%s", mi.name.c_str(), mi.values[i].key.c_str());
@@ -48,26 +49,26 @@ void GuiConcatenation::monitor_cb(ros_monitoring::MonitoringArray ma) {
 		gi.value = mi.values[i].value;
 		gi.errorlevel = mi.values[i].errorlevel;
 		gi.unit = mi.values[i].unit;
-		meanerror+= mi.values[i].errorlevel;
+		meanerror += mi.values[i].errorlevel;
 
 		msg.infos.push_back(gi);
 	}
-	meanerror = meanerror/mi.values.size();
+	meanerror = meanerror / mi.values.size();
 	gi1.errorlevel = meanerror;		//TODO ist die reihenfolge wichtig???
 	msg.infos.push_back(gi1);
 
 }
 
-ros_monitoring::Gui GuiConcatenation::getMsg(){
+ros_monitoring::Gui GuiConcatenation::getMsg() {
 
 	ros_monitoring::Gui ret = msg;
 	ros_monitoring::Gui newMsg;
-	newMsg.name ="Test";
+	newMsg.name = "Test";
 	msg = newMsg;
-	float maxError=0.0;
-	for(int i=0; i<ret.infos.size();i++) {
-		if(maxError<ret.infos[i].errorlevel) {
-			maxError=ret.infos[i].errorlevel;
+	float maxError = 0.0;
+	for (int i = 0; i < ret.infos.size(); i++) {
+		if (maxError < ret.infos[i].errorlevel) {
+			maxError = ret.infos[i].errorlevel;
 		}
 	}
 	ret.errorlevel = maxError;
@@ -78,7 +79,8 @@ int main(int argc, char **argv) {
 
 	ros::init(argc, argv, "gui_msg_concatenation");
 	ros::NodeHandle n("~");
-	ros::Publisher gui_pub = n.advertise<ros_monitoring::Gui>("/monitoring", 10);
+	ros::Publisher gui_pub = n.advertise<ros_monitoring::Gui>("/monitoring/gui",
+			10);
 
 	float freq = 1;
 	if (!n.getParam("frequency", freq)) {
@@ -87,13 +89,11 @@ int main(int argc, char **argv) {
 	ros::Rate loop_rate(freq);
 	GuiConcatenation gc(n);
 
-
-	while(ros::ok()) {
+	while (ros::ok()) {
 		gui_pub.publish(gc.getMsg());
 
 		ros::spinOnce();
 		loop_rate.sleep();
 	}
-
 
 }

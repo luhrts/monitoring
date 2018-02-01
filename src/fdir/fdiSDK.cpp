@@ -13,7 +13,7 @@
 #include "ros_monitoring/fdi/fdiSDK.h"
 
 FdiSDK::FdiSDK(ros::NodeHandle& n) {
-	sub = n.subscribe("/monitoring/all", 1000, &FdiSDK::monitorCallback, this);
+	sub = n.subscribe("/monitoring", 1000, &FdiSDK::monitorCallback, this);
 	pub = n.advertise<ros_monitoring::Error>("/monitoring/errors", 1000);
 }
 

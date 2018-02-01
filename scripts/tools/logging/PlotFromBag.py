@@ -16,14 +16,15 @@ if __name__ == '__main__':
             for info in msg.info:
                 for kv in info.values:
                     if kv.key == sys.argv[2]:
-                        numbers.append(kv.value)
-                        timestamps.append(t)
+                        numbers.append(abs(float(kv.value)))
+                        timestamps.append(float(t.secs) + float(t.nsecs)/10**9)
             
         bag.close()
         
-        plt.plot(numbers)
-        plt.ylabel(sys.argv[3])
-        plt.ylim([-2,0])
+        plt.plot(timestamps, numbers)
+        plt.xlabel("Zeit in s")
+        plt.ylabel("Strom in A")
+        plt.ylim([0,2])
         plt.show()
             
     else:

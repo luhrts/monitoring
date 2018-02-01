@@ -61,7 +61,7 @@ if __name__ == '__main__':
         fg = LiveFloatGraph("Joint 0", 20, 65, 80, 100)
         
         rospy.init_node("floatview")
-        sub = rospy.Subscriber('/monitoring/all', MonitoringArray, fg.callback)
+        sub = rospy.Subscriber('/monitoring', MonitoringArray, fg.callback)
         rate = rospy.Rate(1)
         
         fg.initPlot()

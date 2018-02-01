@@ -223,7 +223,7 @@ int main(int argc, char **argv) {
 	ros::init(argc, argv, "network_monitor");
 	ros::NodeHandle n("~");
 	ros::Publisher pub = n.advertise<ros_monitoring::MonitoringArray>(
-			"/monitoring/all", 1);
+			"/monitoring", 1);
 
 	float freq = 1;
 	if (!n.getParam("frequency", freq)) {

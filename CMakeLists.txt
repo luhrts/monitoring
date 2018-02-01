@@ -130,6 +130,8 @@ target_link_libraries(fdi_example_node
   fdiSDK
 )
 
+add_dependencies(fdi_example_node ros_monitoring_generate_messages_cpp)
+
 add_executable(recovery_example_node src/recovery/recoveryExample.cpp)
 
 target_link_libraries(recovery_example_node
@@ -138,6 +140,8 @@ target_link_libraries(recovery_example_node
   recoverySDK
 )
 
+add_dependencies(recovery_example_node ros_monitoring_generate_messages_cpp)
+
 ####################### TOOL NODES #########################
 add_executable(gui_msg_concat_node src/guiconcatenation.cpp)
 
@@ -145,11 +149,15 @@ target_link_libraries(gui_msg_concat_node
   ${catkin_LIBRARIES}
 )
 
+add_dependencies(gui_msg_concat_node ros_monitoring_generate_messages_cpp)
+
 add_executable(monitoring_to_diagnostics src/monitoringtodiagnostics.cpp)
 
 target_link_libraries(monitoring_to_diagnostics
   ${catkin_LIBRARIES}
 )
+
+add_dependencies(monitoring_to_diagnostics ros_monitoring_generate_messages_cpp)
 
 
 

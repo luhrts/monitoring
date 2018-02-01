@@ -245,7 +245,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "cpu_monitor");
   ros::NodeHandle n("~");
 //	ros::Publisher avg_pub, temp_pub, perc_pub, percpercore_pub, proc_pub;
-  ros::Publisher monitor_pub = n.advertise<ros_monitoring::MonitoringArray>("/monitoring/all", 1);
+  ros::Publisher monitor_pub = n.advertise<ros_monitoring::MonitoringArray>("/monitoring", 1);
 
   int numCPU = sysconf(_SC_NPROCESSORS_ONLN);
 

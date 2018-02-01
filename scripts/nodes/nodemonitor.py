@@ -11,7 +11,7 @@ def nodemonitor():
     nodes = set(rospy.get_param(rospy.get_name() + '/nodes'))
     rate = rospy.Rate(frequency)
     
-    pub = rospy.Publisher('/monitoring/all', MonitoringArray, queue_size=1)
+    pub = rospy.Publisher('/monitoring', MonitoringArray, queue_size=1)
     
     while not rospy.is_shutdown():  # main loop
         mi = MonitoringInfo()

@@ -23,7 +23,7 @@ def topicmonitor():
         
         hzMonitors[entry['name']] = rthz
              
-    pub = rospy.Publisher('/monitoring/all', MonitoringArray, queue_size=1)
+    pub = rospy.Publisher('/monitoring', MonitoringArray, queue_size=1)
     startTimestamp = time.time()
     while not rospy.is_shutdown():  # main loop
         ma = MonitoringArray()
