@@ -8,9 +8,9 @@
 #include "ros_monitoring/guiconcatenation.h"
 
 GuiConcatenation::GuiConcatenation(ros::NodeHandle& n) {
-	monitor_sub = n.subscribe("/monitoring", 10,
+	monitor_sub = n.subscribe("/monitoring", 1000,
 			&GuiConcatenation::monitor_cb, this);
-	error_sub = n.subscribe("/monitoring/errors", 10,
+	error_sub = n.subscribe("/monitoring/errors", 1000,
 			&GuiConcatenation::error_cb, this);
 
 }
