@@ -33,6 +33,7 @@ def nodemonitor():
                 kv.key = "node unavailable"
                 str = node
                 kv.value = str
+                kv.errorlevel = 0.5
                 mi.values.append(kv)
             
         if(not len(mi.values) == 0):  # stops publishing if there are no missing nodes
