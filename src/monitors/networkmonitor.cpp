@@ -18,16 +18,13 @@ NetworkMonitor::NetworkMonitor(float networkThroughput, char nwit[]) {
 	lastStampBytes = ros::Time::now();
 	lastStampPackets = ros::Time::now();
 
-
 	float rx_crc_errors, rx_dropped, rx_errors, rx_fifo_errors, rx_frame_errors,
-			rx_length_errors, rx_missed_errors, rx_over_errors, tx_crc_errors,
-			tx_dropped, tx_errors, tx_fifo_errors, tx_frame_errors,
-			tx_length_errors, tx_missed_errors, tx_over_errors;
+			rx_length_errors, rx_missed_errors, rx_over_errors, tx_aborted_errors, tx_carrier_errors, tx_dropped, tx_errors,
+			tx_fifo_errors, tx_heartbeat_errors, tx_window_errors;
 	readNetworkErrors(rx_crc_errors, rx_dropped, rx_errors, rx_fifo_errors,
 			rx_frame_errors, rx_length_errors, rx_missed_errors, rx_over_errors,
-			tx_crc_errors, tx_dropped, tx_errors, tx_fifo_errors,
-			tx_frame_errors, tx_length_errors, tx_missed_errors,
-			tx_over_errors);
+			tx_aborted_errors, tx_carrier_errors, tx_dropped, tx_errors,
+								tx_fifo_errors, tx_heartbeat_errors, tx_window_errors);
 	lastErrorsVector.push_back(rx_crc_errors);
 	lastErrorsVector.push_back(rx_dropped);
 	lastErrorsVector.push_back(rx_errors);
@@ -36,14 +33,13 @@ NetworkMonitor::NetworkMonitor(float networkThroughput, char nwit[]) {
 	lastErrorsVector.push_back(rx_length_errors);
 	lastErrorsVector.push_back(rx_missed_errors);
 	lastErrorsVector.push_back(rx_over_errors);
-	lastErrorsVector.push_back(tx_crc_errors);
+	lastErrorsVector.push_back(tx_aborted_errors);
+	lastErrorsVector.push_back(tx_carrier_errors);
 	lastErrorsVector.push_back(tx_dropped);
 	lastErrorsVector.push_back(tx_errors);
 	lastErrorsVector.push_back(tx_fifo_errors);
-	lastErrorsVector.push_back(tx_frame_errors);
-	lastErrorsVector.push_back(tx_length_errors);
-	lastErrorsVector.push_back(tx_missed_errors);
-	lastErrorsVector.push_back(tx_over_errors);
+	lastErrorsVector.push_back(tx_heartbeat_errors);
+	lastErrorsVector.push_back(tx_window_errors);
 
 }
 
@@ -51,14 +47,17 @@ NetworkMonitor::~NetworkMonitor() {
 }
 
 unsigned int NetworkMonitor::readNetworkInfo(char nwinterface[], char info[]) {
-	char path[256];
-	sprintf(path, "/%s/%s/%s/", NETWORKPRE, nwinterface, NETWORKSUF);
+	char filepath[256];
+	sprintf(filepath, "/%s/%s/%s/%s", NETWORKPRE, nwinterface, NETWORKSUF, info);
 
+//	ROS_INFO("PATH: %s", filepath);
 	FILE* file;
-	file = fopen(path, "r");
-	int ret;
-	fscanf(file, "%d", ret);
+	file = fopen(filepath, "r");
+	unsigned int ret;
+	fscanf(file, "%d", &ret);
+//	ROS_INFO("Value: %d", ret);
 	fclose(file);
+
 	return ret;
 }
 /*
@@ -80,9 +79,11 @@ void NetworkMonitor::getNetworkLoad(float& loadinPrx, float& loadinPtx,
 	loadinPrx = (RXBpS /*+ TXBpS*/) / maxNWThroughputPS;
 	loadinPtx = (TXBpS /*+ TXBpS*/) / maxNWThroughputPS;
 
-	/*ROS_INFO("RXB pro Sec: %f", RXBpS);
-	 ROS_INFO("TXB pro Sec: %f", TXBpS);
-	 ROS_INFO("Networkload: %f", loadinP);*/
+//	ROS_INFO("New rxb: %d", rxb);
+
+//	ROS_INFO("RXB pro Sec: %f", RXBpS);
+//	ROS_INFO("TXB pro Sec: %f", TXBpS);
+//	ROS_INFO("Networkload: %f", loadinPtx);
 
 	lastRXbytes = rxb;
 	lastTXbytes = txb;
@@ -142,9 +143,9 @@ void NetworkMonitor::getPackets(float& RXPpS, float& TXPpS) {
 void NetworkMonitor::readNetworkErrors(float& rx_crc_errors, float& rx_dropped,
 		float& rx_errors, float& rx_fifo_errors, float& rx_frame_errors,
 		float& rx_length_errors, float& rx_missed_errors, float& rx_over_errors,
-		float& tx_crc_errors, float& tx_dropped, float& tx_errors,
-		float& tx_fifo_errors, float& tx_frame_errors, float& tx_length_errors,
-		float& tx_missed_errors, float& tx_over_errors) {
+		float& tx_aborted_errors, float& tx_carrier_errors, float& tx_dropped, float& tx_errors,
+		float& tx_fifo_errors, float& tx_heartbeat_errors,
+		float& tx_window_errors) {
 	rx_crc_errors = readNetworkInfo(networkinterface, "rx_crc_errors");
 	rx_dropped = readNetworkInfo(networkinterface, "rx_dropped");
 	rx_errors = readNetworkInfo(networkinterface, "rx_errors");
@@ -154,25 +155,24 @@ void NetworkMonitor::readNetworkErrors(float& rx_crc_errors, float& rx_dropped,
 	rx_missed_errors = readNetworkInfo(networkinterface, "rx_missed_errors");
 	rx_over_errors = readNetworkInfo(networkinterface, "rx_over_errors");
 
-	tx_crc_errors = readNetworkInfo(networkinterface, "tx_crc_errors");
+	tx_aborted_errors = readNetworkInfo(networkinterface, "tx_aborted_errors");
+	tx_carrier_errors = readNetworkInfo(networkinterface, "tx_carrier_errors");
 	tx_dropped = readNetworkInfo(networkinterface, "tx_dropped");
 	tx_errors = readNetworkInfo(networkinterface, "tx_errors");
 	tx_fifo_errors = readNetworkInfo(networkinterface, "tx_fifo_errors");
-	tx_frame_errors = readNetworkInfo(networkinterface, "tx_frame_errors");
-	tx_length_errors = readNetworkInfo(networkinterface, "tx_length_errors");
-	tx_missed_errors = readNetworkInfo(networkinterface, "tx_missed_errors");
-	tx_over_errors = readNetworkInfo(networkinterface, "tx_over_errors");
+	tx_heartbeat_errors = readNetworkInfo(networkinterface, "tx_heartbeat_errors");
+	tx_window_errors = readNetworkInfo(networkinterface, "tx_window_errors");
 }
 void NetworkMonitor::getErrors(float& rx_crc_errors, float& rx_dropped,
 		float& rx_errors, float& rx_fifo_errors, float& rx_frame_errors,
 		float& rx_length_errors, float& rx_missed_errors, float& rx_over_errors,
-		float& tx_crc_errors, float& tx_dropped, float& tx_errors,
-		float& tx_fifo_errors, float& tx_frame_errors, float& tx_length_errors,
-		float& tx_missed_errors, float& tx_over_errors) {
+		float& tx_aborted_errors, float& tx_carrier_errors, float& tx_dropped, float& tx_errors,
+				float& tx_fifo_errors, float& tx_heartbeat_errors,
+				float& tx_window_errors) {
 
-	float a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p;
+	float a, b, c, d, e, f, g, h, i, j, k, l, m, n, o;
 
-	readNetworkErrors(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p);
+	readNetworkErrors(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o);
 
 	std::vector<float> newErrorsVector;
 
@@ -195,22 +195,21 @@ void NetworkMonitor::getErrors(float& rx_crc_errors, float& rx_dropped,
 	newErrorsVector.push_back(h);
 
 	//tx
-	tx_crc_errors = i - lastErrorsVector[8];
+	tx_aborted_errors = i - lastErrorsVector[8];
 	newErrorsVector.push_back(i);
-	tx_dropped = j - lastErrorsVector[9];
+	tx_carrier_errors = j - lastErrorsVector[9];
 	newErrorsVector.push_back(j);
-	tx_errors = k - lastErrorsVector[10];
+	tx_dropped = k - lastErrorsVector[10];
 	newErrorsVector.push_back(k);
-	tx_fifo_errors = l - lastErrorsVector[11];
+	tx_errors = l - lastErrorsVector[11];
 	newErrorsVector.push_back(l);
-	tx_frame_errors = m - lastErrorsVector[12];
+	tx_fifo_errors = m - lastErrorsVector[12];
 	newErrorsVector.push_back(m);
-	tx_length_errors = n - lastErrorsVector[13];
+	tx_heartbeat_errors = n - lastErrorsVector[13];
 	newErrorsVector.push_back(n);
-	tx_missed_errors = o - lastErrorsVector[14];
+	tx_window_errors = o - lastErrorsVector[14];
 	newErrorsVector.push_back(o);
-	tx_over_errors = p - lastErrorsVector[15];
-	newErrorsVector.push_back(p);
+
 
 	lastErrorsVector = newErrorsVector;
 
@@ -280,7 +279,8 @@ int main(int argc, char **argv) {
 		ros_monitoring::MonitoringArray ma;
 		ros_monitoring::MonitoringInfo mi;
 		char name[256];
-		sprintf(name, "%s (%s)", ros::this_node::getName().c_str(), cnwInterface);
+		sprintf(name, "%s (%s)", ros::this_node::getName().c_str(),
+				cnwInterface);
 		mi.name = std::string(name);
 		mi.description = "A Network-Monitor";
 		fillMachineInfo(mi);
@@ -356,14 +356,13 @@ int main(int argc, char **argv) {
 		if (bErrors) {
 			float rx_crc_errors, rx_dropped, rx_errors, rx_fifo_errors,
 					rx_frame_errors, rx_length_errors, rx_missed_errors,
-					rx_over_errors, tx_crc_errors, tx_dropped, tx_errors,
-					tx_fifo_errors, tx_frame_errors, tx_length_errors,
-					tx_missed_errors, tx_over_errors;
+					rx_over_errors, tx_aborted_errors, tx_carrier_errors, tx_dropped, tx_errors,
+					tx_fifo_errors, tx_heartbeat_errors,
+					tx_window_errors;
 			NWm.getErrors(rx_crc_errors, rx_dropped, rx_errors, rx_fifo_errors,
 					rx_frame_errors, rx_length_errors, rx_missed_errors,
-					rx_over_errors, tx_crc_errors, tx_dropped, tx_errors,
-					tx_fifo_errors, tx_frame_errors, tx_length_errors,
-					tx_missed_errors, tx_over_errors);
+					rx_over_errors, tx_aborted_errors, tx_carrier_errors, tx_dropped, tx_errors,
+					tx_fifo_errors, tx_heartbeat_errors, tx_window_errors);
 
 			ros_monitoring::KeyValue a_kv, b_kv, c_kv, d_kv, e_kv, f_kv, g_kv,
 					h_kv, i_kv, j_kv, k_kv, l_kv, m_kv, n_kv, o_kv, p_kv;
@@ -423,9 +422,11 @@ int main(int argc, char **argv) {
 			h_kv.unit = "B";
 			mi.values.push_back(h_kv);
 
-			sprintf(value, "tx_crc_errors (%s)", cnwInterface);
+			//########################
+
+			sprintf(value, "tx_carrier_errors (%s)", cnwInterface);
 			i_kv.key = value;
-			sprintf(value, "%f", tx_crc_errors);
+			sprintf(value, "%f", tx_carrier_errors);
 			i_kv.value = value;
 			i_kv.unit = "B";
 			mi.values.push_back(i_kv);
@@ -451,33 +452,28 @@ int main(int argc, char **argv) {
 			l_kv.unit = "B";
 			mi.values.push_back(l_kv);
 
-			sprintf(value, "tx_frame_errors (%s)", cnwInterface);
+			sprintf(value, "tx_heartbeat_errors (%s)", cnwInterface);
 			m_kv.key = value;
-			sprintf(value, "%f", tx_frame_errors);
+			sprintf(value, "%f", tx_heartbeat_errors);
 			m_kv.value = value;
 			m_kv.unit = "B";
 			mi.values.push_back(m_kv);
 
-			sprintf(value, "tx_length_errors (%s)", cnwInterface);
+			sprintf(value, "tx_window_errors (%s)", cnwInterface);
 			n_kv.key = value;
-			sprintf(value, "%f", tx_length_errors);
+			sprintf(value, "%f", tx_window_errors);
 			n_kv.value = value;
 			n_kv.unit = "B";
 			mi.values.push_back(n_kv);
 
-			sprintf(value, "tx_missed_errors (%s)", cnwInterface);
+			sprintf(value, "tx_aborted_errors (%s)", cnwInterface);
 			o_kv.key = value;
-			sprintf(value, "%f", tx_missed_errors);
+			sprintf(value, "%f", tx_aborted_errors);
 			o_kv.value = value;
 			o_kv.unit = "B";
 			mi.values.push_back(o_kv);
 
-			sprintf(value, "tx_over_errors (%s)", cnwInterface);
-			p_kv.key = value;
-			sprintf(value, "%f", tx_over_errors);
-			p_kv.value = value;
-			p_kv.unit = "B";
-			mi.values.push_back(p_kv);
+
 		}
 		ma.info.push_back(mi);
 		pub.publish(ma);
