@@ -48,7 +48,7 @@ def topicmonitor():
                 continue
             mean = sum(hzMonitors[entry['name']].times[-lastXvaluesForCalc:]) / lastXvaluesForCalc  # TODO this is mean overall time. Needs mean over since last seconds
             freq = 1. / mean if mean > 0. else 0 
-            if(entry['frequency'] - 0.1 > freq):  
+            if(entry['frequency'] - 0.1*freq > freq):  
                 rospy.logwarn("Frequency of %s is to low: Expected: %f Actual: %f", entry['name'] , entry['frequency'] , freq)
                 kv = KeyValue()
                 kv.key = "slow Topic"
