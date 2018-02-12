@@ -31,6 +31,7 @@ public:
 protected:
   ros::Publisher pub;
   void publishError(ros_monitoring::Error errormsg);
+  char hostname[30];
 };
 
 #endif /* SRC_FDIR_CONFIGINTERFACE_H_ */

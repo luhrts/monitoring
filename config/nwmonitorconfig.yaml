@@ -1,7 +1,7 @@
-frequency: 1    #Publish and calculation frequency
+frequency: 2000    #Publish and calculation frequency
 bytes: true     #networktrafic in bytes
 packets: true   #networktrafic in packets
 load: true      #networkload scala 0..1
-networkerrors: false
+networkerrors: true
 networkthroughput: 100 #maximal possible throughput in MBit/s. 
 networkinterface: lo    #the networkinterface to monitor. If you need to monitor more interfaces, start multiple nodes with diffrent configurations

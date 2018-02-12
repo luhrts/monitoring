@@ -4,6 +4,6 @@ percentPerCore: true  #like percent but for every core
 processes: false    #parsed output of ps aux
 temperature: true   #temperature of the CPU
 
-frequency: 2    #Publish and calculation frequency
+frequency: 2000    #Publish and calculation frequency
 
 

@@ -1,2 +1,2 @@
-frequency: 0.5
-nodes: [/cpu_monitor, /ram_monitor, /topic_monitor, /node_monitor, /fdi_system, /network_monitor, /recovery_system]
+frequency: 2000
+nodes: [/cpu_monitor, /ram_monitor, /topic_monitor, /node_monitor, /network_monitor]
