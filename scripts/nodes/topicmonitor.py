@@ -33,7 +33,7 @@ def topicmonitor():
         mi.name = rospy.get_name()
         mi.description = "A Topic-Monitor"
         fillMachineInfo(mi)
-        print
+
         for entry in topics:
             n = len(hzMonitors[entry['name']].times) 
             if(n < lastXvaluesForCalc):  # TODO was ist wenn keine miS gesendet werden. Dann wird nichts ueberprueft und somit keine Fehlermeldung rausgegeben!!! && Wenn bereits 10 narchichten da, aber keine neuen mehr ankommen?!?
