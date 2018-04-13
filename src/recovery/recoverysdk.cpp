@@ -1,7 +1,7 @@
 #include "ros_monitoring/recovery/recoverysdk.h"
 
 RecoverySDK::RecoverySDK(ros::NodeHandle& n) {
-	sub = n.subscribe("/monitoring/errors", 100, &RecoverySDK::errorCallback,
+	sub = n.subscribe("/monitoring/errors", 10000, &RecoverySDK::errorCallback,
 			this);
 }
 

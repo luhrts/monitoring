@@ -7,7 +7,7 @@
 #include "ros/ros.h"
 #include <proc/sysinfo.h>
 #include "std_msgs/Float32.h"
-#include "ros_monitoring/MonitoringInfo.h"
+#include "ros_monitoring/MonitoringArray.h"
 #include "string.h"
 
 #include "ros_rt_benchmark_lib/benchmark.h"

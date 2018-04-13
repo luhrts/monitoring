@@ -9,16 +9,19 @@
 #define SRC_MONITORS_MONITOR_H_
 
 #include "ros_monitoring/MonitoringArray.h"
+#include "ros/ros.h"
 
 class MonitorMsg {
 public:
-	MonitorMsg(std::string monitorName, std::string monitorDescription);
+	MonitorMsg(int argc, char **argv, std::string monitorName, std::string monitorDescription);
 	virtual ~MonitorMsg();
 
 	void addValue(std::string key, std::string value, std::string unit, float errorlevel);
 	void addValue(std::string key, float value, std::string unit, float errorlevel);
 
 	void publish();
+
+	void resetMsg();
 
 private:
 	ros::Publisher pub;
