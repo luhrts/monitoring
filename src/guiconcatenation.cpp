@@ -34,28 +34,30 @@ void GuiConcatenation::error_cb(ros_monitoring::Error er) {
 }
 
 void GuiConcatenation::monitor_cb(ros_monitoring::MonitoringArray ma) {
-	ros_monitoring::MonitoringInfo mi = ma.info[0];
-	ros_monitoring::GuiInfo gi1;
-	gi1.name = mi.name;
-	gi1.value = "";
+	for(int j=0; j< ma.info.size(); j++) {
+		ros_monitoring::MonitoringInfo mi = ma.info[j];
+		ros_monitoring::GuiInfo gi1;
+		gi1.name = mi.name;
+		gi1.value = "";
 
-	float meanerror = 0;
-	for (int i = 0; i < mi.values.size(); i++) {
-		ros_monitoring::GuiInfo gi;
-		char name[100];
-		sprintf(name, "%s/%s", mi.name.c_str(), mi.values[i].key.c_str());
-		gi.name = name;
-		//gi.description = mi.values[i].;
-		gi.value = mi.values[i].value;
-		gi.errorlevel = mi.values[i].errorlevel;
-		gi.unit = mi.values[i].unit;
-		meanerror += mi.values[i].errorlevel;
+		float meanerror = 0;
+		for (int i = 0; i < mi.values.size(); i++) {
+			ros_monitoring::GuiInfo gi;
+			char name[100];
+			sprintf(name, "%s/%s", mi.name.c_str(), mi.values[i].key.c_str());
+			gi.name = name;
+			//gi.description = mi.values[i].;
+			gi.value = mi.values[i].value;
+			gi.errorlevel = mi.values[i].errorlevel;
+			gi.unit = mi.values[i].unit;
+			meanerror += mi.values[i].errorlevel;
 
-		msg.infos.push_back(gi);
+			msg.infos.push_back(gi);
+		}
+		meanerror = meanerror / mi.values.size();
+		gi1.errorlevel = meanerror;		//TODO ist die reihenfolge wichtig???
+		msg.infos.push_back(gi1);
 	}
-	meanerror = meanerror / mi.values.size();
-	gi1.errorlevel = meanerror;		//TODO ist die reihenfolge wichtig???
-	msg.infos.push_back(gi1);
 
 }
 

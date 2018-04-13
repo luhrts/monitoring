@@ -23,7 +23,7 @@ pkg_check_modules(PROCPS REQUIRED libprocps)
 
 add_message_files(
   FILES
-  
+
   KeyValue.msg
   Machine.msg
   MonitoringArray.msg
@@ -31,10 +31,10 @@ add_message_files(
   Process.msg
   Processes.msg
   Error.msg
-  
+
   Gui.msg
   GuiInfo.msg
-  
+
 )
 
 generate_messages(
@@ -144,20 +144,25 @@ add_dependencies(recovery_example_node ros_monitoring_generate_messages_cpp)
 
 ####################### TOOL NODES #########################
 add_executable(gui_msg_concat_node src/guiconcatenation.cpp)
-
 target_link_libraries(gui_msg_concat_node
   ${catkin_LIBRARIES}
 )
-
 add_dependencies(gui_msg_concat_node ros_monitoring_generate_messages_cpp)
 
-add_executable(monitoring_to_diagnostics src/monitoringtodiagnostics.cpp)
 
+add_executable(monitoring_to_diagnostics src/monitoringtodiagnostics.cpp)
 target_link_libraries(monitoring_to_diagnostics
   ${catkin_LIBRARIES}
 )
-
 add_dependencies(monitoring_to_diagnostics ros_monitoring_generate_messages_cpp)
+
+
+add_executable(diagnostics_to_monitoring src/diagnosticstomonitoring.cpp)
+target_link_libraries(diagnostics_to_monitoring
+  ${catkin_LIBRARIES}
+)
+add_dependencies(diagnostics_to_monitoring ros_monitoring_generate_messages_cpp)
+
 
 
 
