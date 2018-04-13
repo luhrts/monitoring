@@ -244,10 +244,9 @@ int main(int argc, char **argv)
 
   ros::init(argc, argv, "cpu_monitor");
   ros::NodeHandle n("~");
-//	ros::Publisher avg_pub, temp_pub, perc_pub, percpercore_pub, proc_pub;
-  ros::Publisher monitor_pub = n.advertise<ros_monitoring::MonitoringArray>("/monitoring", 1);
 
   int numCPU = sysconf(_SC_NPROCESSORS_ONLN);
+
 
   float freq = 1;
   if (!n.getParam("frequency", freq))
@@ -257,43 +256,24 @@ int main(int argc, char **argv)
   bool bAvarage = false;
   if (n.getParam("avarage", bAvarage))
   {
-//		if (bAvarage) {
-//			avg_pub = n.advertise<std_msgs::Float32>("/monitoring/cpu/avg", 1);
-//		}
   }
 
   bool bPercent = false;
   if (n.getParam("percent", bPercent))
   {
-//		if (bPercent) {
-//			perc_pub = n.advertise<std_msgs::Float32>("/monitoring/cpu/percent",
-//					1);
-//		}
   }
   bool bPercentPerCore = false;
   if (n.getParam("percentPerCore", bPercentPerCore))
   {
-//		if (bPercentPerCore) {
-//			percpercore_pub = n.advertise<std_msgs::Float32MultiArray>("/monitoring/cpu/percentpercore",
-//					1);
-//		}
   }
 
   bool bProcesses = false;
   if (n.getParam("processes", bProcesses))
   {
-//		if (bProcesses) {
-//			proc_pub = n.advertise<std_msgs::Float32>(
-//					"/monitoring/cpu/allProcesses", 1);
-//		}
   }
   bool bTemp = false;
   if (n.getParam("temperature", bTemp))
   {
-//		if (bTemp) {
-//			temp_pub = n.advertise<std_msgs::Float32>("/monitoring/cpu/temp",
-//					1);
-//		}
   }
 
   ros::Rate loop_rate(freq);
@@ -309,28 +289,19 @@ int main(int argc, char **argv)
   ROS_RT_MeasurementDuration* measurement_perCore = benchmark.createDurationMeasurement("load_per_core");
 
   char value[50];
+  MonitorMsg msg(argc, argv, ros::this_node::getName(), "A CPU-Monitor");
 
   //starting looping over the options and publishing at the end
   while (ros::ok())
   {
-    ros_monitoring::MonitoringArray ma;
-    ros_monitoring::MonitoringInfo mi;
-
-    mi.name = ros::this_node::getName();
-    mi.description = "A CPU-Monitor";
-    fillMachineInfo(mi);
+    msg.resetMsg();
     if (bPercent)
     {
       measurement_percent->start();
       float cpuload = cpum.getCurrentCpuLoad();
       measurement_percent->stop();
 
-      ros_monitoring::KeyValue kv;
-      kv.key = "overall cpu load";
-      sprintf(value, "%f", cpuload);
-      kv.value = value;
-      kv.unit = "%";
-      mi.values.push_back(kv);
+      msg.addValue("overall cpu load", cpuload, "%", 0);
     }
     if (bAvarage)
     {
@@ -338,11 +309,7 @@ int main(int argc, char **argv)
       float cpuavg = cpum.getLoadAvg();
       measurement_loadAvg->stop();
 
-      ros_monitoring::KeyValue kv;
-      kv.key = "cpu load avg";
-      sprintf(value, "%f", cpuavg);
-      kv.value = value;
-      mi.values.push_back(kv);
+      msg.addValue("cpu load avg", cpuavg, "", 0);
     }
     if (bProcesses)
     {
@@ -356,38 +323,24 @@ int main(int argc, char **argv)
       float temp = cpum.getCPUTemp();
       measurement_temp->stop();
 
-      ros_monitoring::KeyValue kv;
-      kv.key = "CPU Temperatur";
-      sprintf(value, "%f", temp);
-      kv.value = value;
-      kv.unit = "C";
-      mi.values.push_back(kv);
+      msg.addValue("CPU Temperatur", temp, "C", 0);
     }
     if (bPercentPerCore)
     {
-//			std_msgs::Float32MultiArray fma;
-
       for (int i = 0; i < numCPU; i++)
       {
         measurement_perCore->start();
         double pCore = cpum.getCPUCoreLoad(i);
         measurement_perCore->stop();
-//				fma.data.push_back(pCore);
 
-        ros_monitoring::KeyValue kv;
-        sprintf(value, "%f", pCore);
-        kv.value = value;
-        sprintf(value, "percentage load CoreNo: %d", i);
-        kv.key = value;
-        kv.unit = "%";
-        mi.values.push_back(kv);
+        char key[40];
+        sprintf(key, "percentage load CoreNo: %d", i);
+        msg.addValue(key, pCore, "%", 0);
 
       }
-//			percpercore_pub.publish(fma);
 
     }
-    ma.info.push_back(mi);
-    monitor_pub.publish(ma);
+    msg.publish();
 
 //		benchmark.printProgress(true);
     loop_rate.sleep();

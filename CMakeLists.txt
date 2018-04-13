@@ -92,6 +92,13 @@ target_link_libraries(recoverySDK
  )
 add_dependencies(recoverySDK ros_monitoring_generate_messages_cpp)
 
+add_library(monitorLIB
+  src/monitors/monitormsg.cpp
+)
+target_link_libraries(monitorLIB
+  ${catkin_LIBRARIES}
+)
+add_dependencies(monitorLIB ros_monitoring_generate_messages_cpp)
 ####################### MONITOR NODES #########################
 
 add_executable(cpu_monitoring_node src/monitors/cpumonitor.cpp)
@@ -100,6 +107,7 @@ add_executable(network_monitoring_node src/monitors/networkmonitor.cpp)
 
 target_link_libraries(cpu_monitoring_node
   ${catkin_LIBRARIES}
+  monitorLIB
 
 )
 add_dependencies(cpu_monitoring_node ros_monitoring_generate_messages_cpp)
