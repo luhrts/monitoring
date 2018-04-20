@@ -122,6 +122,7 @@ add_dependencies(ram_monitoring_node ros_monitoring_generate_messages_cpp)
 
 target_link_libraries(network_monitoring_node
   ${catkin_LIBRARIES}
+  monitorLIB
 )
 add_dependencies(network_monitoring_node ros_monitoring_generate_messages_cpp)
 

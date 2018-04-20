@@ -266,91 +266,37 @@ int main(int argc, char **argv) {
 
 	NetworkMonitor NWm(nwThroughput, cnwInterface);
 
-	//benchmark init things
-	ROS_RT_Benchmark benchmark;
-	benchmark.init();
-	ROS_RT_MeasurementDuration* measurement_networkload_bytes =
-			benchmark.createDurationMeasurement("networkload_in_bytes");
-	ROS_RT_MeasurementDuration* measurement_network_packets =
-			benchmark.createDurationMeasurement("network_packets");
+
+
+	MonitorMsg msg(n, ros::this_node::getName(), "Network-Monitor");
 
 	char value[40];
 	while (ros::ok()) {
-		ros_monitoring::MonitoringArray ma;
-		ros_monitoring::MonitoringInfo mi;
-		char name[256];
-		sprintf(name, "%s (%s)", ros::this_node::getName().c_str(),
-				cnwInterface);
-		mi.name = std::string(name);
-		mi.description = "A Network-Monitor";
-		fillMachineInfo(mi);
+		msg.resetMsg();
+		msg.addNewInfoTree(nwinterface, "Networkinterface monitor");
 
 		if (bBytes || bload) {
 			float loadrx, loadtx, RXBpS, TXBpS;
-			measurement_networkload_bytes->start();
 			NWm.getNetworkLoad(loadrx, loadtx, RXBpS, TXBpS);
-			measurement_networkload_bytes->stop();
 			if (bBytes) {
-				ros_monitoring::KeyValue rx_kv, tx_kv;
-				sprintf(value, "rx in Bytes per Second (%s)", cnwInterface);
-				rx_kv.key = value;
-				sprintf(value, "%f", RXBpS);
-				rx_kv.value = value;
-				rx_kv.unit = "B/s";
-
-				sprintf(value, "tx in Bytes per Second (%s)", cnwInterface);
-				tx_kv.key = value;
-				sprintf(value, "%f", TXBpS);
-				tx_kv.value = value;
-				tx_kv.unit = "B/s";
-
-				mi.values.push_back(rx_kv);
-				mi.values.push_back(tx_kv);
-
+				msg.addValue("RX", RXBpS, "Byte/s", 0);
+				msg.addValue("TX", TXBpS, "Byte/s", 0);
 			}
 
 			if (bload) {
-
-				ros_monitoring::KeyValue loadrx_kv, loadtx_kv;
-				sprintf(value, "Network Load RX on %s", cnwInterface);
-				loadrx_kv.key = value;
-				sprintf(value, "%f", loadrx);
-				loadrx_kv.value = value;
-				loadrx_kv.unit = "%";
-
-				sprintf(value, "Network Load TX on %s", cnwInterface);
-				loadtx_kv.key = value;
-				sprintf(value, "%f", loadtx);
-				loadtx_kv.value = value;
-				loadtx_kv.unit = "%";
-
-				mi.values.push_back(loadrx_kv);
-				mi.values.push_back(loadtx_kv);
+				msg.addValue("Load RX", loadrx, "%", 0);
+				msg.addValue("Load TX", loadtx, "%", 0);
 			}
 
 		}
 		if (bPackets) {
 			float RXPpS, TXPpS;
-			measurement_network_packets->start();
+
 			NWm.getPackets(RXPpS, TXPpS);
-			measurement_network_packets->stop();
+			msg.addValue("RX", RXPpS, "Packet/s", 0);
+			msg.addValue("TX", TXPpS, "Packet/s", 0);
 
-			ros_monitoring::KeyValue rxkv, txkv;
 
-			sprintf(value, "rx in Packets per Second (%s)", cnwInterface);
-			rxkv.key = value;
-			sprintf(value, "%f", RXPpS);
-			rxkv.value = value;
-			rxkv.unit = "P/s";
-
-			sprintf(value, "tx in Packets per Second (%s)", cnwInterface);
-			txkv.key = value;
-			sprintf(value, "%f", TXPpS);
-			txkv.value = value;
-			txkv.unit = "P/s";
-
-			mi.values.push_back(rxkv);
-			mi.values.push_back(txkv);
 		}
 
 		if (bErrors) {
@@ -366,121 +312,30 @@ int main(int argc, char **argv) {
 
 			ros_monitoring::KeyValue a_kv, b_kv, c_kv, d_kv, e_kv, f_kv, g_kv,
 					h_kv, i_kv, j_kv, k_kv, l_kv, m_kv, n_kv, o_kv, p_kv;
-			sprintf(value, "rx_crc_errors (%s)", cnwInterface);
-			a_kv.key = value;
-			sprintf(value, "%f", rx_crc_errors);
-			a_kv.value = value;
-			a_kv.unit = "B";
-			mi.values.push_back(a_kv);
 
-			sprintf(value, "rx_dropped (%s)", cnwInterface);
-			b_kv.key = value;
-			sprintf(value, "%f", rx_dropped);
-			b_kv.value = value;
-			b_kv.unit = "B";
-			mi.values.push_back(b_kv);
-
-			sprintf(value, "rx_errors (%s)", cnwInterface);
-			c_kv.key = value;
-			sprintf(value, "%f", rx_errors);
-			c_kv.value = value;
-			c_kv.unit = "B";
-			mi.values.push_back(c_kv);
-
-			sprintf(value, "rx_fifo_errors (%s)", cnwInterface);
-			d_kv.key = value;
-			sprintf(value, "%f", rx_fifo_errors);
-			d_kv.value = value;
-			d_kv.unit = "B";
-			mi.values.push_back(d_kv);
-
-			sprintf(value, "rx_frame_errors (%s)", cnwInterface);
-			e_kv.key = value;
-			sprintf(value, "%f", rx_frame_errors);
-			e_kv.value = value;
-			e_kv.unit = "B";
-			mi.values.push_back(e_kv);
-
-			sprintf(value, "rx_length_errors (%s)", cnwInterface);
-			f_kv.key = value;
-			sprintf(value, "%f", rx_length_errors);
-			f_kv.value = value;
-			f_kv.unit = "B";
-			mi.values.push_back(f_kv);
-
-			sprintf(value, "rx_missed_errors (%s)", cnwInterface);
-			g_kv.key = value;
-			sprintf(value, "%f", rx_missed_errors);
-			g_kv.value = value;
-			g_kv.unit = "B";
-			mi.values.push_back(g_kv);
-
-			sprintf(value, "rx_over_errors (%s)", cnwInterface);
-			h_kv.key = value;
-			sprintf(value, "%f", rx_over_errors);
-			h_kv.value = value;
-			h_kv.unit = "B";
-			mi.values.push_back(h_kv);
+			msg.addValue("RX_CRC_Errors", rx_crc_errors, "B", 0);
+			msg.addValue("RX_Dropped", rx_dropped, "B", 0);
+			msg.addValue("RX_Errors", rx_errors, "B", 0);
+			msg.addValue("RX_FIFO_Errors", rx_fifo_errors, "B", 0);
+			msg.addValue("RX_Frame_Errors", rx_frame_errors, "B", 0);
+			msg.addValue("RX_Length_Errors", rx_length_errors, "B", 0);
+			msg.addValue("RX_Missed_Errors", rx_missed_errors, "B", 0);
+			msg.addValue("RX_Over_Errors", rx_over_errors, "B", 0);
 
 			//########################
-
-			sprintf(value, "tx_carrier_errors (%s)", cnwInterface);
-			i_kv.key = value;
-			sprintf(value, "%f", tx_carrier_errors);
-			i_kv.value = value;
-			i_kv.unit = "B";
-			mi.values.push_back(i_kv);
-
-			sprintf(value, "tx_dropped (%s)", cnwInterface);
-			j_kv.key = value;
-			sprintf(value, "%f", tx_dropped);
-			j_kv.value = value;
-			j_kv.unit = "B";
-			mi.values.push_back(j_kv);
-
-			sprintf(value, "tx_errors (%s)", cnwInterface);
-			k_kv.key = value;
-			sprintf(value, "%f", tx_errors);
-			k_kv.value = value;
-			k_kv.unit = "B";
-			mi.values.push_back(k_kv);
-
-			sprintf(value, "tx_fifo_errors (%s)", cnwInterface);
-			l_kv.key = value;
-			sprintf(value, "%f", tx_fifo_errors);
-			l_kv.value = value;
-			l_kv.unit = "B";
-			mi.values.push_back(l_kv);
-
-			sprintf(value, "tx_heartbeat_errors (%s)", cnwInterface);
-			m_kv.key = value;
-			sprintf(value, "%f", tx_heartbeat_errors);
-			m_kv.value = value;
-			m_kv.unit = "B";
-			mi.values.push_back(m_kv);
-
-			sprintf(value, "tx_window_errors (%s)", cnwInterface);
-			n_kv.key = value;
-			sprintf(value, "%f", tx_window_errors);
-			n_kv.value = value;
-			n_kv.unit = "B";
-			mi.values.push_back(n_kv);
-
-			sprintf(value, "tx_aborted_errors (%s)", cnwInterface);
-			o_kv.key = value;
-			sprintf(value, "%f", tx_aborted_errors);
-			o_kv.value = value;
-			o_kv.unit = "B";
-			mi.values.push_back(o_kv);
-
+			msg.addValue("TX_Carrier_Errors", tx_carrier_errors, "B", 0);
+			msg.addValue("TX_Dropped", tx_dropped, "B", 0);
+			msg.addValue("TX_Errors", tx_errors, "B", 0);
+			msg.addValue("TX_FIFO_Errors", tx_fifo_errors, "B", 0);
+			msg.addValue("TX_Heartbeat_Errors", tx_heartbeat_errors, "B", 0);
+			msg.addValue("TX_Window_Errors", tx_window_errors, "B", 0);
+			msg.addValue("TX_Aborted_Errors", tx_aborted_errors, "B", 0);
 
 		}
-		ma.info.push_back(mi);
-		pub.publish(ma);
+		msg.publish();
 		loop_rate.sleep();
 	}
 
 	delete[] cnwInterface;
 
-	benchmark.logData();
 }
