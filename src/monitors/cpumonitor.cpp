@@ -291,11 +291,13 @@ int main(int argc, char **argv)
   char value[50];
   MonitorMsg msg(n, ros::this_node::getName(), "A CPU-Monitor");
 
+
   //starting looping over the options and publishing at the end
   while (ros::ok())
   {
     msg.resetMsg();
     msg.addNewInfoTree("CPU", "CPU Data");
+
     if (bPercent)
     {
       measurement_percent->start();
