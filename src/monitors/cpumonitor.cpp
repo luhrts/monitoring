@@ -289,12 +289,13 @@ int main(int argc, char **argv)
   ROS_RT_MeasurementDuration* measurement_perCore = benchmark.createDurationMeasurement("load_per_core");
 
   char value[50];
-  MonitorMsg msg(argc, argv, ros::this_node::getName(), "A CPU-Monitor");
+  MonitorMsg msg(n, ros::this_node::getName(), "A CPU-Monitor");
 
   //starting looping over the options and publishing at the end
   while (ros::ok())
   {
     msg.resetMsg();
+    msg.addNewInfoTree("CPU", "CPU Data");
     if (bPercent)
     {
       measurement_percent->start();

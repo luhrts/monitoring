@@ -13,9 +13,10 @@
 
 class MonitorMsg {
 public:
-	MonitorMsg(int argc, char **argv, std::string monitorName, std::string monitorDescription);
+	MonitorMsg(ros::NodeHandle &n, std::string monitorName, std::string monitorDescription);
 	virtual ~MonitorMsg();
 
+	void addNewInfoTree(std::string name, std::string description);
 	void addValue(std::string key, std::string value, std::string unit, float errorlevel);
 	void addValue(std::string key, float value, std::string unit, float errorlevel);
 
@@ -26,6 +27,7 @@ public:
 private:
 	ros::Publisher pub;
 	ros_monitoring::MonitoringArray ma;
+	double miIndex;
 };
 
 #endif /* SRC_MONITORS_MONITOR_H_ */

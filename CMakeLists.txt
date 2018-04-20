@@ -104,6 +104,7 @@ add_dependencies(monitorLIB ros_monitoring_generate_messages_cpp)
 add_executable(cpu_monitoring_node src/monitors/cpumonitor.cpp)
 add_executable(ram_monitoring_node src/monitors/rammonitor.cpp)
 add_executable(network_monitoring_node src/monitors/networkmonitor.cpp)
+add_executable(statistics_monitoring_node src/monitors/statisticsmonitor.cpp)
 
 target_link_libraries(cpu_monitoring_node
   ${catkin_LIBRARIES}
@@ -123,6 +124,14 @@ target_link_libraries(network_monitoring_node
   ${catkin_LIBRARIES}
 )
 add_dependencies(network_monitoring_node ros_monitoring_generate_messages_cpp)
+
+
+target_link_libraries(statistics_monitoring_node
+  ${catkin_LIBRARIES}
+  monitorLIB
+)
+add_dependencies(statistics_monitoring_node ros_monitoring_generate_messages_cpp)
+
 
 
 

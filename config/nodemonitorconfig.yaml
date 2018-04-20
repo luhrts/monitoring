@@ -1,2 +1,2 @@
-frequency: 2000
+frequency: 2
 nodes: [/cpu_monitor, /ram_monitor, /topic_monitor, /node_monitor, /network_monitor]
