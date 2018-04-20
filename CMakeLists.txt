@@ -116,7 +116,7 @@ add_dependencies(cpu_monitoring_node ros_monitoring_generate_messages_cpp)
 target_link_libraries(ram_monitoring_node
   ${catkin_LIBRARIES}
   ${PROCPS_LIBRARIES}
-
+  monitorLIB
 )
 add_dependencies(ram_monitoring_node ros_monitoring_generate_messages_cpp)
 
