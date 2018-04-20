@@ -1,6 +1,7 @@
 #include "ros_monitoring/monitors/statisticsmonitor.h"
 
 StatisticMonitor::StatisticMonitor(ros::NodeHandle &n) {
+  n.setParam("/enable_statistics", true);
   loadConfig(n);
   stats_sub = n.subscribe("/statistics", 1000, &StatisticMonitor::statisticsCallback, this);
   msg = new MonitorMsg (n, ros::this_node::getName(), "Statistics for ROS Topics" );
@@ -38,7 +39,7 @@ StatisticMonitor::~StatisticMonitor() {
 }
 
 void StatisticMonitor::loadConfig(ros::NodeHandle &n) {
-  freq = 0.2;
+  freq = 2;
   if (!n.getParam("frequency", freq))
   {
     ROS_WARN("No frequency supplied. Working with %f Hz.", freq);
@@ -55,10 +56,20 @@ void StatisticMonitor::statisticsCallback(rosgraph_msgs::TopicStatistics stats) 
     }
   }
   si.topic = topic;
-  si.pubs.push_back(stats.node_pub);
-  si.subs.push_back(stats.node_sub);
-  si.frequence = 1/stats.period_mean.toSec(); //TODO sum or mean?!?
+  if(std::find(si.pubs.begin(), si.pubs.end(), stats.node_pub) == si.pubs.end()) {
+    si.pubs.push_back(stats.node_pub);
+  }
+  if(std::find(si.subs.begin(), si.subs.end(), stats.node_sub) == si.subs.end()) {
+      si.subs.push_back(stats.node_sub);
+  }
+
+  ros::Duration difference = stats.window_stop - stats.window_start;
+  double frequence = 1/stats.period_mean.toSec();
+  double frequence1 = stats.delivered_msgs/difference.toSec();
   // ROS_INFO("Frequence: %f", si.frequence);
+  // ROS_INFO("Frequence1: %f", frequence1);
+  si.frequence =  frequence1;//TODO sum or mean?!?
+
 
   statisticData.push_back(si);
 }
