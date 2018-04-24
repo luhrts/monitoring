@@ -21,21 +21,21 @@ This monitor can only watch data flow from one node to another. If nobody subscr
 
 ---
 
-#Usage
+# Usage
 
-##Monitoring
+## Monitoring
 The monitors all can be configure via a yaml-config files, you can find examples in the folder *config*.
 
 You can write your own node. It is recommend to use the *include/ros_monitoring/monitors/monitormsg.h* interface
 
-##Fault detection and identification
+## Fault detection and identification
 You can create your own FDI node with the SDK (*src/fdir/fdiSDK.cpp*). An example node is *src/fdir/fdiExample.cpp*
 
-##Recovery
+## Recovery
 You can create your own Recovery node with the SDK (*src/recovery/recoverysdk.cpp*). An example implementation is *src/recovery/recoveryExample.cpp*
 
-##GUI
+## GUI
 There is a rqt plugin to visulaize the monitoring data. To use it, you need to start the *gui_msg_concat_node* node. This node aggregates all messages to send to a remote pc over the topic */monitoring/gui*. You can visualize the data with the *Monitor Viewer*
 
-##Connect to Diagnostics
+## Connect to Diagnostics
 You can connect the monitoring systems to the diagnostics stack. There are two bridges. One for diagnostics to monitoring (node: *diagnostics_to_monitoring*) and one for monitoring to diagnostics (node: *monitoring_to_diagnostics*)
