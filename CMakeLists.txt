@@ -17,7 +17,6 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(PROCPS REQUIRED libprocps)
-pkg_check_modules(FLITE REQUIRED libflite)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -48,7 +47,7 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES fdiSDK recoverySDK
   CATKIN_DEPENDS message_runtime
- DEPENDS PROCPS FLITE
+ DEPENDS PROCPS
 )
 
 
@@ -63,7 +62,6 @@ include_directories(
  include
  ${catkin_INCLUDE_DIRS}
  ${PROCPS_INCLUDE_DIRS}
- ${FLITE_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -92,7 +90,6 @@ add_library(recoverySDK
 )
 target_link_libraries(recoverySDK
     ${catkin_LIBRARIES}
-    ${FLITE_LIBRARIES}
  )
 add_dependencies(recoverySDK ros_monitoring_generate_messages_cpp)
 

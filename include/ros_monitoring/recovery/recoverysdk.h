@@ -8,6 +8,7 @@
 #include "std_handler/restartnodehandler.h"
 #include "std_handler/stoplaunchfile.h"
 #include "std_handler/outputerrormessage.h"
+#include "std_handler/error_to_speech.h"
 
 class RecoverySDK
 {

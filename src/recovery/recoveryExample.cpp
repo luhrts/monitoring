@@ -27,7 +27,7 @@ int main(int argc, char **argv)
   example.registerErrorHandler(&rnh, "node dead");
   example.registerErrorHandler(&slf, "CPU Overheating");
   example.registerErrorHandler(&oem, "CPU Hot");
-  example.registerErrorHandler(&ets, "node dead");
+  example.registerErrorHandler(&ets, "CPU Hot");
 
 
   ros::spin();

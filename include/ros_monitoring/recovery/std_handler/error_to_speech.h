@@ -9,7 +9,12 @@ public:
 	virtual ~ErrorToSpeech();
 
 	void checkError(ros_monitoring::Error msg);
-  cst_voice v;
+
+private:
+	std::map<std::string, ros::Time> lastSaid;
+
+	bool checkSaid(std::string key);
+
 };
 
 #endif /* SRC_RECOVERY_STD_HANDLER_ERROR_TO_SPEECH_H_ */
