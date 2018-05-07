@@ -22,10 +22,12 @@ int main(int argc, char **argv)
   RestartNodeHandler rnh;
   StopLaunchFile slf;
   OutputErrorMessage oem;
+  ErrorToSpeech ets;
 
   example.registerErrorHandler(&rnh, "node dead");
   example.registerErrorHandler(&slf, "CPU Overheating");
   example.registerErrorHandler(&oem, "CPU Hot");
+  example.registerErrorHandler(&ets, "node dead");
 
 
   ros::spin();
