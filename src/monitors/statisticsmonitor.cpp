@@ -9,21 +9,43 @@ StatisticMonitor::StatisticMonitor(ros::NodeHandle &n) {
   ros::Rate loop_rate(freq);
   while(ros::ok()) {
     msg->resetMsg();
+    ROS_INFO("Statistics check");
+    for(int i=0;i<topicRequirements.size(); i++) {
+      TopicRequirement tr = topicRequirements[i];
+      msg->addNewInfoTree(tr.topic, "from " + tr.source + " to " + tr.destination);
+      //Find corresponding statisticdata from list
+      StatisticsInfo si;
+      bool siFound = false;
+      for(StatisticsInfo stin:statisticData) {
+        if(stin.topic==tr.topic && stin.sub==tr.destination && stin.pub==tr.source) {
+          siFound = true;
+          si = stin;
+          break;
+        }
+      }
+      msg->addValue("Sub: ", tr.destination, "", 0.0);
+      msg->addValue("Pub: ", tr.source, "", 0.0);
+      if(!siFound) {
+        msg->addValue("Topic Missing", 0.0, "", 1.0);
+        continue;
+      }
 
-    for(int i=0;i<statisticData.size(); i++) {
-      msg->addNewInfoTree(statisticData[i].topic, "statistic info over the topic");
-      msg->addValue("frequence", statisticData[i].frequence, "Hz", 0);
-      std::string pubs, subs;
-      for(int j=0;j<statisticData[i].pubs.size();j++) {
-        pubs +=statisticData[i].pubs[j];
-        pubs += ", ";
+      if(tr.frequency-tr.dFrequency <si.frequency && si.frequency < tr.frequency+tr.dFrequency){
+        msg->addValue("frequency", si.frequency, "Hz", 0);
+      } else {
+        msg->addValue("frequency", si.frequency, "Hz", tr.errorlevel);
       }
-      for(int j=0;j<statisticData[i].subs.size();j++) {
-        subs +=statisticData[i].subs[j];
-        subs += ", ";
+
+      if(tr.size-tr.dSize <si.size && si.size < tr.size+tr.dSize){
+        msg->addValue("frequency", si.size, "Byte", 0);
+      } else {
+        msg->addValue("frequency", si.size, "Byte", tr.errorlevel);
       }
-      msg->addValue("subscriber", subs, "", 0);
-      msg->addValue("publisher", pubs, "", 0);
+
+    /*  if(tr.type!=si.type) {
+        msg->addValue("type error", si.type, "", tr.errorlevel);
+      } */
+
 
     }
     msg->publish();
@@ -39,37 +61,85 @@ StatisticMonitor::~StatisticMonitor() {
 }
 
 void StatisticMonitor::loadConfig(ros::NodeHandle &n) {
-  freq = 2;
+  freq = 1;
   if (!n.getParam("frequency", freq))
   {
     ROS_WARN("No frequency supplied. Working with %f Hz.", freq);
   }
+  std::vector<std::string> topics;
+  if(n.getParam("topics", topics)) {
+    for(std::string name: topics) {
+      TopicRequirement tr;
+
+      if(!n.getParam(name + "/topic", tr.topic)) {
+        ROS_ERROR("%s Statistics: No topic supplied.", name.c_str());
+      }
+      if(!n.getParam(name + "/source", tr.source)) {
+        ROS_ERROR("%s Statistics: No source supplied.", name.c_str());
+      }
+      if(!n.getParam(name + "/source", tr.source)) {
+        ROS_ERROR("%s Statistics: No source supplied.", name.c_str());
+      }
+      if(!n.getParam(name + "/destination", tr.destination)) {
+        ROS_ERROR("%s Statistics: No destination supplied.", name.c_str());
+      }
+      if(!n.getParam(name + "/frequency", tr.frequency)) {
+        ROS_ERROR("%s Statistics: No frequency supplied.", name.c_str());
+      }
+      if(!n.getParam(name + "/size", tr.size)) {
+        ROS_ERROR("%s Statistics: No size supplied.", name.c_str());
+      }
+      if(!n.getParam(name + "/dFrequency", tr.dFrequency)) {
+        ROS_ERROR("%s Statistics: No dFrequency supplied.", name.c_str());
+      }
+      if(!n.getParam(name + "/dSize", tr.dSize)) {
+        ROS_ERROR("%s Statistics: No dSize supplied.", name.c_str());
+      }
+      if(!n.getParam(name + "/type", tr.type)) {
+        ROS_ERROR("%s Statistics: No type supplied.", name.c_str());
+      }
+      if(!n.getParam(name + "/errorlevel", tr.errorlevel)) {
+        ROS_ERROR("%s Statistics: No errorlevel supplied.", name.c_str());
+      }
+      topicRequirements.push_back(tr);
+    }
+  }
 }
 
 void StatisticMonitor::statisticsCallback(rosgraph_msgs::TopicStatistics stats) {
+  // ROS_INFO("Statistics incoming");
   StatisticsInfo si;
   std::string topic(stats.topic);
+  std::string sub(stats.node_sub);
+  std::string pub(stats.node_pub);
+  // ROS_INFO("Topic: %s, Pub: %s, Sub: %s",topic.c_str(), pub.c_str(),sub.c_str());
   // ROS_INFO("mean: %f", stats.period_mean.toSec());
+  bool siFound = false;
+  int siIndex;
   for(int i=0; i<statisticData.size(); i++) {
-    if(statisticData[i].topic == topic) {
+    if(statisticData[i].topic == topic && statisticData[i].pub == pub && statisticData[i].sub == sub) {
       si = statisticData[i];
+      siFound = true;
+      siIndex = i;
+      break;
     }
   }
-  si.topic = topic;
-  if(std::find(si.pubs.begin(), si.pubs.end(), stats.node_pub) == si.pubs.end()) {
-    si.pubs.push_back(stats.node_pub);
-  }
-  if(std::find(si.subs.begin(), si.subs.end(), stats.node_sub) == si.subs.end()) {
-      si.subs.push_back(stats.node_sub);
-  }
 
+  if(!siFound)  {
+    si.topic = topic;
+    si.pub = pub;
+    si.sub = sub;
+  }
   ros::Duration difference = stats.window_stop - stats.window_start;
-  double frequence = 1/stats.period_mean.toSec();
-  double frequence1 = stats.delivered_msgs/difference.toSec();
+  double frequency = 1/stats.period_mean.toSec();
+  double frequency1 = stats.delivered_msgs/difference.toSec();
   // ROS_INFO("Frequence: %f", si.frequence);
   // ROS_INFO("Frequence1: %f", frequence1);
-  si.frequence =  frequence1;//TODO sum or mean?!?
+  si.frequency =  frequency1;//TODO sum or mean?!?
 
+  si.size = 0; //TODO
+
+  /// si.type =  TODO
 
   statisticData.push_back(si);
 }

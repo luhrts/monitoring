@@ -9,9 +9,23 @@
 
 struct StatisticsInfo{
   std::string topic;
-  float frequence;
-  std::vector<std::string> subs;
-  std::vector<std::string> pubs;
+  float frequency;
+  std::string sub;
+  std::string pub;
+  int size;
+  std::string type;
+};
+
+struct TopicRequirement{
+  std::string topic;
+  std::string source;
+  std::string destination;
+  float frequency;
+  int size;
+  float dFrequency;
+  int dSize;
+  std::string type;
+  float errorlevel;
 };
 
 class StatisticMonitor
@@ -29,5 +43,6 @@ private:
   MonitorMsg *msg;
   float freq;
   std::vector<StatisticsInfo> statisticData;
+  std::vector<TopicRequirement> topicRequirements;
 };
 #endif /* SRC_STATISTICSMONITOR_H_ */
