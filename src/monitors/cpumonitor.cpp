@@ -280,13 +280,6 @@ int main(int argc, char **argv)
   CpuMonitor cpum;
 
   //inti benchmark things
-  ROS_RT_Benchmark benchmark;
-  benchmark.init();
-  ROS_RT_MeasurementDuration* measurement_percent = benchmark.createDurationMeasurement("percent");
-  ROS_RT_MeasurementDuration* measurement_loadAvg = benchmark.createDurationMeasurement("load_avg");
-  ROS_RT_MeasurementDuration* measurement_processcpuusage = benchmark.createDurationMeasurement("process_cpu_usage");
-  ROS_RT_MeasurementDuration* measurement_temp = benchmark.createDurationMeasurement("cpu_temp");
-  ROS_RT_MeasurementDuration* measurement_perCore = benchmark.createDurationMeasurement("load_per_core");
 
   char value[50];
   MonitorMsg msg(n, ros::this_node::getName(), "A CPU-Monitor");
@@ -300,31 +293,23 @@ int main(int argc, char **argv)
 
     if (bPercent)
     {
-      measurement_percent->start();
+
       float cpuload = cpum.getCurrentCpuLoad();
-      measurement_percent->stop();
 
       msg.addValue("overall cpu load", cpuload, "%", 0);
     }
     if (bAvarage)
     {
-      measurement_loadAvg->start();
       float cpuavg = cpum.getLoadAvg();
-      measurement_loadAvg->stop();
-
       msg.addValue("cpu load avg", cpuavg, "", 0);
     }
     if (bProcesses)
     {
-      measurement_processcpuusage->start();
       //cpum.publishProcessCpuUsage(proc_pub, mi);
-      measurement_processcpuusage->stop();
     }
     if (bTemp)
     {
-      measurement_temp->start();
       float temp = cpum.getCPUTemp();
-      measurement_temp->stop();
 
       msg.addValue("CPU Temperatur", temp, "C", 0);
     }
@@ -332,9 +317,7 @@ int main(int argc, char **argv)
     {
       for (int i = 0; i < numCPU; i++)
       {
-        measurement_perCore->start();
         double pCore = cpum.getCPUCoreLoad(i);
-        measurement_perCore->stop();
 
         char key[40];
         sprintf(key, "percentage load CoreNo: %d", i);
@@ -345,10 +328,7 @@ int main(int argc, char **argv)
     }
     msg.publish();
 
-//		benchmark.printProgress(true);
     loop_rate.sleep();
   }
-
-  benchmark.logData();
 
 }
