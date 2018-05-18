@@ -1,6 +1,8 @@
 #include "ros_monitoring/recovery/std_handler/error_to_speech.h"
+#include "std_msgs/String.h"
 
-ErrorToSpeech::ErrorToSpeech() {
+ErrorToSpeech::ErrorToSpeech(ros::NodeHandle &n) {
+	voice_pub = n.advertise<std_msgs::String>("/voice_output", 1);
 
 
 }
@@ -13,9 +15,10 @@ void ErrorToSpeech::checkError(ros_monitoring::Error msg)
 {
 
 	if(checkSaid(msg.key)) {
-		char command[200];
-		sprintf(command, "espeak \"%s\"", msg.key.c_str());
-	  system(command);
+		std_msgs::String voice;
+		voice.data = msg.key;
+		voice_pub.publish(voice);
+
 	}
 
 }

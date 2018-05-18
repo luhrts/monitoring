@@ -182,6 +182,12 @@ target_link_libraries(diagnostics_to_monitoring
 )
 add_dependencies(diagnostics_to_monitoring ros_monitoring_generate_messages_cpp)
 
+add_executable(speech_output src/speech_output.cpp)
+target_link_libraries(speech_output
+  ${catkin_LIBRARIES}
+)
+add_dependencies(speech_output ros_monitoring_generate_messages_cpp)
+
 
 
 

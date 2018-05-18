@@ -38,7 +38,7 @@ private:
   void loadConfig(ros::NodeHandle &n);
 
   void statisticsCallback(rosgraph_msgs::TopicStatistics stats);
-
+  void compareStatisticDataWithRequirements();
   ros::Subscriber stats_sub;
   MonitorMsg *msg;
   float freq;

@@ -5,7 +5,7 @@
 
 class ErrorToSpeech: public ErrorHandlerInterface {
 public:
-	ErrorToSpeech();
+	ErrorToSpeech(ros::NodeHandle &n);
 	virtual ~ErrorToSpeech();
 
 	void checkError(ros_monitoring::Error msg);
@@ -14,6 +14,8 @@ private:
 	std::map<std::string, ros::Time> lastSaid;
 
 	bool checkSaid(std::string key);
+
+	ros::Publisher voice_pub;
 
 };
 

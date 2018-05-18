@@ -22,7 +22,7 @@ int main(int argc, char **argv)
   RestartNodeHandler rnh;
   StopLaunchFile slf;
   OutputErrorMessage oem;
-  ErrorToSpeech ets;
+  ErrorToSpeech ets(n);
 
   example.registerErrorHandler(&rnh, "node dead");
   example.registerErrorHandler(&slf, "CPU Overheating");

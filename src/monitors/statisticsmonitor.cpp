@@ -9,45 +9,8 @@ StatisticMonitor::StatisticMonitor(ros::NodeHandle &n) {
   ros::Rate loop_rate(freq);
   while(ros::ok()) {
     msg->resetMsg();
-    ROS_INFO("Statistics check");
-    for(int i=0;i<topicRequirements.size(); i++) {
-      TopicRequirement tr = topicRequirements[i];
-      msg->addNewInfoTree(tr.topic, "from " + tr.source + " to " + tr.destination);
-      //Find corresponding statisticdata from list
-      StatisticsInfo si;
-      bool siFound = false;
-      for(StatisticsInfo stin:statisticData) {
-        if(stin.topic==tr.topic && stin.sub==tr.destination && stin.pub==tr.source) {
-          siFound = true;
-          si = stin;
-          break;
-        }
-      }
-      msg->addValue("Sub: ", tr.destination, "", 0.0);
-      msg->addValue("Pub: ", tr.source, "", 0.0);
-      if(!siFound) {
-        msg->addValue("Topic Missing", 0.0, "", 1.0);
-        continue;
-      }
-
-      if(tr.frequency-tr.dFrequency <si.frequency && si.frequency < tr.frequency+tr.dFrequency){
-        msg->addValue("frequency", si.frequency, "Hz", 0);
-      } else {
-        msg->addValue("frequency", si.frequency, "Hz", tr.errorlevel);
-      }
-
-      if(tr.size-tr.dSize <si.size && si.size < tr.size+tr.dSize){
-        msg->addValue("frequency", si.size, "Byte", 0);
-      } else {
-        msg->addValue("frequency", si.size, "Byte", tr.errorlevel);
-      }
-
-    /*  if(tr.type!=si.type) {
-        msg->addValue("type error", si.type, "", tr.errorlevel);
-      } */
-
-
-    }
+    // ROS_INFO("Statistics check");
+    compareStatisticDataWithRequirements();
     msg->publish();
     std::vector<StatisticsInfo> newSD;
     statisticData = newSD;
@@ -58,6 +21,53 @@ StatisticMonitor::StatisticMonitor(ros::NodeHandle &n) {
 
 StatisticMonitor::~StatisticMonitor() {
   delete msg;
+}
+
+void StatisticMonitor::compareStatisticDataWithRequirements() {
+  for(int i=0;i<topicRequirements.size(); i++) {
+    TopicRequirement tr = topicRequirements[i];
+    msg->addNewInfoTree(tr.topic, "from " + tr.source + " to " + tr.destination);
+    ROS_INFO("Topic: %s", tr.topic.c_str());
+    //Find corresponding statisticdata from list
+    StatisticsInfo si;
+    bool siFound = false;
+    for(StatisticsInfo stin:statisticData) { //searching for coresponding recorded statistic data
+      if(stin.topic==tr.topic && stin.sub==tr.destination && stin.pub==tr.source) {
+        siFound = true;
+        si = stin;
+        break;
+      }
+    }
+    msg->addValue("Sub: ", tr.destination, "", 0.0);
+    msg->addValue("Pub: ", tr.source, "", 0.0);
+    if(!siFound) {//testing if topic is available
+      msg->addValue("Topic Missing", 0.0, "", 1.0);
+      continue;
+    }
+
+    //checking frequency
+    if(tr.frequency-tr.dFrequency <si.frequency && si.frequency < tr.frequency+tr.dFrequency){
+      msg->addValue("frequency", si.frequency, "Hz", 0);
+    } else {
+      if(tr.frequency != -1) { //if frequency is -1, it should not be checked
+        msg->addValue("frequency", si.frequency, "Hz", tr.errorlevel);
+      }
+    }
+
+    if(tr.size-tr.dSize <si.size && si.size < tr.size+tr.dSize){
+      msg->addValue("size", si.size, "Byte", 0);
+    } else {
+      if(tr.size != -1) { //if size is -1, it should not be checked
+        msg->addValue("size", si.size, "Byte", tr.errorlevel);
+      }
+    }
+
+  /*  if(tr.type!=si.type) { //type is not included in statistics
+      msg->addValue("type error", si.type, "", tr.errorlevel);
+    } */
+
+
+  }
 }
 
 void StatisticMonitor::loadConfig(ros::NodeHandle &n) {
@@ -137,7 +147,7 @@ void StatisticMonitor::statisticsCallback(rosgraph_msgs::TopicStatistics stats) 
   // ROS_INFO("Frequence1: %f", frequence1);
   si.frequency =  frequency1;//TODO sum or mean?!?
 
-  si.size = 0; //TODO
+  si.size = stats.delivered_msgs/stats.traffic; //TODO
 
   /// si.type =  TODO
 
