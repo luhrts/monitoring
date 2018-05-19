@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>monitoring</name>
+  <version>1.0</version>
+  <description></description>
+  <maintainer email=""></maintainer>
+  <license></license>
+  
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>monitoring_core</exec_depend>
+  
+  <export>
+    <metapackage />
+  </export>
+</package>
