@@ -8,7 +8,7 @@ public:
 	ErrorToSpeech(ros::NodeHandle &n);
 	virtual ~ErrorToSpeech();
 
-	void checkError(ros_monitoring::Error msg);
+  void checkError(monitoring_msgs::Error msg);
 
 private:
 	std::map<std::string, ros::Time> lastSaid;

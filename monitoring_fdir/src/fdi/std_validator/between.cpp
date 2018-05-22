@@ -1,4 +1,4 @@
-#include "ros_monitoring/fdi/std_validator/between.h"
+#include "monitoring_fdir/fdi/std_validator/between.h"
 
 Between::Between(float maxValue, std::string maxErrorMsg, float maxerrorLevel, float minValue, std::string minErrorMsg, float minerrorLevel, ros::Publisher& publisher)
   :maxValue(maxValue)
@@ -16,14 +16,14 @@ Between::~Between() {}
 /**
  * checks the message if keyvalue pair is between the configured values(min/max), sends out a errormessage if not.
  */
-void Between::check(ros_monitoring::KeyValue newMsg) {
+void Between::check(monitoring_msgs::KeyValue newMsg) {
 //  ROS_INFO("Checking CPU TEMP %s", newMsg.value.c_str());
 
   std::string::size_type sz;
   float value = std::stof (newMsg.value,&sz);
   if(maxValue<value) {
     ROS_WARN("ERROR: Value: %f is higher then expected (%f), Errorlevel to %f", value, maxValue, maxlevel);
-    ros_monitoring::Error maxerrormsg;
+    monitoring_msgs::Error maxerrormsg;
     maxerrormsg.header.stamp = ros::Time::now();
     maxerrormsg.key = maxmsg;
     maxerrormsg.value = newMsg.value;
@@ -33,7 +33,7 @@ void Between::check(ros_monitoring::KeyValue newMsg) {
 
   } else if(minValue>=value) {
     ROS_WARN("ERROR: Value: %f is lower then expected (%f), Errorlevel to %f", value, minValue, minlevel);
-    ros_monitoring::Error minerrormsg;
+    monitoring_msgs::Error minerrormsg;
     minerrormsg.header.stamp = ros::Time::now();
     minerrormsg.key = minmsg;
     minerrormsg.value = newMsg.value;

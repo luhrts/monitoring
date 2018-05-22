@@ -9,8 +9,8 @@
 #define SRC_FDIR_CONFIGINTERFACE_H_
 
 #include "ros/ros.h"
-#include "ros_monitoring/KeyValue.h"
-#include "ros_monitoring/Error.h"
+#include "monitoring_msgs/KeyValue.h"
+#include "monitoring_msgs/Error.h"
 
 
 /**
@@ -26,11 +26,11 @@ public:
    * check will be called by the fdiSDK to validate if the key-value pair is a error.
    * You need to check if this is so and publish an error with the function publishError
    */
-  virtual void check(ros_monitoring::KeyValue newMsg) = 0;
+  virtual void check(monitoring_msgs::KeyValue newMsg) = 0;
 
 protected:
   ros::Publisher pub;
-  void publishError(ros_monitoring::Error errormsg);
+  void publishError(monitoring_msgs::Error errormsg);
   char hostname[30];
 };
 

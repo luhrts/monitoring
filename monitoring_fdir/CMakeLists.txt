@@ -23,12 +23,12 @@ include_directories(
 
 
 add_library(fdiSDK
-  src/fdir/fdiSDK.cpp
-  src/fdir/configinterface.cpp
-  src/fdir/std_validator/max.cpp
-  src/fdir/std_validator/min.cpp
-  src/fdir/std_validator/between.cpp
-  src/fdir/std_validator/nodeavailable.cpp
+  src/fdi/fdiSDK.cpp
+  src/fdi/configinterface.cpp
+  src/fdi/std_validator/max.cpp
+  src/fdi/std_validator/min.cpp
+  src/fdi/std_validator/between.cpp
+  src/fdi/std_validator/nodeavailable.cpp
 )
 
 target_link_libraries(fdiSDK
@@ -47,7 +47,7 @@ target_link_libraries(recoverySDK
     ${catkin_LIBRARIES}
 )
 
-add_executable(fdi_example_node src/fdir/fdiExample.cpp)
+add_executable(fdi_example_node src/fdi/fdiExample.cpp)
 
 target_link_libraries(fdi_example_node
   ${catkin_LIBRARIES}

@@ -1,5 +1,5 @@
 #include <ros/ros.h>
-#include "ros_monitoring/fdi/fdiSDK.h"
+#include "monitoring_fdir/fdi/fdiSDK.h"
 
 
 /*
@@ -10,7 +10,7 @@ int main(int argc, char **argv)
   //Initializising ROS with a publisher and a configurable frequency
   ros::init(argc, argv, "user_fdi");
   ros::NodeHandle n("~");
-  ros::Publisher pub = n.advertise<ros_monitoring::Error>("/monitoring/errors", 1000);
+  ros::Publisher pub = n.advertise<monitoring_msgs::Error>("/monitoring/errors", 1000);
   float freq = 1;
   if (!n.getParam("frequency", freq))
   {

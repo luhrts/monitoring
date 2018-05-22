@@ -1,4 +1,4 @@
-#include "ros_monitoring/fdi/std_validator/nodeavailable.h"
+#include "monitoring_fdir/fdi/std_validator/nodeavailable.h"
 
 NodeAvailable::NodeAvailable(float errorwert, ros::Publisher pub)
   :ConfigInterface(pub)
@@ -10,10 +10,10 @@ NodeAvailable::NodeAvailable(float errorwert, ros::Publisher pub)
 /**
  * redirects the keyvalue pair if the msg node unavailable is read, so the recovery system can restart it.
  */
-void NodeAvailable::check(ros_monitoring::KeyValue newMsg)
+void NodeAvailable::check(monitoring_msgs::KeyValue newMsg)
 {
   if(newMsg.key == "node unavailable") {
-    ros_monitoring::Error errormsg;
+    monitoring_msgs::Error errormsg;
     errormsg.header.stamp = ros::Time::now();
     errormsg.key = "node dead";
     errormsg.value = newMsg.value;

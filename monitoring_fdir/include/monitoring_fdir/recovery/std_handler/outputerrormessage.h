@@ -15,7 +15,7 @@ public:
 	OutputErrorMessage();
 	virtual ~OutputErrorMessage();
 
-	void checkError(ros_monitoring::Error msg);
+  void checkError(monitoring_msgs::Error msg);
 };
 
 #endif /* SRC_RECOVERY_STD_HANDLER_OUTPUTERRORMESSAGE_H_ */

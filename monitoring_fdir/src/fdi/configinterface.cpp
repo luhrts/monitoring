@@ -5,10 +5,10 @@
  *      Author: matthias
  */
 
-#include "ros_monitoring/fdi/configinterface.h"
+#include "monitoring_fdir/fdi/configinterface.h"
 
 #include "ros/ros.h"
-#include "ros_monitoring/MonitoringArray.h"
+#include "monitoring_msgs/MonitoringArray.h"
 #include <unistd.h>
 
 ConfigInterface::ConfigInterface(ros::Publisher& publisher) {
@@ -26,7 +26,7 @@ ConfigInterface::~ConfigInterface() {
 /**
  * standartizied publish call to ease the use
  */
-void ConfigInterface::publishError(ros_monitoring::Error errormsg) {
+void ConfigInterface::publishError(monitoring_msgs::Error errormsg) {
 
 	errormsg.pc.Hostname = hostname;
 	pub.publish(errormsg);

@@ -11,8 +11,6 @@
 #define SRC_FDIR_MAX_H_
 
 
-#include "ros/ros.h"
-#include "ros_monitoring/MonitoringInfo.h"
 #include "../configinterface.h"
 
 class Max : public ConfigInterface
@@ -21,7 +19,7 @@ class Max : public ConfigInterface
   Max(float maxValue, std::string errormsg, float errorLevel, ros::Publisher& publisher);
   ~Max();
 
-  void check(ros_monitoring::KeyValue newMsg);
+  void check(monitoring_msgs::KeyValue newMsg);
 
  private:
   float maxValue, errorlevel;

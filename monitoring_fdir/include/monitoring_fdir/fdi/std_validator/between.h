@@ -9,7 +9,7 @@ public:
   Between(float maxValue, std::string maxErrorMsg, float maxerrorLevel, float minValue, std::string minErrorMsg, float minerrorLevel, ros::Publisher& publisher);
   ~Between();
 
-  void check(ros_monitoring::KeyValue newMsg);
+  void check(monitoring_msgs::KeyValue newMsg);
 
  private:
   float maxValue, maxlevel, minValue, minlevel;

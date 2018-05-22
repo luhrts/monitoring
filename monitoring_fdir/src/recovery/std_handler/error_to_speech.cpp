@@ -1,4 +1,4 @@
-#include "ros_monitoring/recovery/std_handler/error_to_speech.h"
+#include "monitoring_fdir/recovery/std_handler/error_to_speech.h"
 #include "std_msgs/String.h"
 
 ErrorToSpeech::ErrorToSpeech(ros::NodeHandle &n) {
@@ -11,7 +11,7 @@ ErrorToSpeech::~ErrorToSpeech() {
 	// TODO Auto-generated destructor stub
 }
 
-void ErrorToSpeech::checkError(ros_monitoring::Error msg)
+void ErrorToSpeech::checkError(monitoring_msgs::Error msg)
 {
 
 	if(checkSaid(msg.key)) {

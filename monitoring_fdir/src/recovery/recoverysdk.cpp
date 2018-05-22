@@ -1,4 +1,4 @@
-#include "ros_monitoring/recovery/recoverysdk.h"
+#include "monitoring_fdir/recovery/recoverysdk.h"
 
 RecoverySDK::RecoverySDK(ros::NodeHandle& n) {
 	sub = n.subscribe("/monitoring/errors", 10000, &RecoverySDK::errorCallback,
@@ -20,7 +20,7 @@ void RecoverySDK::registerErrorHandler(ErrorHandlerInterface* errorHandler,
  */
 void RecoverySDK::checkErrors() {
 	while (!msgBuffer.empty()) {
-		ros_monitoring::Error error = msgBuffer.front();
+    monitoring_msgs::Error error = msgBuffer.front();
 		if (!(recoveryHandler.find(error.key) == recoveryHandler.end())) {
 			std::vector<ErrorHandlerInterface *> recoveryHandlerList =
 					recoveryHandler[error.key]; //get the list with objects that are registered on this message
@@ -35,7 +35,7 @@ void RecoverySDK::checkErrors() {
 /**
  * fills the msgbuffer with incoming error msg.
  */
-void RecoverySDK::errorCallback(ros_monitoring::Error error) {
+void RecoverySDK::errorCallback(monitoring_msgs::Error error) {
 	if (!(recoveryHandler.find(error.key) == recoveryHandler.end())) {
 		std::vector<ErrorHandlerInterface *> recoveryHandlerList =
 				recoveryHandler[error.key]; //get the list with objects that are registered on this message

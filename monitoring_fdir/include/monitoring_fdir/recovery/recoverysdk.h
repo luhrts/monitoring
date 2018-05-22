@@ -1,7 +1,7 @@
 #ifndef RECOVERYSDK_H
 #define RECOVERYSDK_H
 
-#include "ros_monitoring/Error.h"
+#include "monitoring_msgs/Error.h"
 #include "errorhandlerinterface.h"
 #include <queue>
 
@@ -19,9 +19,9 @@ public:
   void checkErrors();
 
 private:
-  void errorCallback(ros_monitoring::Error error);
+  void errorCallback(monitoring_msgs::Error error);
 
-  std::queue<ros_monitoring::Error> msgBuffer; //Fifo, so that it gets processed in the original order
+  std::queue<monitoring_msgs::Error> msgBuffer; //Fifo, so that it gets processed in the original order
   ros::Subscriber sub;
 
   std::map<std::string, std::vector<ErrorHandlerInterface *>> recoveryHandler;

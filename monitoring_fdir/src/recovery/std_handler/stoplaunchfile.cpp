@@ -5,7 +5,7 @@
  *      Author: matthias
  */
 
-#include "ros_monitoring/recovery/std_handler/stoplaunchfile.h"
+#include "monitoring_fdir/recovery/std_handler/stoplaunchfile.h"
 
 StopLaunchFile::StopLaunchFile() {
 	// TODO Auto-generated constructor stub
@@ -20,7 +20,7 @@ StopLaunchFile::~StopLaunchFile() {
  * kills all started launchfiles to stop the programms.
  * Only use in emergencys.
  */
-void StopLaunchFile::checkError(ros_monitoring::Error msg) {
+void StopLaunchFile::checkError(monitoring_msgs::Error msg) {
 	ROS_ERROR("------------------- KILLING ALL ROSLAUNCH --------------------");
 	char cmd[80];
 	sprintf(cmd, "killall roslaunch");

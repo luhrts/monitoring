@@ -9,7 +9,7 @@ class RestartNodeHandler : public ErrorHandlerInterface
 public:
   RestartNodeHandler();
 
-  void checkError(ros_monitoring::Error msg);
+  void checkError(monitoring_msgs::Error msg);
 
 private:
 

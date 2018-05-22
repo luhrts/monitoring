@@ -5,7 +5,7 @@
  *      Author: matthias
  */
 
-#include "ros_monitoring/fdi/std_validator/max.h"
+#include "monitoring_fdir/fdi/std_validator/max.h"
 
 Max::Max(float value, std::string errormsg, float errorLevel, ros::Publisher& publisher)
   :maxValue(value)
@@ -20,14 +20,14 @@ Max::~Max() {}
 /**
  * Checks if the keyvalue pair is over the configured value.
  */
-void Max::check(ros_monitoring::KeyValue newMsg) {
+void Max::check(monitoring_msgs::KeyValue newMsg) {
 //  ROS_INFO("Checking CPU TEMP %s", newMsg.value.c_str());
 
   std::string::size_type sz;
   float value = std::stof (newMsg.value,&sz);
   if(maxValue< value) {
     ROS_WARN("ERROR: Value: %f is higher then expected (%f), Errorlevel to %f", value, maxValue, errorlevel);
-    ros_monitoring::Error errormsg;
+    monitoring_msgs::Error errormsg;
     errormsg.header.stamp = ros::Time::now();
     errormsg.key = msg;
     errormsg.value = newMsg.value;

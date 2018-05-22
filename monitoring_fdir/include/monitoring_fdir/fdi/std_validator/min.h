@@ -8,7 +8,7 @@ class Min : public ConfigInterface
 public:
   Min(float value, std::string errormsg, float errorLevel, ros::Publisher& publisher);
   ~Min();
-  void check(ros_monitoring::KeyValue newMsg);
+  void check(monitoring_msgs::KeyValue newMsg);
 
 private:
   float minValue, errorlevel;

@@ -10,8 +10,8 @@
 
 #include "ros/ros.h"
 #include <queue>
-#include "ros_monitoring/MonitoringArray.h"
-#include "ros_monitoring/Error.h"
+#include "monitoring_msgs/MonitoringArray.h"
+#include "monitoring_msgs/Error.h"
 #include "string"
 #include "configinterface.h"
 #include "std_validator/max.h"
@@ -45,8 +45,8 @@ public:
   void checkForFDI();
 
 private:
-  void monitorCallback(ros_monitoring::MonitoringArray ma);
-  std::queue<ros_monitoring::KeyValue> msgBuffer;
+  void monitorCallback(monitoring_msgs::MonitoringArray ma);
+  std::queue<monitoring_msgs::KeyValue> msgBuffer;
   ros::Subscriber sub;
   ros::Publisher pub;
 

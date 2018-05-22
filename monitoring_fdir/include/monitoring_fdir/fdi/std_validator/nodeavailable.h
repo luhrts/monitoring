@@ -8,7 +8,7 @@ class NodeAvailable : public ConfigInterface
 public:
   NodeAvailable(float errorwert, ros::Publisher pub);
 
-  void check(ros_monitoring::KeyValue newMsg);
+  void check(monitoring_msgs::KeyValue newMsg);
 private:
   float errorlevel;
 

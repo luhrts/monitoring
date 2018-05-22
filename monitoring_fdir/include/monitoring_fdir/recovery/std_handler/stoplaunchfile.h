@@ -16,7 +16,7 @@ public:
   StopLaunchFile();
   virtual ~StopLaunchFile();
 
-  void checkError(ros_monitoring::Error msg);
+  void checkError(monitoring_msgs::Error msg);
 };
 
 #endif /* SRC_RECOVERY_STD_HANDLER_STOPLAUNCHFILE_H_ */

@@ -1,4 +1,4 @@
-#include "ros_monitoring/recovery/std_handler/restartnodehandler.h"
+#include "monitoring_fdir/recovery/std_handler/restartnodehandler.h"
 
 RestartNodeHandler::RestartNodeHandler()
 {
@@ -8,7 +8,7 @@ RestartNodeHandler::RestartNodeHandler()
 /**
  * Restarts the node by killing it. The launchfile should be on respawn=true, therefore the node gets restarted.
  */
-void RestartNodeHandler::checkError(ros_monitoring::Error msg) {
+void RestartNodeHandler::checkError(monitoring_msgs::Error msg) {
   char cmd[80];
   sprintf(cmd, "killall %s", msg.value.c_str());
   system(cmd);

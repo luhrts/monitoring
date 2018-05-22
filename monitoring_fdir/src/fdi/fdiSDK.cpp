@@ -10,11 +10,11 @@
  * Inheried the ConfigInterface for new Validators
  */
 
-#include "ros_monitoring/fdi/fdiSDK.h"
+#include "monitoring_fdir/fdi/fdiSDK.h"
 
 FdiSDK::FdiSDK(ros::NodeHandle& n) {
 	sub = n.subscribe("/monitoring", 10000, &FdiSDK::monitorCallback, this);
-	pub = n.advertise<ros_monitoring::Error>("/monitoring/errors", 10000);
+  pub = n.advertise<monitoring_msgs::Error>("/monitoring/errors", 10000);
 }
 
 FdiSDK::~FdiSDK() {
@@ -25,10 +25,10 @@ FdiSDK::~FdiSDK() {
  * this callback will automaticly buffer the messages.
  * Which will be handled in the checkforFDI function.
  */
-void FdiSDK::monitorCallback(ros_monitoring::MonitoringArray ma) {
+void FdiSDK::monitorCallback(monitoring_msgs::MonitoringArray ma) {
 	for (int j = 0; j < ma.info.size(); j++) {
 		for (int i = 0; i < ma.info[j].values.size(); i++) {
-			ros_monitoring::KeyValue kv = ma.info[j].values[i];
+      monitoring_msgs::KeyValue kv = ma.info[j].values[i];
 			if (!(fdiConfigList.find(kv.key) == fdiConfigList.end())) {
 				//get the list with objects that are registered on this message
 				std::vector<ConfigInterface *> fdiObjectList =
@@ -94,7 +94,7 @@ void FdiSDK::registerFDIObject(ConfigInterface* object, std::string msg) {
  */
 void FdiSDK::checkForFDI() {
 	while (!msgBuffer.empty()) {
-		ros_monitoring::KeyValue kv = msgBuffer.front();
+    monitoring_msgs::KeyValue kv = msgBuffer.front();
 		if (!(fdiConfigList.find(kv.key) == fdiConfigList.end())) {
 			//get the list with objects that are registered on this message
 			std::vector<ConfigInterface *> fdiObjectList = fdiConfigList[kv.key];
