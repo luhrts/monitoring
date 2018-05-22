@@ -28,8 +28,8 @@ generate_messages(
 )
 
 catkin_package(
-  INCLUDE_DIRS 
-  LIBRARIES  
+  INCLUDE_DIRS
+  LIBRARIES
   CATKIN_DEPENDS message_runtime
   DEPENDS
 )

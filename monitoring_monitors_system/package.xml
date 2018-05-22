@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>monitoring_monitors_system</name>
+  <version>0.0.0</version>
+  <description>The monitoring_monitors_system package</description>
+
+  <maintainer email="schotte93@gmail.com">Matthias Jakob</maintainer>
+
+
+
+  <license>TODO</license>
+
+
+
+  <author email="schotte93@gmail.com">Matthias Jakob</author>
+
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>monitoring_core</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_export_depend>monitoring_core</build_export_depend>
+  <build_export_depend>roscpp</build_export_depend>
+  <build_export_depend>rospy</build_export_depend>
+  <exec_depend>monitoring_core</exec_depend>
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>rospy</exec_depend>
+
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>

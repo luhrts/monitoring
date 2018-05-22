@@ -4,14 +4,13 @@
   <version>0.0.0</version>
   <description>The monitoring_core package</description>
 
-
   <maintainer email="carstensen@rts.uni-hannover.de">Jan Carstensen</maintainer>
 
   <license>BSD</license>
 
   <!-- <url type="website">http://wiki.ros.org/ros_monitoring</url> -->
 
-  <author email="jane.doe@example.com">Matthias Jakob</author>
+  <author email="schotte93@gmail.com">Matthias Jakob</author>
   <author email="carstensen@rts.uni-hannover.de">Jan Carstensen</author>
 
   <buildtool_depend>catkin</buildtool_depend>
@@ -24,4 +23,5 @@
   <exec_depend>roscpp</exec_depend>
   
   <build_export_depend>roscpp</build_export_depend>
+  <build_export_depend>monitoring_msgs</build_export_depend>
 </package>

@@ -10,7 +10,7 @@
 Monitor::Monitor(ros::NodeHandle &n, std::string monitorDescription) {
   pub = n.advertise<monitoring_msgs::MonitoringArray> ("/monitoring", 1);
   monitoring_msgs::MonitoringInfo mi;
-  mi.name = n.getNamespace();
+  mi.name = ros::this_node::getName(),
   mi.description = monitorDescription;
   ma.info[miIndex] = mi;
 }

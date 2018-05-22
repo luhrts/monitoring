@@ -1,2 +1,0 @@
-string Hostname
-string ip
