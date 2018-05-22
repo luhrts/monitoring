@@ -5,7 +5,7 @@
  *      Author: matthias
  */
 
-#include "ros_monitoring/monitors/cpumonitor.h"
+#include "monitoring_monitors_system/cpumonitor.h"
 
 CpuMonitor::CpuMonitor()
 {
@@ -184,37 +184,37 @@ double CpuMonitor::getCPUCoreLoad(int n)
  *
  * DOES NOT WORK ATM
  */
-void CpuMonitor::publishProcessCpuUsage(ros::Publisher pub, ros_monitoring::MonitoringInfo& mi)
-{
-  FILE *in;
-  char buff[512];
-  if (!(in = popen("ps aux", "r")))
-  {
-    ROS_ERROR("Could not execute ps aux");
+//void CpuMonitor::publishProcessCpuUsage(ros::Publisher pub, ros_monitoring::MonitoringInfo& mi)
+//{
+//  FILE *in;
+//  char buff[512];
+//  if (!(in = popen("ps aux", "r")))
+//  {
+//    ROS_ERROR("Could not execute ps aux");
 
-  }
-  char user[8], stat[128], command[256];
-  int pid, vsz, rss, tty, starth, startm, timem, times;
-  float pcpu, pmem;
-  ros_monitoring::Processes list;
-  int i = 0;
-  while (fgets(buff, sizeof(buff), in) != NULL)
-  {
-    sscanf(buff, "%s %d %f %f %d %d %s %s %d:%d %d:%d %s", &user, &pid, &pcpu, &pmem, &vsz, &rss, &tty, &stat, &starth,
-           &startm, &timem, &times, &command);
-    //ROS_INFO("Cpu %f, %s", pcpu, command);
-    ros_monitoring::Process newProc;
-    newProc.name = command;
-    newProc.pCpu = pcpu;
-    newProc.pRam = pmem;
-    newProc.pid = pid;
-    newProc.stat = stat;
-    list.processes.push_back(newProc);
-    i++;
-  }
-  pclose(in);
-  pub.publish(list);
-}
+//  }
+//  char user[8], stat[128], command[256];
+//  int pid, vsz, rss, tty, starth, startm, timem, times;
+//  float pcpu, pmem;
+//  ros_monitoring::Processes list;
+//  int i = 0;
+//  while (fgets(buff, sizeof(buff), in) != NULL)
+//  {
+//    sscanf(buff, "%s %d %f %f %d %d %s %s %d:%d %d:%d %s", &user, &pid, &pcpu, &pmem, &vsz, &rss, &tty, &stat, &starth,
+//           &startm, &timem, &times, &command);
+//    //ROS_INFO("Cpu %f, %s", pcpu, command);
+//    ros_monitoring::Process newProc;
+//    newProc.name = command;
+//    newProc.pCpu = pcpu;
+//    newProc.pRam = pmem;
+//    newProc.pid = pid;
+//    newProc.stat = stat;
+//    list.processes.push_back(newProc);
+//    i++;
+//  }
+//  pclose(in);
+//  pub.publish(list);
+//}
 
 //--------------------------------------------------------------
 
@@ -282,14 +282,14 @@ int main(int argc, char **argv)
   //inti benchmark things
 
   char value[50];
-  MonitorMsg msg(n, ros::this_node::getName(), "A CPU-Monitor");
+  Monitor msg(n, ros::this_node::getName(), "A CPU-Monitor");
 
 
   //starting looping over the options and publishing at the end
   while (ros::ok())
   {
     msg.resetMsg();
-    msg.addNewInfoTree("CPU", "CPU Data");
+//    msg.addNewInfoTree("CPU", "CPU Data");
 
     if (bPercent)
     {

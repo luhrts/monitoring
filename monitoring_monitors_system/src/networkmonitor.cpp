@@ -5,7 +5,7 @@
  *      Author: matthias
  */
 
-#include "ros_monitoring/monitors/networkmonitor.h"
+#include "monitoring_monitors_system/networkmonitor.h"
 
 NetworkMonitor::NetworkMonitor(float networkThroughput, char nwit[]) {
 	maxNWThroughputPS = (float) (networkThroughput * pow(10, 6)) / 8; //transforms MBit/s to Byte/s
@@ -268,12 +268,12 @@ int main(int argc, char **argv) {
 
 
 
-	MonitorMsg msg(n, ros::this_node::getName(), "Network-Monitor");
+  Monitor msg(n, ros::this_node::getName(), "Network-Monitor");
 
 	char value[40];
 	while (ros::ok()) {
 		msg.resetMsg();
-		msg.addNewInfoTree(nwinterface, "Networkinterface monitor");
+//		msg.addNewInfoTree(nwinterface, "Networkinterface monitor");
 
 		if (bBytes || bload) {
 			float loadrx, loadtx, RXBpS, TXBpS;

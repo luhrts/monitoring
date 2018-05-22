@@ -11,11 +11,7 @@
 #include "ros/ros.h"
 #include <iostream>
 #include <string>
-#include "std_msgs/Float32.h"
-#include "ros_monitoring/MonitoringArray.h"
-#include "ros_monitoring/help.h"
-#include "ros_rt_benchmark_lib/benchmark.h"
-#include "ros_monitoring/monitors/monitormsg.h"
+#include "monitoring_core/monitor.h"
 
 #define NETWORKPRE "sys/class/net"
 #define NETWORKSUF "statistics"

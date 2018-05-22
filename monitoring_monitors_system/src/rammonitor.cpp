@@ -7,13 +7,9 @@
 #include "ros/ros.h"
 #include <proc/sysinfo.h>
 #include "std_msgs/Float32.h"
-#include "ros_monitoring/MonitoringArray.h"
 #include "string.h"
 
-#include "ros_rt_benchmark_lib/benchmark.h"
-
-#include "ros_monitoring/help.h"
-#include "ros_monitoring/monitors/monitormsg.h"
+#include "monitoring_core/monitor.h"
 
 int main(int argc, char **argv)
 {
@@ -40,13 +36,13 @@ int main(int argc, char **argv)
 
   ros::Rate loop_rate(freq);
 
-  MonitorMsg msg(n, ros::this_node::getName(), "RAM-Monitor" );
+  Monitor msg(n, ros::this_node::getName(), "RAM-Monitor" );
   while (ros::ok())
   {
     msg.resetMsg();
 
     meminfo();		//geting ram info via sysinfo lib
-    msg.addNewInfoTree(ros::this_node::getName(), "RAM-Monitor");
+//    msg.addNewInfoTree(ros::this_node::getName(), "RAM-Monitor");
 
     /*	kb_main_total, kb_main_used, kb_main_free,
      kb_main_shared, kb_main_buffers, kb_main_cached*/

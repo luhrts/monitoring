@@ -3,7 +3,7 @@
 
 #include "ros/ros.h"
 #include "rosgraph_msgs/TopicStatistics.h"
-#include "ros_monitoring/monitors/monitormsg.h"
+#include "monitoring_core/monitor.h"
 
 
 
@@ -40,7 +40,7 @@ private:
   void statisticsCallback(rosgraph_msgs::TopicStatistics stats);
   void compareStatisticDataWithRequirements();
   ros::Subscriber stats_sub;
-  MonitorMsg *msg;
+  Monitor *msg;
   float freq;
   std::vector<StatisticsInfo> statisticData;
   std::vector<TopicRequirement> topicRequirements;

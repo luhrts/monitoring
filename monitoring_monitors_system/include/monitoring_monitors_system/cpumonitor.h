@@ -9,19 +9,11 @@
 #define SRC_CPUMONITOR_H_
 
 #include "ros/ros.h"
-#include "std_msgs/Float32.h"
-#include "std_msgs/Float32MultiArray.h"
-#include "ros_monitoring/help.h"
-#include "ros_monitoring/MonitoringArray.h"
-#include "ros_monitoring/monitors/monitormsg.h"
+#include "monitoring_core/monitor.h"
 #include "stdlib.h"
 #include "stdio.h"
 #include "string.h"
 #include <vector>
-
-#include "ros_monitoring/Processes.h"
-
-#include "ros_rt_benchmark_lib/benchmark.h"
 
 class CpuMonitor
 {
@@ -31,7 +23,7 @@ public:
 
   float getCurrentCpuLoad();
   float getLoadAvg();
-  void publishProcessCpuUsage(ros::Publisher pub, ros_monitoring::MonitoringInfo& mi);
+//  void publishProcessCpuUsage(ros::Publisher pub, ros_monitoring::MonitoringInfo& mi);
   float getCPUTemp();
   double getCPUCoreLoad(int n);
 

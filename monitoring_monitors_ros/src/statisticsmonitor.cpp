@@ -1,4 +1,4 @@
-#include "ros_monitoring/monitors/statisticsmonitor.h"
+#include "monitoring_monitors_ros/statisticsmonitor.h"
 
 StatisticMonitor::StatisticMonitor(ros::NodeHandle &n) {
   n.setParam("/enable_statistics", true);
