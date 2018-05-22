@@ -18,3 +18,4 @@ add_executable(gui_msg_concat_node src/guiconcatenation.cpp)
 target_link_libraries(gui_msg_concat_node
   ${catkin_LIBRARIES}
 )
+add_dependencies(gui_msg_concat_node ${catkin_EXPORTED_TARGETS})

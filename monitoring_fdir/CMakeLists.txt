@@ -35,6 +35,8 @@ add_library(fdiSDK
 target_link_libraries(fdiSDK
     ${catkin_LIBRARIES}
  )
+add_dependencies(fdiSDK ${catkin_EXPORTED_TARGETS})
+
 
 add_library(recoverySDK
   src/recovery/recoverysdk.cpp
