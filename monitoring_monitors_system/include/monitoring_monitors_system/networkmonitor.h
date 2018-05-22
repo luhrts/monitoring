@@ -43,35 +43,119 @@
 #define NETWORKPRE "sys/class/net"
 #define NETWORKSUF "statistics"
 
+/**
+ * @brief The NetworkMonitor class is a monitor for networkinterfaces like eth, wifi or lo. If you need to monitor multiple interfaces, create a monitor for each interface
+ */
 class NetworkMonitor
 {
 public:
+  /**
+   * @brief NetworkMonitor is the constructor
+   * @param networkThroughput is the maximal expected bandwidth (in MBit/s) of this interface (remember, a connection over a 100MBit/s ethernet port can probably not deliver a 100MBit/s. If you need a accurate percentage, you need to test your connection)
+   * @param nwit is the name of the interface (like lo or eth0)
+   */
   NetworkMonitor(float networkThroughput, char nwit[]);
   virtual ~NetworkMonitor();
 
+  /**
+   * @brief getNetworkLoad calculates the load of the objects networkinterface
+   * @param loadinPrx returns the received load in 0..1
+   * @param loadinPtx returns the transmitted load in 0..1
+   * @param RXBpS returns the received in B/s
+   * @param TXBpS returns the transmitted in B/s
+   */
   void getNetworkLoad(float& loadinPrx, float& loadinPtx, float& RXBpS, float& TXBpS);
+
+  /**
+   * @brief getPackets calculates the trafic in packets
+   * @param RXPpS returns the received packets/s
+   * @param TXPpS returns the transmitted packets/s
+   */
   void getPackets(float& RXPpS, float& TXPpS);
+
+  /**
+   * @brief getErrors reads all networkinterface errors from the proc filesystem.
+   * @param rx_crc_errors
+   * @param rx_dropped
+   * @param rx_errors
+   * @param rx_fifo_errors
+   * @param rx_frame_errors
+   * @param rx_length_errors
+   * @param rx_missed_errors
+   * @param rx_over_errors
+   * @param tx_aborted_errors
+   * @param tx_carrier_errors
+   * @param tx_dropped
+   * @param tx_errors
+   * @param tx_fifo_errors
+   * @param tx_heartbeat_errors
+   * @param tx_window_errors
+   */
   void getErrors(float& rx_crc_errors, float& rx_dropped, float& rx_errors, float& rx_fifo_errors, float& rx_frame_errors, float& rx_length_errors, float& rx_missed_errors, float& rx_over_errors,
 		  float& tx_aborted_errors, float& tx_carrier_errors, float& tx_dropped, float& tx_errors, float& tx_fifo_errors, float& tx_heartbeat_errors, float& tx_window_errors);
 
 
 private:
+  /**
+   * @brief readNetworkInfo reads the wanted info from the filesystem
+   * @param nwinterface is the network interface name
+   * @param info is the name that needs to be read
+   * @return value of the read value
+   */
   unsigned int readNetworkInfo(char nwinterface[], char info[]);
-  float maxNWThroughputPS;
+  /**
+   * @brief readRXbytes reads the Received bytes
+   * @param nwinterface is the network interface name
+   * @return received bytes
+   */
   unsigned int readRXbytes(char nwinterface[]);
+  /**
+   * @brief readTXbytes reads the transmitted bytes
+   * @param nwinterface is the network interface name
+   * @return transmitted bytes
+   */
   unsigned int readTXbytes(char nwinterface[]);
+  /**
+   * @brief readRXpackets reads received packets
+   * @param nwinterface is the network interface name
+   * @return received packets
+   */
   unsigned int readRXpackets(char nwinterface[]);
+  /**
+   * @brief readTXpackets reads the transmitted packets
+   * @param nwinterface is the network interface name
+   * @return transmitted packets
+   */
   unsigned int readTXpackets(char nwinterface[]);
+  /**
+   * @brief readNetworkErrors reads all possible network errors
+   * @param rx_crc_errors
+   * @param rx_dropped
+   * @param rx_errors
+   * @param rx_fifo_errors
+   * @param rx_frame_errors
+   * @param rx_length_errors
+   * @param rx_missed_errors
+   * @param rx_over_errors
+   * @param tx_aborted_errors
+   * @param tx_carrier_errors
+   * @param tx_dropped
+   * @param tx_errors
+   * @param tx_fifo_errors
+   * @param tx_heartbeat_errors
+   * @param tx_window_errors
+   */
   void readNetworkErrors(float& rx_crc_errors, float& rx_dropped, float& rx_errors, float& rx_fifo_errors,
   		float& rx_frame_errors,	float& rx_length_errors, float& rx_missed_errors, float& rx_over_errors,
 		float& tx_aborted_errors, float& tx_carrier_errors, float& tx_dropped, float& tx_errors,
 						float& tx_fifo_errors, float& tx_heartbeat_errors, float& tx_window_errors);
 
-  ros::Time lastStampBytes, lastStampPackets;
-  unsigned int lastRXbytes, lastTXbytes, lastRXpackets, lastTXpackets;
-  char *networkinterface;
+  float maxNWThroughputPS;  ///< the maximum network bandwith of this interface
+  ros::Time lastStampBytes, lastStampPackets; ///< saves the time the last read was done
+  unsigned int lastRXbytes, lastTXbytes, lastRXpackets, lastTXpackets; ///< saves the last read values
+  char *networkinterface;   ///< the name of the network interface
 
-  std::vector<float> lastErrorsVector;
+  std::vector<float> lastErrorsVector;  ///< saves all last read errorvalues
 
 };
 

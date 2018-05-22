@@ -34,49 +34,59 @@
  *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-#ifndef SRC_CPUMONITOR_H_
-#define SRC_CPUMONITOR_H_
-
 #include "ros/ros.h"
+#include <proc/sysinfo.h>
+
 #include "monitoring_core/monitor.h"
 
 
-/**
- * @brief The CpuMonitor class provides a monitor for the CPU
- */
-class CpuMonitor
+
+int main(int argc, char **argv)
 {
-public:
-  CpuMonitor();
-  virtual ~CpuMonitor();
+  ros::init(argc, argv, "ram_monitor");
+  ros::NodeHandle n("~");
 
-  /**
-   * @brief getCurrentCpuLoad calculates the overall cpu load of all cores. This is the mean over the time it was last called
-   * @return overall cpu load in percent
-   */
-  float getCurrentCpuLoad();
-  /**
-   * @brief getLoadAvg gets the linux-specific loadavg with a rather fast updatetime
-   * @return the avg value of the system
-   */
-  float getLoadAvg();
-  /**
-   * @brief getCPUTemp reads the cpu temp from the sys pseudo-file system of the kernel
-   * @return the cpu temperature in °C
-   */
-  float getCPUTemp();
-  /**
-   * @brief getCPUCoreLoad calculates the load of one cpu core. This is the mean over the time it was last called
-   * @param n specifys the cpu number of the interested cpu core
-   * @return cpu core load in percent
-   */
-  double getCPUCoreLoad(int n);
+  float freq = 1;
+  if (!n.getParam("frequency", freq))
+  {
+    ROS_WARN("No frequency supplied. Working with %f Hz.", freq);
+  }
 
-private:
-  std::vector<unsigned long long> lastTotalUser, lastTotalUserLow, lastTotalSys, lastTotalIdle; ///< vector to save the previous jiffie states of each cpu core and for overall
-  int temp_index;   ///< index which temperature sensor is listed as the cpu temperature sensor
-  void init();      ///< inits the jiffie state vectors aswell as the temp_index
+  bool bUsed = false;
+  if (n.getParam("used", bUsed))
+  {
+  }
 
-};
+  bool bPercent = false;
+  if (n.getParam("percent", bPercent))
+  {
+  }
 
-#endif /* SRC_CPUMONITOR_H_ */
+  ros::Rate loop_rate(freq);
+
+  Monitor msg(n, "RAM-Monitor" );
+  while (ros::ok())
+  {
+    msg.resetMsg();
+
+    meminfo();		//geting ram info via sysinfo lib
+    /* OUTPUT: kb_main_total, kb_main_used, kb_main_free,
+     kb_main_shared, kb_main_buffers, kb_main_cached*/
+
+    char value[200];
+    if (bUsed)
+    {
+      msg.addValue("RAM used", kb_main_used, "kb", 0);
+    }
+    if (bPercent)
+    {
+      float perc = ((float)kb_main_used / (float)kb_main_total) * 100.0;
+      msg.addValue("RAM % used", perc, "%", 0);
+    }
+    msg.publish();
+
+    loop_rate.sleep();
+
+  }
+
+}
