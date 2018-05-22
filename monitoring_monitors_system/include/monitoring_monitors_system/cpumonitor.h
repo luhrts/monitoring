@@ -40,21 +40,42 @@
 #include "ros/ros.h"
 #include "monitoring_core/monitor.h"
 
+
+/**
+ * @brief The CpuMonitor class provides a monitor for the CPU
+ */
 class CpuMonitor
 {
 public:
   CpuMonitor();
   virtual ~CpuMonitor();
 
+  /**
+   * @brief getCurrentCpuLoad calculates the overall cpu load of all cores. This is the mean over the time it was last called
+   * @return overall cpu load in percent
+   */
   float getCurrentCpuLoad();
+  /**
+   * @brief getLoadAvg gets the linux-specific loadavg with a rather fast updatetime
+   * @return the avg value of the system
+   */
   float getLoadAvg();
+  /**
+   * @brief getCPUTemp reads the cpu temp from the sys pseudo-file system of the kernel
+   * @return the cpu temperature in °C
+   */
   float getCPUTemp();
+  /**
+   * @brief getCPUCoreLoad calculates the load of one cpu core. This is the mean over the time it was last called
+   * @param n specifys the cpu number of the interested cpu core
+   * @return cpu core load in percent
+   */
   double getCPUCoreLoad(int n);
 
 private:
-  std::vector<unsigned long long> lastTotalUser, lastTotalUserLow, lastTotalSys, lastTotalIdle;
-  int temp_index;
-  void init();
+  std::vector<unsigned long long> lastTotalUser, lastTotalUserLow, lastTotalSys, lastTotalIdle; ///< vector to save the previous jiffie states of each cpu core and for overall
+  int temp_index;   ///< index which temperature sensor is listed as the cpu temperature sensor
+  void init();      ///< inits the jiffie state vectors aswell as the temp_index
 
 };
 

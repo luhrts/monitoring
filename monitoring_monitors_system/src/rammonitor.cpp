@@ -39,6 +39,8 @@
 
 #include "monitoring_core/monitor.h"
 
+
+
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "ram_monitor");

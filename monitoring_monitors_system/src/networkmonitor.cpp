@@ -79,12 +79,10 @@ unsigned int NetworkMonitor::readNetworkInfo(char nwinterface[], char info[]) {
 	char filepath[256];
 	sprintf(filepath, "/%s/%s/%s/%s", NETWORKPRE, nwinterface, NETWORKSUF, info);
 
-//	ROS_INFO("PATH: %s", filepath);
 	FILE* file;
 	file = fopen(filepath, "r");
 	unsigned int ret;
-	fscanf(file, "%d", &ret);
-//	ROS_INFO("Value: %d", ret);
+  fscanf(file, "%d", &ret);
 	fclose(file);
 
 	return ret;
@@ -107,12 +105,6 @@ void NetworkMonitor::getNetworkLoad(float& loadinPrx, float& loadinPtx,
 	TXBpS = (float) deltaTXB / timeT;
 	loadinPrx = (RXBpS /*+ TXBpS*/) / maxNWThroughputPS;
 	loadinPtx = (TXBpS /*+ TXBpS*/) / maxNWThroughputPS;
-
-//	ROS_INFO("New rxb: %d", rxb);
-
-//	ROS_INFO("RXB pro Sec: %f", RXBpS);
-//	ROS_INFO("TXB pro Sec: %f", TXBpS);
-//	ROS_INFO("Networkload: %f", loadinPtx);
 
 	lastRXbytes = rxb;
 	lastTXbytes = txb;
@@ -295,14 +287,11 @@ int main(int argc, char **argv) {
 
 	NetworkMonitor NWm(nwThroughput, cnwInterface);
 
-
-
   Monitor msg(n, "Network-Monitor");
 
 	char value[40];
 	while (ros::ok()) {
-		msg.resetMsg();
-//		msg.addNewInfoTree(nwinterface, "Networkinterface monitor");
+    msg.resetMsg();
 
 		if (bBytes || bload) {
 			float loadrx, loadtx, RXBpS, TXBpS;
