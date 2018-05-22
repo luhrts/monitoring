@@ -8,7 +8,7 @@
 #include "monitoring_fdir/fdi/configinterface.h"
 
 #include "ros/ros.h"
-#include "monitoring_msgs/MonitoringArray.h"
+#include "monitoring_msgs/Error.h"
 #include <unistd.h>
 
 ConfigInterface::ConfigInterface(ros::Publisher& publisher) {
