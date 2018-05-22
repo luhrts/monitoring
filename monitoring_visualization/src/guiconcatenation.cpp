@@ -5,7 +5,7 @@
  *      Author: matthias
  */
 
-#include "ros_monitoring/guiconcatenation.h"
+#include "monitoring_visualization/guiconcatenation.h"
 
 GuiConcatenation::GuiConcatenation(ros::NodeHandle& n) {
 	monitor_sub = n.subscribe("/monitoring", 1000,
@@ -19,9 +19,9 @@ GuiConcatenation::~GuiConcatenation() {
 	// TODO Auto-generated destructor stub
 }
 
-void GuiConcatenation::error_cb(ros_monitoring::Error er) {
+void GuiConcatenation::error_cb(monitoring_msgs::Error er) {
 
-	ros_monitoring::GuiInfo info;
+  monitoring_msgs::GuiInfo info;
 
 	info.name = er.key;
 	info.description = er.description;
@@ -33,16 +33,16 @@ void GuiConcatenation::error_cb(ros_monitoring::Error er) {
 
 }
 
-void GuiConcatenation::monitor_cb(ros_monitoring::MonitoringArray ma) {
+void GuiConcatenation::monitor_cb(monitoring_msgs::MonitoringArray ma) {
 	for(int j=0; j< ma.info.size(); j++) {
-		ros_monitoring::MonitoringInfo mi = ma.info[j];
-		ros_monitoring::GuiInfo gi1;
+    monitoring_msgs::MonitoringInfo mi = ma.info[j];
+    monitoring_msgs::GuiInfo gi1;
 		gi1.name = mi.name;
 		gi1.value = "";
 
 		float meanerror = 0;
 		for (int i = 0; i < mi.values.size(); i++) {
-			ros_monitoring::GuiInfo gi;
+      monitoring_msgs::GuiInfo gi;
 			char name[100];
 			sprintf(name, "%s/%s", mi.name.c_str(), mi.values[i].key.c_str());
 			gi.name = name;
@@ -61,10 +61,10 @@ void GuiConcatenation::monitor_cb(ros_monitoring::MonitoringArray ma) {
 
 }
 
-ros_monitoring::Gui GuiConcatenation::getMsg() {
+monitoring_msgs::Gui GuiConcatenation::getMsg() {
 
-	ros_monitoring::Gui ret = msg;
-	ros_monitoring::Gui newMsg;
+  monitoring_msgs::Gui ret = msg;
+  monitoring_msgs::Gui newMsg;
 	newMsg.name = "Test";
 	msg = newMsg;
 	float maxError = 0.0;
@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
 
 	ros::init(argc, argv, "gui_msg_concatenation");
 	ros::NodeHandle n("~");
-	ros::Publisher gui_pub = n.advertise<ros_monitoring::Gui>("/monitoring/gui",
+  ros::Publisher gui_pub = n.advertise<monitoring_msgs::Gui>("/monitoring/gui",
 			10);
 
 	float freq = 1;

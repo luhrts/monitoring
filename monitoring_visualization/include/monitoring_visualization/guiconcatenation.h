@@ -9,21 +9,21 @@
 #define SRC_GUICONCATENATION_H_
 
 #include "ros/ros.h"
-#include "ros_monitoring/MonitoringArray.h"
-#include "ros_monitoring/Error.h"
-#include "ros_monitoring/Gui.h"
+#include "monitoring_msgs/MonitoringArray.h"
+#include "monitoring_msgs/Error.h"
+#include "monitoring_msgs/Gui.h"
 
 class GuiConcatenation {
 public:
 	GuiConcatenation(ros::NodeHandle& n);
 	virtual ~GuiConcatenation();
 
-	ros_monitoring::Gui getMsg();
+  monitoring_msgs::Gui getMsg();
 private:
-	void monitor_cb(ros_monitoring::MonitoringArray ma);
-	void error_cb(ros_monitoring::Error er);
+  void monitor_cb(monitoring_msgs::MonitoringArray ma);
+  void error_cb(monitoring_msgs::Error er);
 	ros::Subscriber monitor_sub, error_sub;
-	ros_monitoring::Gui msg;
+  monitoring_msgs::Gui msg;
 };
 
 #endif /* SRC_GUICONCATENATION_H_ */

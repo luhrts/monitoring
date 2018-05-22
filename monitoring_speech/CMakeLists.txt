@@ -17,3 +17,4 @@ add_executable(speech_output src/speech_output.cpp)
 target_link_libraries(speech_output
   ${catkin_LIBRARIES}
 )
+
