@@ -10,6 +10,11 @@ node {
     }
 
     stage('ROS-Build'){
+         dir ('catkin_ws/src') {
+            withEnv([pythonPath]) {
+                sh 'source /opt/ros/kinetic/setup.bash; catkin_init_workspace'
+            }
+        }
       dir ('catkin_ws') { 
         withEnv([pythonPath]) {
           sh 'source /opt/ros/kinetic/setup.bash; catkin_make'
