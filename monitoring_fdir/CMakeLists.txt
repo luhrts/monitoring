@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES fdiSDK recoverySDK
+  CATKIN_DEPENDS monitoring_msgs
 )
 
 include_directories(
@@ -46,6 +47,7 @@ add_library(recoverySDK
 target_link_libraries(recoverySDK
     ${catkin_LIBRARIES}
 )
+add_dependencies(recoverySDK ${catkin_EXPORTED_TARGETS})
 
 add_executable(fdi_example_node src/fdi/fdiExample.cpp)
 
