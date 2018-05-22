@@ -1,9 +1,38 @@
-/*
- * cpumonitor.cpp
+/*********************************************************************
+ * Software License Agreement (BSD License)
  *
- *  Created on: Nov 3, 2017
- *      Author: matthias
- */
+ * Copyright (c) 2018  University of Hannover
+ *                     Institute for Systems Engineering - RTS
+ *                     Prof. Dr.-Ing. Bernardo Wagner
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name University of Hannover nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+*********************************************************************/
 
 #include "monitoring_monitors_system/cpumonitor.h"
 
@@ -25,9 +54,8 @@ float CpuMonitor::getLoadAvg()
 
 //-------------------------------------------------------
 
-//Quelle: https://stackoverflow.com/questions/63166/how-to-determine-cpu-and-memory-consumption-from-inside-a-process
 /**
- * getting all starting values of the cpu at first because they are incrementel, so we need them for the delta. They are
+ * getting all starting values of the file /proc/stat at first because they are incrementel, so we need them for the delta. They are
  * catched for every core and overall cpu and saved to a vector.
  */
 void CpuMonitor::init()
@@ -88,6 +116,7 @@ void CpuMonitor::init()
   temp_index = i;
 
 }
+
 
 /*
  * Reads values in jiffies and calculates the Load of the overall Cpu in percent
@@ -158,9 +187,8 @@ double CpuMonitor::getCPUCoreLoad(int n)
   }
   else
   {
-    //because the value is incrementel, you need to get the deltas
+    //because the value is incrementel, you need to calculate the deltas
     total = (totalUser - lastTotalUser[n]) + (totalUserLow - lastTotalUserLow[n]) + (totalSys - lastTotalSys[n]);	//if total is 0 a nan value is possible TODO!!!
-    //        ROS_INFO("total: %llu", total);
     percent = total;
     total += (totalIdle - lastTotalIdle[n]);
     percent /= total;
@@ -178,44 +206,7 @@ double CpuMonitor::getCPUCoreLoad(int n)
 
 //--------------------------------------------------------------
 
-/*
- * This gets information from ps aux, parses it and publishes every process
- *
- * DOES NOT WORK ATM
- */
-//void CpuMonitor::publishProcessCpuUsage(ros::Publisher pub, ros_monitoring::MonitoringInfo& mi)
-//{
-//  FILE *in;
-//  char buff[512];
-//  if (!(in = popen("ps aux", "r")))
-//  {
-//    ROS_ERROR("Could not execute ps aux");
 
-//  }
-//  char user[8], stat[128], command[256];
-//  int pid, vsz, rss, tty, starth, startm, timem, times;
-//  float pcpu, pmem;
-//  ros_monitoring::Processes list;
-//  int i = 0;
-//  while (fgets(buff, sizeof(buff), in) != NULL)
-//  {
-//    sscanf(buff, "%s %d %f %f %d %d %s %s %d:%d %d:%d %s", &user, &pid, &pcpu, &pmem, &vsz, &rss, &tty, &stat, &starth,
-//           &startm, &timem, &times, &command);
-//    //ROS_INFO("Cpu %f, %s", pcpu, command);
-//    ros_monitoring::Process newProc;
-//    newProc.name = command;
-//    newProc.pCpu = pcpu;
-//    newProc.pRam = pmem;
-//    newProc.pid = pid;
-//    newProc.stat = stat;
-//    list.processes.push_back(newProc);
-//    i++;
-//  }
-//  pclose(in);
-//  pub.publish(list);
-//}
-
-//--------------------------------------------------------------
 
 /*
  *	reads the temperature from a file and transforms it to °C
@@ -256,18 +247,12 @@ int main(int argc, char **argv)
   if (n.getParam("avarage", bAvarage))
   {
   }
-
   bool bPercent = false;
   if (n.getParam("percent", bPercent))
   {
   }
   bool bPercentPerCore = false;
   if (n.getParam("percentPerCore", bPercentPerCore))
-  {
-  }
-
-  bool bProcesses = false;
-  if (n.getParam("processes", bProcesses))
   {
   }
   bool bTemp = false;
@@ -278,7 +263,6 @@ int main(int argc, char **argv)
   ros::Rate loop_rate(freq);
   CpuMonitor cpum;
 
-  //inti benchmark things
 
   char value[50];
   Monitor msg(n, "A CPU-Monitor");
@@ -288,13 +272,10 @@ int main(int argc, char **argv)
   while (ros::ok())
   {
     msg.resetMsg();
-//    msg.addNewInfoTree("CPU", "CPU Data");
 
     if (bPercent)
     {
-
       float cpuload = cpum.getCurrentCpuLoad();
-
       msg.addValue("overall cpu load", cpuload, "%", 0);
     }
     if (bAvarage)
@@ -302,14 +283,9 @@ int main(int argc, char **argv)
       float cpuavg = cpum.getLoadAvg();
       msg.addValue("cpu load avg", cpuavg, "", 0);
     }
-    if (bProcesses)
-    {
-      //cpum.publishProcessCpuUsage(proc_pub, mi);
-    }
     if (bTemp)
     {
       float temp = cpum.getCPUTemp();
-
       msg.addValue("CPU Temperatur", temp, "C", 0);
     }
     if (bPercentPerCore)
@@ -321,13 +297,9 @@ int main(int argc, char **argv)
         char key[40];
         sprintf(key, "percentage load CoreNo: %d", i);
         msg.addValue(key, pCore, "%", 0);
-
       }
-
     }
     msg.publish();
-
     loop_rate.sleep();
   }
-
 }
