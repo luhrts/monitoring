@@ -32,18 +32,15 @@ add_executable(network_monitoring_node src/networkmonitor.cpp)
 
 target_link_libraries(cpu_monitoring_node
   ${catkin_LIBRARIES}
-  monitorLIB
 
 )
 
 target_link_libraries(ram_monitoring_node
   ${catkin_LIBRARIES}
   ${PROCPS_LIBRARIES}
-  monitorLIB
 )
 
 target_link_libraries(network_monitoring_node
   ${catkin_LIBRARIES}
-  monitorLIB
 )
 

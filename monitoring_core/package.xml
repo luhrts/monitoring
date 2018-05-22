@@ -23,4 +23,5 @@
   <exec_depend>roscpp</exec_depend>
   
   <build_export_depend>roscpp</build_export_depend>
+  <build_export_depend>monitoring_msgs</build_export_depend>
 </package>
