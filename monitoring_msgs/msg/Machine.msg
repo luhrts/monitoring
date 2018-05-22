@@ -1,0 +1,2 @@
+string Hostname
+string ip
