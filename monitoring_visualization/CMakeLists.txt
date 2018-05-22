@@ -9,6 +9,13 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
 )
 
+catkin_package(
+  INCLUDE_DIRS include
+  LIBRARIES
+  CATKIN_DEPENDS roscpp
+)
+
+
 include_directories(
  include
  ${catkin_INCLUDE_DIRS}
@@ -18,3 +25,4 @@ add_executable(gui_msg_concat_node src/guiconcatenation.cpp)
 target_link_libraries(gui_msg_concat_node
   ${catkin_LIBRARIES}
 )
+add_dependencies(gui_msg_concat_node ${catkin_EXPORTED_TARGETS})

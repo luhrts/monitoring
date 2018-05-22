@@ -8,13 +8,18 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
 )
 
+
+catkin_package(
+  INCLUDE_DIRS
+  LIBRARIES
+  CATKIN_DEPENDS roscpp
+)
+
 include_directories(
- include
  ${catkin_INCLUDE_DIRS}
 )
 
 add_executable(speech_output src/speech_output.cpp)
 target_link_libraries(speech_output
-  ${catkin_LIBRARIES}
-)
-
+   ${catkin_LIBRARIES}
+ )
