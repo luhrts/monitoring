@@ -8,6 +8,13 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
 )
 
+
+catkin_package(
+  INCLUDE_DIRS
+  LIBRARIES
+  CATKIN_DEPENDS roscpp
+)
+
 include_directories(
  include
  ${catkin_INCLUDE_DIRS}
