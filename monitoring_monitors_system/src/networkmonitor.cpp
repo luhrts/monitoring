@@ -221,7 +221,7 @@ int main(int argc, char **argv) {
 
 	ros::init(argc, argv, "network_monitor");
 	ros::NodeHandle n("~");
-	ros::Publisher pub = n.advertise<ros_monitoring::MonitoringArray>(
+  ros::Publisher pub = n.advertise<monitoring_msgs::MonitoringArray>(
 			"/monitoring", 1);
 
 	float freq = 1;
@@ -268,7 +268,7 @@ int main(int argc, char **argv) {
 
 
 
-  Monitor msg(n, ros::this_node::getName(), "Network-Monitor");
+  Monitor msg(n, "Network-Monitor");
 
 	char value[40];
 	while (ros::ok()) {
@@ -310,7 +310,7 @@ int main(int argc, char **argv) {
 					rx_over_errors, tx_aborted_errors, tx_carrier_errors, tx_dropped, tx_errors,
 					tx_fifo_errors, tx_heartbeat_errors, tx_window_errors);
 
-			ros_monitoring::KeyValue a_kv, b_kv, c_kv, d_kv, e_kv, f_kv, g_kv,
+      monitoring_msgs::KeyValue a_kv, b_kv, c_kv, d_kv, e_kv, f_kv, g_kv,
 					h_kv, i_kv, j_kv, k_kv, l_kv, m_kv, n_kv, o_kv, p_kv;
 
 			msg.addValue("RX_CRC_Errors", rx_crc_errors, "B", 0);

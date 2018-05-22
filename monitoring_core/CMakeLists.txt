@@ -13,7 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES monitoring_core
-  CATKIN_DEPENDS 
+  CATKIN_DEPENDS monitoring_msgs
   DEPENDS
 )
 

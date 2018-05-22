@@ -19,7 +19,6 @@ CpuMonitor::~CpuMonitor()
 float CpuMonitor::getLoadAvg()
 {
   double loadavg[3];
-  std_msgs::Float32 avg;
   getloadavg(loadavg, 3); //works/updates around every 5 seconds
   return loadavg[0];
 }
@@ -282,7 +281,7 @@ int main(int argc, char **argv)
   //inti benchmark things
 
   char value[50];
-  Monitor msg(n, ros::this_node::getName(), "A CPU-Monitor");
+  Monitor msg(n, "A CPU-Monitor");
 
 
   //starting looping over the options and publishing at the end

@@ -15,7 +15,7 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "ram_monitor");
   ros::NodeHandle n("~");
-  ros::Publisher monitor_pub = n.advertise<ros_monitoring::MonitoringArray>("/monitoring", 1);
+  ros::Publisher monitor_pub = n.advertise<monitoring_msgs::MonitoringArray>("/monitoring", 1);
 
 
   float freq = 1;
@@ -36,7 +36,7 @@ int main(int argc, char **argv)
 
   ros::Rate loop_rate(freq);
 
-  Monitor msg(n, ros::this_node::getName(), "RAM-Monitor" );
+  Monitor msg(n, "RAM-Monitor" );
   while (ros::ok())
   {
     msg.resetMsg();

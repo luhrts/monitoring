@@ -4,7 +4,7 @@ StatisticMonitor::StatisticMonitor(ros::NodeHandle &n) {
   n.setParam("/enable_statistics", true);
   loadConfig(n);
   stats_sub = n.subscribe("/statistics", 1000, &StatisticMonitor::statisticsCallback, this);
-  msg = new MonitorMsg (n, ros::this_node::getName(), "Statistics for ROS Topics" );
+  msg = new Monitor (n, "Statistics for ROS Topics" );
 
   ros::Rate loop_rate(freq);
   while(ros::ok()) {
@@ -26,7 +26,7 @@ StatisticMonitor::~StatisticMonitor() {
 void StatisticMonitor::compareStatisticDataWithRequirements() {
   for(int i=0;i<topicRequirements.size(); i++) {
     TopicRequirement tr = topicRequirements[i];
-    msg->addNewInfoTree(tr.topic, "from " + tr.source + " to " + tr.destination);
+ //   msg->addNewInfoTree(tr.topic, "from " + tr.source + " to " + tr.destination);   //TODO: Find new way to handle
     ROS_INFO("Topic: %s", tr.topic.c_str());
     //Find corresponding statisticdata from list
     StatisticsInfo si;
