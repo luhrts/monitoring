@@ -12,7 +12,7 @@ Monitor::Monitor(ros::NodeHandle &n, std::string monitorDescription) {
   monitoring_msgs::MonitoringInfo mi;
   mi.name = ros::this_node::getName(),
   mi.description = monitorDescription;
-  ma.info[miIndex] = mi;
+  ma.info.push_back(mi);
 }
 
 Monitor::~Monitor() {
