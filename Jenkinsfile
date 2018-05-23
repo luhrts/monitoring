@@ -5,6 +5,12 @@ node {
   currentBuild.result = "SUCCESS"
 
   try {
+    stage('Clean old Build'){
+        dir('catkin_ws/src') {
+            deleteDir()
+        }
+    }
+  
     stage('Checkout'){
       checkout scm
     }
