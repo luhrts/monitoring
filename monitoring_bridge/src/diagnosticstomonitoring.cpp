@@ -39,6 +39,7 @@
 DiagnosticsToMonitoring::DiagnosticsToMonitoring(ros::NodeHandle &node) {
   monitor_pub = node.advertise<monitoring_msgs::MonitoringArray>("/monitoring", 1);
   diag_sub = node.subscribe("/diagnostics", 10, &DiagnosticsToMonitoring::diagnostics_callback, this);
+  monitormsg = new Monitor(node, "diagnostics_bridge");
 }
 
 DiagnosticsToMonitoring::~DiagnosticsToMonitoring() {
@@ -47,31 +48,19 @@ DiagnosticsToMonitoring::~DiagnosticsToMonitoring() {
 
 void DiagnosticsToMonitoring::diagnostics_callback(diagnostic_msgs::DiagnosticArray msg) {
   for(int i=0; i<msg.status.size(); i++) {
-    monitoring_msgs::MonitoringInfo mi;
     double errorlevel = msg.status[i].level/2.0;
     if(errorlevel >= 1.0) {
       errorlevel = 1.0;
     }
-    mi.name = msg.status[i].name;
-    mi.description = msg.status[i].message;
-    mi.header.stamp = msg.header.stamp;
     for (int j=0; j<msg.status[i].values.size(); j++) {
-      monitoring_msgs::KeyValue kv;
-      kv.key = msg.status[i].values[j].key;
-      kv.value = msg.status[i].values[j].value;
-      kv.errorlevel = errorlevel;
-      mi.values.push_back(kv);
+      monitormsg->addValue( msg.status[i].values[j].key,  msg.status[i].values[j].value, "", errorlevel);
     }
-    ma.info.push_back(mi);
   }
-
 }
 
 void DiagnosticsToMonitoring::publish() {
-  ma.header.stamp = ros::Time::now();
-  monitor_pub.publish(ma);
-  monitoring_msgs::MonitoringArray newMa;
-  ma = newMa;
+ monitormsg->publish();
+
 }
 
 int main(int argc, char **argv) {

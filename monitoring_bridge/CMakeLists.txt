@@ -9,6 +9,7 @@ project(monitoring_bridge)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   monitoring_msgs
+  monitoring_core
   roscpp
   rospy
 )

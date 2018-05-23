@@ -39,7 +39,7 @@
 
 #include "ros/ros.h"
 #include "diagnostic_msgs/DiagnosticArray.h"
-#include "monitoring_msgs/MonitoringArray.h"
+#include "monitoring_core/monitor.h"
 
 /**
  * @brief The DiagnosticsToMonitoring class allows to convert diagnostics msgs to monitoring msgs
@@ -60,7 +60,8 @@ private:
 	void diagnostics_callback(diagnostic_msgs::DiagnosticArray msg);
   ros::Publisher monitor_pub; ///< publishes the msgs
   ros::Subscriber diag_sub;   ///< receives all diagnostics msgs
-  monitoring_msgs::MonitoringArray ma;
+  Monitor* monitormsg;
+
 };
 
 #endif /* SRC_MONITORINGTODIAGNOSTICS_H_ */
