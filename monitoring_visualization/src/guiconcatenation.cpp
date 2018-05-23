@@ -65,7 +65,7 @@ monitoring_msgs::Gui GuiConcatenation::getMsg() {
 
   monitoring_msgs::Gui ret = msg;
   monitoring_msgs::Gui newMsg;
-	newMsg.name = "Test";
+  newMsg.name = "GUI";
 	msg = newMsg;
 	float maxError = 0.0;
 	for (int i = 0; i < ret.infos.size(); i++) {

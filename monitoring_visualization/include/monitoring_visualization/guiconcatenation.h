@@ -18,11 +18,23 @@ public:
 	GuiConcatenation(ros::NodeHandle& n);
 	virtual ~GuiConcatenation();
 
+  /**
+   * @brief getMsg function to get the msg for publishing
+   * @return msg type for aggregated monitors and error msgs
+   */
   monitoring_msgs::Gui getMsg();
 private:
+  /**
+   * @brief monitor_cb callback for monitoring msgs
+   * @param ma
+   */
   void monitor_cb(monitoring_msgs::MonitoringArray ma);
+  /**
+   * @brief error_cb callback for error msgs
+   * @param er
+   */
   void error_cb(monitoring_msgs::Error er);
-	ros::Subscriber monitor_sub, error_sub;
+  ros::Subscriber monitor_sub, error_sub; ///< subscribers for data collection
   monitoring_msgs::Gui msg;
 };
 
