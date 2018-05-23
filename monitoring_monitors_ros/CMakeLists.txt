@@ -10,6 +10,11 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
 )
 
+catkin_package(
+  INCLUDE_DIRS include
+  CATKIN_DEPENDS monitoring_core
+)
+
 include_directories(
  include
  ${catkin_INCLUDE_DIRS}

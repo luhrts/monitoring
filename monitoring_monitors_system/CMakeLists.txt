@@ -16,7 +16,7 @@ pkg_check_modules(PROCPS REQUIRED libprocps)
 catkin_package(
   INCLUDE_DIRS include
   CATKIN_DEPENDS monitoring_core
- DEPENDS PROCPS
+  DEPENDS PROCPS
 )
 
 
