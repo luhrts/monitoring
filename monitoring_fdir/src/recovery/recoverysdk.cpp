@@ -14,25 +14,6 @@ void RecoverySDK::registerErrorHandler(ErrorHandlerInterface* errorHandler,
 }
 
 /**
- * Checks and Redirects all messages to the appropriate registered objects
- *
- * NOT IN USE
- */
-void RecoverySDK::checkErrors() {
-	while (!msgBuffer.empty()) {
-    monitoring_msgs::Error error = msgBuffer.front();
-		if (!(recoveryHandler.find(error.key) == recoveryHandler.end())) {
-			std::vector<ErrorHandlerInterface *> recoveryHandlerList =
-					recoveryHandler[error.key]; //get the list with objects that are registered on this message
-			for (int i = 0; i < recoveryHandlerList.size(); i++) {
-				recoveryHandlerList[i]->checkError(error);
-			}
-		}
-		msgBuffer.pop();
-	}
-}
-
-/**
  * fills the msgbuffer with incoming error msg.
  */
 void RecoverySDK::errorCallback(monitoring_msgs::Error error) {

@@ -28,6 +28,9 @@ struct TopicRequirement{
   float errorlevel;
 };
 
+/**
+ * @brief The StatisticMonitor class uses ros statistics to monitor topics
+ */
 class StatisticMonitor
 {
 public:
@@ -35,14 +38,24 @@ public:
   ~StatisticMonitor();
 
 private:
+  /**
+   * @brief loadConfig reads the parameter that are provided via the ros parameterserver and saves them to topicRequirements
+   * @param n
+   */
   void loadConfig(ros::NodeHandle &n);
-
+  /**
+   * @brief statisticsCallback saves all incoming statistic data in statisticData
+   * @param stats incoming data
+   */
   void statisticsCallback(rosgraph_msgs::TopicStatistics stats);
+  /**
+   * @brief compareStatisticDataWithRequirements compares statisticData and topicRequirements
+   */
   void compareStatisticDataWithRequirements();
-  ros::Subscriber stats_sub;
-  Monitor *msg;
-  float freq;
-  std::vector<StatisticsInfo> statisticData;
-  std::vector<TopicRequirement> topicRequirements;
+  ros::Subscriber stats_sub;  ///< subscirber for topic statistics
+  Monitor *msg;   ///< msg that saves information that will be published
+  float freq;   ///< working frequency
+  std::vector<StatisticsInfo> statisticData;    ///< contains data from ros_statistics
+  std::vector<TopicRequirement> topicRequirements;    ///< contains user defined topic requirements
 };
 #endif /* SRC_STATISTICSMONITOR_H_ */

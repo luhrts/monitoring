@@ -10,21 +10,30 @@
 #include "std_handler/outputerrormessage.h"
 #include "std_handler/error_to_speech.h"
 
+/**
+ * @brief The RecoverySDK class is a sdk to handle errors
+ */
 class RecoverySDK
 {
 public:
   RecoverySDK(ros::NodeHandle& n);
-
+  /**
+   * @brief registerErrorHandler to register Error Handler with a error msg name
+   * @param errorHandler the handler that will be registered
+   * @param msg the corresponding msg name
+   */
   void registerErrorHandler(ErrorHandlerInterface* errorHandler, std::string msg);
-  void checkErrors();
 
 private:
+  /**
+   * @brief errorCallback callback function for the ros msgs
+   * @param error error msg content
+   */
   void errorCallback(monitoring_msgs::Error error);
 
-  std::queue<monitoring_msgs::Error> msgBuffer; //Fifo, so that it gets processed in the original order
-  ros::Subscriber sub;
+  ros::Subscriber sub;    ///< subscribes to /monitoring/errors
 
-  std::map<std::string, std::vector<ErrorHandlerInterface *>> recoveryHandler;
+  std::map<std::string, std::vector<ErrorHandlerInterface *>> recoveryHandler;  ///< contains the registered handler with the corresponding msgs
 };
 
 #endif // RECOVERYSDK_H

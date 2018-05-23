@@ -19,15 +19,6 @@
 #include "std_validator/between.h"
 #include "std_validator/nodeavailable.h"
 
-/**
- * this struct is deprecated and was used befor the configinterface.h
- */
-struct fdiconfig{
-  std::string op;
-  float value;
-  std::string error;
-  float errorlevel;
-};
 
 
 /**
@@ -40,17 +31,23 @@ public:
   FdiSDK(ros::NodeHandle& n);
   virtual ~FdiSDK();
 
-  void load_config(ros::NodeHandle& n);
+  /**
+   * @brief registerFDIObject is used to register validators to check for errors in the system
+   * @param object is the validator
+   * @param msg is the name of the message it wants to listen to
+   */
   void registerFDIObject(ConfigInterface* object, std::string msg);
-  void checkForFDI();
 
 private:
+  /**
+   * @brief monitorCallback this callback will automaticly buffer the messages. Which will be handled in the checkforFDI function.
+   * @param ma
+   */
   void monitorCallback(monitoring_msgs::MonitoringArray ma);
-  std::queue<monitoring_msgs::KeyValue> msgBuffer;
-  ros::Subscriber sub;
-  ros::Publisher pub;
+  ros::Subscriber sub;  ///< subscribes to monitoring for all monitored data
+  ros::Publisher pub;   ///< publisher for error msgs
 
-  std::map<std::string, std::vector<ConfigInterface *> > fdiConfigList;
+  std::map<std::string, std::vector<ConfigInterface *> > fdiConfigList; ///< a map to assign incoming msgs to the registered validators
 };
 
 #endif /* SRC_FDIR_FDISDK_H_ */
