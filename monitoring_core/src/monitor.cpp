@@ -8,6 +8,7 @@
 #include "monitoring_core/monitor.h"
 
 Monitor::Monitor(ros::NodeHandle &n, std::string monitorDescription) {
+  monitor_description_ = monitorDescription;
   pub = n.advertise<monitoring_msgs::MonitoringArray> ("/monitoring", 1);
   monitoring_msgs::MonitoringInfo mi;
   mi.name = ros::this_node::getName(),
@@ -21,16 +22,14 @@ Monitor::~Monitor() {
 }
 
 void Monitor::addValue(std::string key, std::string value, std::string unit, float errorlevel) {
-	if(miIndex<0){
-		ROS_ERROR("No Info Tree Node Created!!! Use addNewInfoTree before adding Values");
-	} else {
-    monitoring_msgs::KeyValue kv;
-		kv.key = key;
-		kv.value = value;
-		kv.unit = unit;
-		kv.errorlevel = errorlevel;
-		ma.info[miIndex].values.push_back(kv);
-	}
+
+  monitoring_msgs::KeyValue kv;
+  kv.key = key;
+  kv.value = value;
+  kv.unit = unit;
+  kv.errorlevel = errorlevel;
+  ma.info[miIndex].values.push_back(kv);
+
 }
 
 void Monitor::addValue(std::string key, float value, std::string unit, float errorlevel){
@@ -49,6 +48,10 @@ void Monitor::publish() {
 void Monitor::resetMsg(){
   monitoring_msgs::MonitoringArray newMA;
 	ma = newMA;
-	miIndex = -1;
+  monitoring_msgs::MonitoringInfo mi;
+  mi.name = ros::this_node::getName(),
+  mi.description = monitor_description_;
+  ma.info.push_back(mi);
+  miIndex = 0;
 
 }
