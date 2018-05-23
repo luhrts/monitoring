@@ -1,0 +1,17 @@
+<library path="src">
+  <class name="RobotMonitor" type="rqt_robot_monitor.robot_monitor_plugin.RobotMonitorPlugin" base_class_type="rqt_gui_py::Plugin">
+    <description>
+    Display for /monitoring
+    </description>
+    <qtgui>
+      <group>
+        <label>Monitor Tools</label>
+        <icon type="theme">folder</icon>
+        <statustip>Plugins related to robot tools.</statustip>
+      </group>
+      <label>Monitor Viewer</label>
+      <icon type="theme">utilities-system-monitor</icon>
+      <statustip>A Python GUI plugin for monitoring the robot state using diagnostics messages.</statustip>
+    </qtgui>
+  </class>
+</library>
