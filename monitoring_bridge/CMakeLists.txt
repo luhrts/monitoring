@@ -28,9 +28,10 @@ add_executable(monitoring_to_diagnostics src/monitoringtodiagnostics.cpp)
 target_link_libraries(monitoring_to_diagnostics
   ${catkin_LIBRARIES}
 )
-
+add_dependencies(monitoring_to_diagnostics ${catkin_EXPORTED_TARGETS})
 
 add_executable(diagnostics_to_monitoring src/diagnosticstomonitoring.cpp)
 target_link_libraries(diagnostics_to_monitoring
   ${catkin_LIBRARIES}
 )
+add_dependencies(diagnostics_to_monitoring ${catkin_EXPORTED_TARGETS})
