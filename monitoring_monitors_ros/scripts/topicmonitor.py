@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from rostopic import *
-from ros_monitoring.msg import * 
+from monitoring_msgs.msg import *
 from time import sleep
 from help import fillMachineInfo
 import time

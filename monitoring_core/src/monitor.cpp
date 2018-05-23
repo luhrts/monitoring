@@ -14,6 +14,8 @@ Monitor::Monitor(ros::NodeHandle &n, std::string monitorDescription) {
   mi.name = ros::this_node::getName(),
   mi.description = monitorDescription;
   ma.info.push_back(mi);
+  miIndex = 0;
+
 }
 
 Monitor::~Monitor() {
@@ -29,7 +31,6 @@ void Monitor::addValue(std::string key, std::string value, std::string unit, flo
   kv.unit = unit;
   kv.errorlevel = errorlevel;
   ma.info[miIndex].values.push_back(kv);
-
 }
 
 void Monitor::addValue(std::string key, float value, std::string unit, float errorlevel){

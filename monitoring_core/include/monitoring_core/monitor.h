@@ -28,7 +28,7 @@ private:
   monitoring_msgs::MonitoringArray ma;
   std::string node_name_;
   std::string monitor_description_;
-  double miIndex = 0;
+  int miIndex = 0;
 };
 
 #endif /* SRC_MONITORS_MONITOR_H_ */

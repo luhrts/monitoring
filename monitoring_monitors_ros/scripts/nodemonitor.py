@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from rosnode import *
-from ros_monitoring.msg import *
+from monitoring_msgs.msg import *
 from help import fillMachineInfo
 
 
