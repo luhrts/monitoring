@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import rospy
 from rostopic import *
-from monitoring_msgs.msg import *
 from time import sleep
-from help import fillMachineInfo
+from monitoring_msgs.msg import *
+from monitoring_core.monitor import Monitor
 import time
 
 
@@ -12,6 +12,7 @@ def topicmonitor():
     topics = rospy.get_param(rospy.get_name() + '/topics')
     frequency = rospy.get_param(rospy.get_name() + '/frequency')
     rate = rospy.Rate(frequency)
+    monitor = Monitor("simple_monitor_python")
     
     lastXvaluesForCalc = 10
     
@@ -26,13 +27,7 @@ def topicmonitor():
     pub = rospy.Publisher('/monitoring', MonitoringArray, queue_size=1)
     startTimestamp = time.time()
     while not rospy.is_shutdown():  # main loop
-        ma = MonitoringArray()
-        mi = MonitoringInfo()
-        ma.info.append(mi)
-        mi.header.stamp = rospy.Time.now()
-        mi.name = rospy.get_name()
-        mi.description = "A Topic-Monitor"
-        fillMachineInfo(mi)
+
 
         for entry in topics:
             n = len(hzMonitors[entry['name']].times) 
@@ -41,22 +36,17 @@ def topicmonitor():
                     continue
             if(n == 0):  # no mis received, division by 0 catching
                 rospy.logwarn("no new miS for topic %s", entry['name'])
-                kv = KeyValue()
-                kv.key = "no topic"
-                kv.value = "Topic " + entry['name'] + " sends no data"
-                mi.values.append(kv)
+                value = "Topic " + entry['name'] + " sends no data"
+                monitor.addValue("no topic", value, "", 0.3)
                 continue
             mean = sum(hzMonitors[entry['name']].times[-lastXvaluesForCalc:]) / lastXvaluesForCalc  # TODO this is mean overall time. Needs mean over since last seconds
             freq = 1. / mean if mean > 0. else 0 
             if(entry['frequency'] - 0.1*freq > freq):  
                 rospy.logwarn("Frequency of %s is to low: Expected: %f Actual: %f", entry['name'] , entry['frequency'] , freq)
-                kv = KeyValue()
-                kv.key = "slow Topic"
-                kv.value = "Topic " + entry['name'] + " is on " + str(freq) + "Hz, Expected: " + str(entry['frequency'])
-                mi.values.append(kv)
+                value = "Topic " + entry['name'] + " is on " + str(freq) + "Hz, Expected: " + str(entry['frequency'])
+                monitor.addValue("slow topic", value, "", 0.3)
                 
-        if(not len(mi.values) == 0):  # stops publishing if there are no missing nodes
-            pub.publish(ma)
+        monitor.publish()
         rate.sleep()
 
 
