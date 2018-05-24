@@ -38,7 +38,7 @@ from python_qt_binding.QtCore import Signal, Slot, QObject
 
 import rospy
 
-from ros_monitoring.msg import *
+from monitoring_msgs.msg import *
 
 class Timeline(QObject):
     """

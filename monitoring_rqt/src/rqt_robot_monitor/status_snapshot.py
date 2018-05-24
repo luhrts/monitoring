@@ -41,7 +41,7 @@ from python_qt_binding.QtCore import Signal
 from diagnostic_msgs.msg import DiagnosticStatus
 from rqt_robot_monitor.util_robot_monitor import level_to_text
 
-from ros_monitoring.msg import *
+from monitoring_msgs.msg import *
 
 
 class StatusSnapshot(QTextEdit):

@@ -17,7 +17,7 @@ class Monitor:
         kv.key = str(key)
         kv.value = str(value)
         kv.unit = str(unit)
-        kv.errorlevel = 0.5
+        kv.errorlevel = errorlevel
         self.ma.info[0].values.append(kv)
 
     def publish(self):
