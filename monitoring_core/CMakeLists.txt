@@ -31,3 +31,9 @@ target_link_libraries(monitoring_core
 add_dependencies(monitoring_core monitoring_msgs_generate_messages_cpp)
 
 catkin_python_setup()
+
+catkin_add_gtest(myUnitTest test/simple_mointor_test.cpp)
+target_link_libraries(myUnitTest
+  ${catkin_LIBRARIES}
+  monitoring_core
+)

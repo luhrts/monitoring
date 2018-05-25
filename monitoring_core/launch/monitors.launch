@@ -1,7 +1,7 @@
 <launch>
-  <include file="$(find ros_monitoring)/launch/cpu_monitor.launch" />
-  <include file="$(find ros_monitoring)/launch/ram_monitor.launch" />
-  <include file="$(find ros_monitoring)/launch/node_monitor.launch" />
-  <include file="$(find ros_monitoring)/launch/nw_monitor.launch" />
-  <include file="$(find ros_monitoring)/launch/topic_monitor.launch" />
+  <include file="$(find monitoring_monitors_system)/launch/cpu_monitor.launch" />
+  <include file="$(find monitoring_monitors_system)/launch/ram_monitor.launch" />
+  <include file="$(find monitoring_monitors_ros)/launch/node_monitor.launch" />
+  <include file="$(find monitoring_monitors_system)/launch/nw_monitor.launch" />
+  <include file="$(find monitoring_monitors_ros)/launch/topic_monitor.launch" />
 </launch>
