@@ -7,7 +7,7 @@
 
 #ifndef SRC_MONITORS_MONITOR_H_
 #define SRC_MONITORS_MONITOR_H_
-
+#include "gtest/gtest_prod.h"  
 #include "monitoring_msgs/MonitoringArray.h"
 #include "ros/ros.h"
 
@@ -18,7 +18,6 @@ public:
 
   void addValue(std::string key, std::string value, std::string unit, float errorlevel);
   void addValue(std::string key, float value, std::string unit, float errorlevel);
-
 	void publish();
 
 	void resetMsg();
@@ -29,6 +28,12 @@ private:
   std::string node_name_;
   std::string monitor_description_;
   int miIndex = 0;
+///////////////////Gtest/////////////////////
+FRIEND_TEST(MonitoringCore, addValueString);
+FRIEND_TEST(MonitoringCore, addValueFloatRand);
+FRIEND_TEST(MonitoringCore, addValueFloat);
+FRIEND_TEST(MonitoringCore, addValueErrorLevel);
+
 };
 
 #endif /* SRC_MONITORS_MONITOR_H_ */
