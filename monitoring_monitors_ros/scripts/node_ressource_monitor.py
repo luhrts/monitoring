@@ -28,6 +28,8 @@ from std_msgs.msg import String
 
 from collections import namedtuple
 
+ID = "NODEINFO"
+
 class node:
         def __init__(self, name, pid):
             self.pid = pid
