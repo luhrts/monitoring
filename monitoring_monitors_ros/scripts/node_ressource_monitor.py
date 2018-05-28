@@ -14,9 +14,10 @@
 # TODO: rename file (4) DONE
 # TODO: Integrate Whitelist Param-stuff (5) DONE
 # TODO: Integrate default if Whitelist Param-stuff n/a  DONE
-# TODO: Integrate into Monitoring (7)
+# TODO: Integrate into Monitoring (7) DONE
 # TODO: Set return value of get_process_info(pid) to named tuple containing all values
         see documentation at https://docs.python.org/3/library/collections.html#collections.namedtuple DONE
+# TODO: Add second yaml file for general config, (frequency, black/whitelist etc)
 """
 
 
@@ -261,7 +262,6 @@ def print_to_console_and_monitor(name, pid):
                     monitor.addValue("username", str(node_info_tuple.username), "", 0.0)
 
             monitor.publish()
-            rospy.logout(monitor)
         else:
             rospy.logerr(name + " not in whitelist")
 
