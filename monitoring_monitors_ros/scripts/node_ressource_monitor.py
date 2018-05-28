@@ -2,8 +2,9 @@
 """
  Author: Michael Lange
  This scripts lists all running rosnodes and displays all values the
- psutil package is providing for each node, In order to filter Nodes and the
- values belonging to them, it is possible to create a whitelist
+ psutil package is providing for each node.
+ Supports a filter function in order to only retrieve information of specific
+ nodes and specific values.
 
 # TODO: node name, PID into own Datatype (1) DONE
 # TODO: comments in Dpxygen style (2) WIP
