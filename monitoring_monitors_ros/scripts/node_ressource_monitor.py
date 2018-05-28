@@ -1,19 +1,20 @@
 #!/usr/bin/env python
 """
  Author: Michael Lange
- Dieses Skript listet alle aktiven ROS-Nodes auf,
- dann pro Node Name, exe-path, CPU auslastung [%], MEM auslastung [%]
+ This scripts lists all running rosnodes and displays all values the
+ psutil package is providing for each node, In order to filter Nodes and the
+ values belonging to them, it is possible to create a whitelist
 
 # TODO: node name, PID into own Datatype (1) DONE
-# TODO: comments in Dpxygen style (2)
+# TODO: comments in Dpxygen style (2) WIP
 # TODO: Log error as ros error (3) DONE
 # TODO: get all psutil process info (6) DONE
 # TODO: rename file (4) DONE
 # TODO: Integrate Whitelist Param-stuff (5) DONE
 # TODO: Integrate default if Whitelist Param-stuff n/a  DONE
 # TODO: Integrate into Monitoring (7)
-# TODO: Set return value of get_process_info(pid) to named tuple containing all values DONE
-        see documentation at https://docs.python.org/3/library/collections.html#collections.namedtuple
+# TODO: Set return value of get_process_info(pid) to named tuple containing all values
+        see documentation at https://docs.python.org/3/library/collections.html#collections.namedtuple DONE
 """
 
 
@@ -26,8 +27,6 @@ from std_msgs.msg import String
 
 from collections import namedtuple
 
-ID = '/NODEINFO'
-
 class node:
         def __init__(self, name, pid):
             self.pid = pid
@@ -39,8 +38,10 @@ def init():
     rospy.init_node('node_ressource_monitor', anonymous=True)
 
 def get_node_list():
-    #List all ROS Nodes
-    #Return: List containing ROS Nodes(name, pid)
+    """
+    List all ROS Nodes
+    Return: List containing ROS Nodes(name, pid)
+    """
     rospy.loginfo("GET_NODE_LIST:")
     node_array_temp = rosnode.get_node_names()
     node_list = []
@@ -55,8 +56,9 @@ def get_node_list():
     return node_list
 
 def get_process_info(pid):
-    #gather all information provided by psutil.Process(pid)
-
+    """
+    gather all information provided by psutil.Process(pid)
+    """
     p = psutil.Process(pid)
 
     children = p.children()
@@ -113,8 +115,9 @@ def get_process_info(pid):
     return ret_val
 
 def print_info_to_console(name, pid):
-    #print information to console
-
+    """
+    print information to console
+    """
     #get all values belonging to pid
     try:
         node_info_tuple = get_process_info(pid)
@@ -140,7 +143,7 @@ def print_info_to_console(name, pid):
 
     for element in whitelisted_nodes:
 
-        #look for whitelisted values, et default if no parameters are set
+        #look for whitelisted values, set default if no parameters are set
         if not no_param_available:
             whitelisted_values = rospy.get_param('/node_ressource_monitor/' + element)
         else:
@@ -222,9 +225,11 @@ def print_info_to_console(name, pid):
             rospy.logerr(name + " not in whitelist")
 
 def gather_info():
-    #obtains list of all running nodes by calling GET_NODE_LIST
-    #calls get_process_info() for each retrieved node
-    #calls print_info_to_console() for each retrieved node
+    """
+    obtains list of all running nodes by calling get_node_list()
+    calls get_process_info() for each retrieved node
+    calls print_info_to_console() for each retrieved node
+    """
     node_list = get_node_list()
     for i in node_list:
         try:
@@ -239,7 +244,8 @@ def gather_info():
 
 if __name__ == '__main__':
     init()
-    rate = rospy.Rate(1)
+    frequency = 1
+    rate = rospy.Rate(frequency)
     while not rospy.is_shutdown():
         try:
             gather_info()
