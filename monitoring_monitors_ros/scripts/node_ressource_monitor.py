@@ -8,7 +8,7 @@
  nodes with specific values.
 
 # TODO: node name, PID into own Datatype (1) DONE
-# TODO: comments in Dpxygen style (2) WIP
+# TODO: comments in Dpxygen style (2) DONE
 # TODO: Log error as ros error (3) DONE
 # TODO: get all psutil process info (6) DONE
 # TODO: rename file (4) DONE
@@ -17,8 +17,10 @@
 # TODO: Integrate into Monitoring (7) DONE
 # TODO: Set return value of get_process_info(pid) to named tuple containing all values
         see documentation at https://docs.python.org/3/library/collections.html#collections.namedtuple DONE
-# TODO: Add second yaml file for general config, (frequency, black/whitelist etc)
+# TODO: Add second yaml file for general config, (frequency, black/whitelist etc) DONE
 # TODO: Clean up get_process_info() nonsense DONE
+# TODO: create additional launch files DONE
+# TODO: integrate blacklist filter feature DONE
 # TODO: Add units to monitor output
 """
 
@@ -33,6 +35,7 @@ from monitoring_core.monitor import Monitor
 from collections import namedtuple
 
 ID = "NODEINFO"
+filter_type = None
 
 class node:
         def __init__(self, name, pid):
@@ -43,8 +46,20 @@ class node:
 def init():
     """
     Init rospy node
+    check for frequency parameter (default = 1Hz)
+    check for filter_type (0 = default (list all), 1 = whitelist, 2 = black list)
+    Return: frequency and filter_type
     """
     rospy.init_node('node_ressource_monitor', anonymous=True)
+    if rospy.has_param('node_ressource_monitor/frequency'):
+        frequency = rospy.get_param('node_ressource_monitor/frequency')
+    else:
+        frequency = 1
+    if rospy.has_param('node_ressource_monitor/filter_type'):
+        filter_type = rospy.get_param('node_ressource_monitor/filter_type')
+    else:
+        filter_type = 0
+    return frequency, filter_type
 
 def get_node_list():
     """
@@ -82,37 +97,50 @@ def print_to_console_and_monitor(name, pid):
     except psutil._exceptions.NoSuchProcess:
         pass
 
+    #create monitor
     monitor = Monitor("node_ressource_monitor")
+
     no_param_available = False
-    #get list of whitelisted nodes
+    #get list of nodes set as filter values
     try:
-        whitelisted_nodes = rospy.get_param('/node_ressource_monitor')
+        node_filter = rospy.get_param('/node_ressource_monitor/nodes')
     except KeyError:
         no_param_available = True
         rospy.logerr("No parameters set - setting default")
 
-    #set default if no parameters are set
-    if no_param_available:
-        whitelisted_nodes = {'default_node':{'name': name, 'values': ['children', 'cmdline', \
+    #If filter_type == 2 (blacklist), compare current node name with filtered Nodes
+    #cancel function call if entry in blacklist is found
+    if filter_type == 2:
+        for element in node_filter:
+            if name in rospy.get_param('/node_ressource_monitor/nodes/' + element).get("name"):
+                rospy.logerr(name + " is blacklisted!")
+                return
+
+    #set default elements in node_filter if no parameters are set, filter_type is default
+    #or filter_type is blacklist, in order to retrieve all available information
+    if no_param_available or filter_type == 0 or filter_type == 2:
+        node_filter = {'default_node':{'name': name, 'values': ['children', 'cmdline', \
             'connections', 'cpu_affinity', 'cpu_percent', 'cpu_times', 'create_time', \
             'cwd', 'exe', 'gids', 'io_counters', 'ionice', 'is_running', 'memory_info', \
             'memory_info_ex', 'memory_maps', 'memory_percent', 'name', \
             'nice', 'num_ctx_switches', 'num_fds', 'num_threads', 'open_files', \
             'parent', 'ppid', 'status', 'terminal', 'threads', 'uids', 'username']}}
 
-    for element in whitelisted_nodes:
+    for element in node_filter:
 
-        #look for whitelisted values, set default if no parameters are set
-        if not no_param_available:
-            whitelisted_values = rospy.get_param('/node_ressource_monitor/' + element)
+        #look for whitelisted values, use default if no parameters are set,
+        #filter_type is default or blacklisting is activated
+        if no_param_available or filter_type == 0 or filter_type == 2:
+            value_filter = node_filter['default_node']
         else:
-            whitelisted_values = whitelisted_nodes['default_node']
+            value_filter = rospy.get_param('/node_ressource_monitor/nodes/' + element)
 
         #lookup name of given node in whitelisted_nodes/values
-        if name in whitelisted_values.get("name"):
+        if name in value_filter.get("name"):
+
             rospy.logout("Node-name: " + name)
             #check whitelisted_values dictionary for values to print
-            for element in whitelisted_values.get("values"):
+            for element in value_filter.get("values"):
                 if element == 'children':
                     rospy.loginfo("children: " + str(node_process_info.children()))
                     monitor.addValue("children", str(node_process_info.children()), "", 0.0)
@@ -236,9 +264,9 @@ def gather_info():
     rospy.loginfo("=============================")
 
 if __name__ == '__main__':
-    init()
-    frequency = 1
+    frequency, filter_type = init()
     rate = rospy.Rate(frequency)
+    rospy.loginfo(frequency)
     while not rospy.is_shutdown():
         try:
             gather_info()

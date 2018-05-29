@@ -1,7 +1,0 @@
-node1:
-    name: /rosout
-    values:
-      - exe
-      - cmdline
-      - ppid
-      - status
