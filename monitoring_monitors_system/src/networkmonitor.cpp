@@ -290,8 +290,7 @@ int main(int argc, char **argv) {
   Monitor msg(n, "Network-Monitor");
 
 	char value[40];
-	while (ros::ok()) {
-    msg.resetMsg();
+  while (ros::ok()) {
 
 		if (bBytes || bload) {
 			float loadrx, loadtx, RXBpS, TXBpS;
@@ -350,8 +349,9 @@ int main(int argc, char **argv) {
 			msg.addValue("TX_Aborted_Errors", tx_aborted_errors, "B", 0);
 
 		}
-		msg.publish();
+    ros::spinOnce();
 		loop_rate.sleep();
+
 	}
 
 	delete[] cnwInterface;

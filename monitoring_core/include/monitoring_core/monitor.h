@@ -13,7 +13,7 @@
 
 class Monitor {
 public:
-  Monitor(ros::NodeHandle &n, std::string monitorDescription);
+  Monitor(ros::NodeHandle &n, std::string monitorDescription, bool autoPublishing = true);
   virtual ~Monitor();
 
   void addValue(std::string key, std::string value, std::string unit, float errorlevel);
@@ -25,10 +25,14 @@ public:
 
 private:
 	ros::Publisher pub;
+  ros::Timer timer;   //takes the publishing frequency
+  void timerCallback(const ros::TimerEvent& te);
+
   monitoring_msgs::MonitoringArray ma;
   std::string node_name_;
   std::string monitor_description_;
   int miIndex = 0;
+
 };
 
 #endif /* SRC_MONITORS_MONITOR_H_ */
