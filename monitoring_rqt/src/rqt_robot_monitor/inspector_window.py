@@ -41,7 +41,7 @@ from .timeline_pane import TimelinePane
 import rqt_robot_monitor.util_robot_monitor as util
 
 
-from ros_monitoring.msg import *
+from monitoring_msgs.msg import *
 
 
 class InspectorWindow(QWidget):

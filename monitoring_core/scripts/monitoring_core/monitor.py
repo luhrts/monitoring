@@ -2,23 +2,23 @@
 import rospy
 from monitoring_msgs.msg import *
 
-class monitor:
+class Monitor:
     def __init__(self, monitorDescription):
-        self.pub = rospy.Publisher('/monitoring/error', MonitoringArray, queue_size=1)
+        self.pub = rospy.Publisher('/monitoring', MonitoringArray, queue_size=1)
         self.ma = MonitoringArray()
         self.description = monitorDescription
         mi = MonitoringInfo()
         mi.name = rospy.get_name()
         mi.description = self.description
-        ma.info.append(mi)
+        self.ma.info.append(mi)
 
     def addValue(self, key, value, unit, errorlevel):
         kv = KeyValue()
-        kv.key = key
-        kv.value = value
-        kv.unit = unit
-        kv.errorlevel = 0.5
-        ma.info[0].values.append(kv)
+        kv.key = str(key)
+        kv.value = str(value)
+        kv.unit = str(unit)
+        kv.errorlevel = errorlevel
+        self.ma.info[0].values.append(kv)
 
     def publish(self):
         self.ma.header.stamp = rospy.Time.now()
@@ -30,7 +30,7 @@ class monitor:
         self.ma = MonitoringArray()
         mi = MonitoringInfo()
         mi.name = rospy.get_name()
-        mi.description = monitorDescription
-        ma.info.append(mi)
+        mi.description = self.description
+        self.ma.info.append(mi)
 
 

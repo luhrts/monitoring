@@ -42,7 +42,7 @@ from python_qt_binding.QtWidgets import QGraphicsPixmapItem, QGraphicsView, \
     QGraphicsScene
 
 import rqt_robot_monitor.util_robot_monitor as util
-from ros_monitoring.msg import *
+from monitoring_msgs.msg import *
 
 
 class TimelineView(QGraphicsView):
