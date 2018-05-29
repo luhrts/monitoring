@@ -13,7 +13,7 @@ int main(int argc, char **argv)
   while (ros::ok()){
     monitor.addValue("count", c, "SIUnits", 0.0);
     c++;
-    monitor.publish();
+    ros::spinOnce();
     loop_rate.sleep();
   }
 
