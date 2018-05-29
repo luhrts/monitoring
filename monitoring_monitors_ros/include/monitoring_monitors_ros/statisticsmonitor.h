@@ -57,5 +57,8 @@ private:
   float freq;   ///< working frequency
   std::vector<StatisticsInfo> statisticData;    ///< contains data from ros_statistics
   std::vector<TopicRequirement> topicRequirements;    ///< contains user defined topic requirements
+
+
+
 };
 #endif /* SRC_STATISTICSMONITOR_H_ */

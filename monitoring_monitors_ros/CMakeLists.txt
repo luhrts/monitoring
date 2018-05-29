@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   monitoring_core
   roscpp
   rospy
+  
 )
 
 catkin_package(
@@ -20,20 +21,19 @@ include_directories(
  ${catkin_INCLUDE_DIRS}
 )
 
-add_library(monitoring_monitors_ros
-  src/statisticsmonitor.cpp
- ~/RTS_ws/src/monitoring/monitoring_core/src/monitor.cpp
-)
+
 add_executable(statistics_monitoring_node src/statisticsmonitor.cpp)
 
 target_link_libraries(statistics_monitoring_node
   ${catkin_LIBRARIES}
 )
-catkin_add_gtest(ros_monitore_test test/test.cpp)
-target_link_libraries(ros_monitore_test
-  ${catkin_LIBRARIES}
- ## monitoring_core
-  monitoring_monitors_ros
-)
+
+if(CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+  add_rostest_gtest(ros_monitore_test test/test_.test src/test/test.cpp)
+  target_link_libraries(ros_monitore_test 
+                        ${catkin_LIBRARIES}
+                        )
+endif()
 
 
