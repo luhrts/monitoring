@@ -3,7 +3,7 @@ import rospy
 from monitoring_msgs.msg import *
 
 class Monitor:
-    def __init__(self, monitorDescription):
+    def __init__(self, monitorDescription, autoPublishing = True):
         self.pub = rospy.Publisher('/monitoring', MonitoringArray, queue_size=1)
         self.ma = MonitoringArray()
         self.description = monitorDescription
@@ -11,6 +11,17 @@ class Monitor:
         mi.name = rospy.get_name()
         mi.description = self.description
         self.ma.info.append(mi)
+
+        if(autoPublishing):
+            try:
+                frequency = rospy.get_param(rospy.get_name() + '/monitoring/frequency')
+                self.timer = rospy.Timer(rospy.Duration(1/frequency), self.publish)
+            except KeyError:
+                rospy.logerr("monitoring frequency not set (%s/monitoring/frequency)", rospy.get_name())
+                quit()
+
+
+
 
     def addValue(self, key, value, unit, errorlevel):
         kv = KeyValue()
