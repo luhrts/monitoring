@@ -11,16 +11,22 @@ class Monitor:
         mi.name = rospy.get_name()
         mi.description = self.description
         self.ma.info.append(mi)
-
         if(autoPublishing):
             try:
+                frequency = 1
                 frequency = rospy.get_param(rospy.get_name() + '/monitoring/frequency')
-                self.timer = rospy.Timer(rospy.Duration(1/frequency), self.publish)
+                if(frequency == 0):
+                    rospy.logerr("frequency can not be 0, using 1")
+                    frequency = 1
+                duration =1.0/frequency
+                self.timer = rospy.Timer(rospy.Duration(duration), self.timercallback)       #//DIVISION BY ZERO
             except KeyError:
                 rospy.logerr("monitoring frequency not set (%s/monitoring/frequency)", rospy.get_name())
                 quit()
 
-
+    def timercallback(self, event):
+        rospy.loginfo( "callback")
+        self.publish()
 
 
     def addValue(self, key, value, unit, errorlevel):

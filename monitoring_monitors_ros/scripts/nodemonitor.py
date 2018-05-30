@@ -12,6 +12,7 @@ def nodemonitor():
         nodes = set(rospy.get_param(rospy.get_name() + '/nodes'))
     except KeyError:
         print "value not set"
+        quit()
 
     rate = rospy.Rate(frequency)
     monitor = Monitor("nodemonitor")
