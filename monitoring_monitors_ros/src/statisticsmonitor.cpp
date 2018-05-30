@@ -8,10 +8,10 @@ StatisticMonitor::StatisticMonitor(ros::NodeHandle &n) {
 
   ros::Rate loop_rate(freq);
   while(ros::ok()) {
-    msg->resetMsg();
+
     // ROS_INFO("Statistics check");
     compareStatisticDataWithRequirements();
-    msg->publish();
+
     std::vector<StatisticsInfo> newSD;
     statisticData = newSD;
     ros::spinOnce();
@@ -41,24 +41,24 @@ void StatisticMonitor::compareStatisticDataWithRequirements() {
     msg->addValue("Sub: ", tr.destination, "", 0.0);
     msg->addValue("Pub: ", tr.source, "", 0.0);
     if(!siFound) {//testing if topic is available
-      msg->addValue("Topic Missing", 0.0, "", 1.0);
+      msg->addValue(tr.topic+ "/TopicMissing", 0.0, "", 1.0);
       continue;
     }
 
     //checking frequency
     if(tr.frequency-tr.dFrequency <si.frequency && si.frequency < tr.frequency+tr.dFrequency){
-      msg->addValue("frequency", si.frequency, "Hz", 0);
+      msg->addValue(tr.topic+ "/frequency", si.frequency, "Hz", 0);
     } else {
       if(tr.frequency != -1) { //if frequency is -1, it should not be checked
-        msg->addValue("frequency", si.frequency, "Hz", tr.errorlevel);
+        msg->addValue(tr.topic+ "/frequency", si.frequency, "Hz", tr.errorlevel);
       }
     }
 
     if(tr.size-tr.dSize <si.size && si.size < tr.size+tr.dSize){
-      msg->addValue("size", si.size, "Byte", 0);
+      msg->addValue(tr.topic+ "/size", si.size, "Byte", 0);
     } else {
       if(tr.size != -1) { //if size is -1, it should not be checked
-        msg->addValue("size", si.size, "Byte", tr.errorlevel);
+        msg->addValue(tr.topic+ "/size", si.size, "Byte", tr.errorlevel);
       }
     }
 

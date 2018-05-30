@@ -39,3 +39,6 @@ There is a rqt plugin to visulaize the monitoring data. To use it, you need to s
 
 ## Connect to Diagnostics
 You can connect the monitoring systems to the diagnostics stack. There are two bridges. One for diagnostics to monitoring (node: *diagnostics_to_monitoring*) and one for monitoring to diagnostics (node: *monitoring_to_diagnostics*)
+
+## Errorlevel
+The Errorlevel is a value between 0.0 and 1.0 it can be any float value. They are further devided in 3 groups. Ok, Warn and Error states. Ok is between 0 and 0.35. Warn is till 0.7 and Error is till 1.0.

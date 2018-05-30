@@ -2,25 +2,24 @@
 import rospy
 from rosnode import *
 from monitoring_msgs.msg import *
-from help import fillMachineInfo
+from monitoring_core.monitor import Monitor
 
 
 def nodemonitor():
     rospy.init_node("nodemonitor")
-    frequency = rospy.get_param(rospy.get_name() + '/frequency')
-    nodes = set(rospy.get_param(rospy.get_name() + '/nodes'))
+    try:
+        frequency = rospy.get_param(rospy.get_name() + '/frequency')
+        nodes = set(rospy.get_param(rospy.get_name() + '/nodes'))
+    except KeyError:
+        print "value not set"
+        quit()
+
     rate = rospy.Rate(frequency)
-    
-    pub = rospy.Publisher('/monitoring', MonitoringArray, queue_size=1)
+    monitor = Monitor("nodemonitor")
+    #pub = rospy.Publisher('/monitoring', MonitoringArray, queue_size=1)
     
     while not rospy.is_shutdown():  # main loop
-        mi = MonitoringInfo()
-        ma = MonitoringArray()
-        ma.info.append(mi)
-        mi.header.stamp = rospy.Time.now()
-        mi.name = rospy.get_name()
-        mi.description = "A Node-Monitor"
-        fillMachineInfo(mi)
+
         
         currentNodes = set(get_node_names())
         if(not nodes.issubset(currentNodes)):
@@ -29,15 +28,9 @@ def nodemonitor():
         for node in nodes:
             if(not rosnode_ping(node, 1)):
                 rospy.logwarn("Can not ping node: %s", node)
-                kv = KeyValue()
-                kv.key = "node unavailable"
-                str = node
-                kv.value = str
-                kv.errorlevel = 0.5
-                mi.values.append(kv)
+                monitor.addValue("node unavailable", node, "", 0.5)
             
-        if(not len(mi.values) == 0):  # stops publishing if there are no missing nodes
-            pub.publish(ma)
+
         rate.sleep()
 
 

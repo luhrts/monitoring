@@ -67,7 +67,6 @@ int main(int argc, char **argv)
   Monitor msg(n, "RAM-Monitor" );
   while (ros::ok())
   {
-    msg.resetMsg();
 
     meminfo();		//geting ram info via sysinfo lib
     /* OUTPUT: kb_main_total, kb_main_used, kb_main_free,
@@ -83,7 +82,7 @@ int main(int argc, char **argv)
       float perc = ((float)kb_main_used / (float)kb_main_total) * 100.0;
       msg.addValue("RAM % used", perc, "%", 0);
     }
-    msg.publish();
+    ros::spinOnce();
 
     loop_rate.sleep();
 

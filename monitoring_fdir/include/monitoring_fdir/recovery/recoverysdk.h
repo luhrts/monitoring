@@ -33,7 +33,7 @@ private:
 
   ros::Subscriber sub;    ///< subscribes to /monitoring/errors
 
-  std::map<std::string, std::vector<ErrorHandlerInterface *>> recoveryHandler;  ///< contains the registered handler with the corresponding msgs
+  std::map<std::string, std::vector<ErrorHandlerInterface *> > recoveryHandler;  ///< contains the registered handler with the corresponding msgs
 };
 
 #endif // RECOVERYSDK_H
