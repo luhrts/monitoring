@@ -31,14 +31,13 @@ private:
   std::string node_name_;
   std::string monitor_description_;
   int miIndex = 0;
-<<<<<<< HEAD
+
 ///////////////////Gtest/////////////////////
 FRIEND_TEST(MonitoringCore, addValueString);
 FRIEND_TEST(MonitoringCore, addValueFloatRand);
 FRIEND_TEST(MonitoringCore, addValueFloat);
 FRIEND_TEST(MonitoringCore, addValueErrorLevel);
-=======
->>>>>>> ec3b999014c7db378724d36e63a8072d098f88ba
+
 
 };
 
