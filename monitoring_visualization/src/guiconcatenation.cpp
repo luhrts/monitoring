@@ -54,10 +54,9 @@ void GuiConcatenation::monitor_cb(monitoring_msgs::MonitoringArray ma) {
 
 			msg.infos.push_back(gi);
 		}
-		meanerror = meanerror / mi.values.size();
-    if(std::isnan(meanerror)) {
-      ROS_ERROR("Meanerror schwachsinn, %s", gi1.name);
-    }
+		if(mi.values.size()!=0) {
+			meanerror = meanerror / mi.values.size();
+		}
 		gi1.errorlevel = meanerror;		//TODO ist die reihenfolge wichtig???
     gi1.unit = "";
     msg.infos.push_back(gi1);
