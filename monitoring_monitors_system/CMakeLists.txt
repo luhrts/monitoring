@@ -29,6 +29,7 @@ include_directories(
 add_executable(cpu_monitoring_node src/cpumonitor.cpp)
 add_executable(ram_monitoring_node src/rammonitor.cpp)
 add_executable(network_monitoring_node src/networkmonitor.cpp)
+add_executable(wifi_signal_strength_monitoring_node src/wifistrengthmonitor.cpp)
 
 target_link_libraries(cpu_monitoring_node
   ${catkin_LIBRARIES}
@@ -43,4 +44,6 @@ target_link_libraries(ram_monitoring_node
 target_link_libraries(network_monitoring_node
   ${catkin_LIBRARIES}
 )
-
+target_link_libraries(wifi_signal_strength_monitoring_node
+  ${catkin_LIBRARIES}
+)
