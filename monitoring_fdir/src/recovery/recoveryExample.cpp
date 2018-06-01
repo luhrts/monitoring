@@ -20,12 +20,12 @@ int main(int argc, char **argv)
   RecoverySDK example(n);
 
   RestartNodeHandler rnh;
-  StopLaunchFile slf;
+  //StopLaunchFile slf;
   OutputErrorMessage oem;
   ErrorToSpeech ets(n);
 
   example.registerErrorHandler(&rnh, "node dead");
-  example.registerErrorHandler(&slf, "CPU Overheating");
+  //example.registerErrorHandler(&slf, "CPU Overheating");
   example.registerErrorHandler(&oem, "CPU Hot");
   example.registerErrorHandler(&ets, "CPU Hot");
 
