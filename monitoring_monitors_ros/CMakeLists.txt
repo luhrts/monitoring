@@ -30,10 +30,9 @@ target_link_libraries(statistics_monitoring_node
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
-  add_rostest_gtest(ros_monitore_test test/ros_monitore_test.test src/test/ros_monitore_test.cpp)
-  target_link_libraries(ros_monitore_test 
+  add_rostest_gtest(ros_statistics_monitor_test test/launch/ros_statistics_monitor_test.test test/src/ros_statistics_monitor_test.cpp)
+  target_link_libraries(ros_statistics_monitor_test
                         ${catkin_LIBRARIES}
-                       ## monitoring_core
                        )
 endif()
 
