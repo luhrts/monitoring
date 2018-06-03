@@ -7,21 +7,9 @@
  Supports a filter function in order to only retrieve information of specific
  nodes with specific values.
 
-# TODO: node name, PID into own Datatype (1) DONE
-# TODO: comments in Dpxygen style (2) DONE
-# TODO: Log error as ros error (3) DONE
-# TODO: get all psutil process info (6) DONE
-# TODO: rename file (4) DONE
-# TODO: Integrate Whitelist Param-stuff (5) DONE
-# TODO: Integrate default if Whitelist Param-stuff n/a  DONE
-# TODO: Integrate into Monitoring (7) DONE
-# TODO: Set return value of get_process_info(pid) to named tuple containing all values
-        see documentation at https://docs.python.org/3/library/collections.html#collections.namedtuple DONE
-# TODO: Add second yaml file for general config, (frequency, black/whitelist etc) DONE
-# TODO: Clean up get_process_info() nonsense DONE
-# TODO: create additional launch files DONE
-# TODO: integrate blacklist filter feature DONE
+# TODO: Filter enumration
 # TODO: Add units to monitor output
+# TODO: nur alle lokalen nodes, wenn whitelist aber auf anderem rechner dann warning
 """
 
 
@@ -36,18 +24,19 @@ from collections import namedtuple
 
 ID = "NODEINFO"
 filter_type = None
+monitor = Monitor("node_ressource_monitor")
 
 class node:
         def __init__(self, name, pid):
             self.pid = pid
             self.name = name
 
-
 def init():
     """
     Init rospy node
     check for frequency parameter (default = 1Hz)
     check for filter_type (0 = default (list all), 1 = whitelist, 2 = black list)
+    init monitoring
     Return: frequency and filter_type
     """
     rospy.init_node('node_ressource_monitor', anonymous=True)
@@ -84,184 +73,385 @@ def get_process_info(pid):
     gather all information provided by psutil.Process(pid)
     """
     node_process_info = psutil.Process(pid)
-    return node_process_info
+    return node_process_info.as_dict()
 
-def print_to_console_and_monitor(name, pid):
-    """
-    print information to console
-    pass the data to the ros monitoring system
-    """
-    #get all values belonging to pid
-    try:
-        node_process_info = get_process_info(pid)
-    except psutil._exceptions.NoSuchProcess:
-        pass
-
-    #create monitor
-    monitor = Monitor("node_ressource_monitor")
-
-    no_param_available = False
-    #get list of nodes set as filter values
-    try:
-        node_filter = rospy.get_param('/node_ressource_monitor/nodes')
-    except KeyError:
-        no_param_available = True
-        rospy.logerr("No parameters set - setting default")
-
-    #If filter_type == 2 (blacklist), compare current node name with filtered Nodes
-    #cancel function call if entry in blacklist is found
-    if filter_type == 2:
-        for element in node_filter:
-            if name in rospy.get_param('/node_ressource_monitor/nodes/' + element).get("name"):
-                rospy.logerr(name + " is blacklisted!")
-                return
-
-    #set default elements in node_filter if no parameters are set, filter_type is default
-    #or filter_type is blacklist, in order to retrieve all available information
-    if no_param_available or filter_type == 0 or filter_type == 2:
-        node_filter = {'default_node':{'name': name, 'values': ['children', 'cmdline', \
-            'connections', 'cpu_affinity', 'cpu_percent', 'cpu_times', 'create_time', \
-            'cwd', 'exe', 'gids', 'io_counters', 'ionice', 'is_running', 'memory_info', \
-            'memory_info_ex', 'memory_maps', 'memory_percent', 'name', \
-            'nice', 'num_ctx_switches', 'num_fds', 'num_threads', 'open_files', \
-            'parent', 'ppid', 'status', 'terminal', 'threads', 'uids', 'username']}}
-
-    for element in node_filter:
-
-        #look for whitelisted values, use default if no parameters are set,
-        #filter_type is default or blacklisting is activated
-        if no_param_available or filter_type == 0 or filter_type == 2:
-            value_filter = node_filter['default_node']
-        else:
-            value_filter = rospy.get_param('/node_ressource_monitor/nodes/' + element)
-
-        #lookup name of given node in whitelisted_nodes/values
-        if name in value_filter.get("name"):
-
-            rospy.logout("Node-name: " + name)
-            #check whitelisted_values dictionary for values to print
-            for element in value_filter.get("values"):
-                if element == 'children':
-                    rospy.loginfo("children: " + str(node_process_info.children()))
-                    monitor.addValue("children", str(node_process_info.children()), "", 0.0)
-                if element == 'cmdline':
-                    rospy.loginfo("cmdline: " + str(node_process_info.cmdline()))
-                    monitor.addValue("cmdline", str(node_process_info.cmdline()), "", 0.0)
-                if element == 'connections':
-                    rospy.loginfo("connections: " + str(node_process_info.connections()))
-                    monitor.addValue("connections", str(node_process_info.connections()), "", 0.0)
-                if element == 'cpu_affinity':
-                    rospy.loginfo("cpu_affinity: " + str(node_process_info.cpu_affinity()))
-                    monitor.addValue("cpu_affinity", str(node_process_info.cpu_affinity()), "", 0.0)
-                if element == 'cpu_percent':
-                    rospy.loginfo("cpu_percent: " + str(node_process_info.cpu_percent()))
-                    monitor.addValue("cpu_percent", str(node_process_info.cpu_percent()), "", 0.0)
-                if element == 'cpu_times':
-                    rospy.loginfo("cpu_times: " + str(node_process_info.cpu_times()))
-                    monitor.addValue("cpu_times", str(node_process_info.cpu_times()), "", 0.0)
-                if element == 'create_time':
-                    rospy.loginfo("create_time: " + str(node_process_info.create_time()))
-                    monitor.addValue("create_time", str(node_process_info.create_time()), "", 0.0)
-                if element == 'cwd':
-                    rospy.loginfo("cwd: " + str(node_process_info.cwd()))
-                    monitor.addValue("cwd", str(node_process_info.cwd()), "", 0.0)
-                if element == 'exe':
-                    rospy.loginfo("exe-path: " + str(node_process_info.exe()))
-                    monitor.addValue("exe-path", str(node_process_info.exe()), "", 0.0)
-                if element == 'gids':
-                    rospy.loginfo("gids: " + str(node_process_info.gids()))
-                    monitor.addValue("gids", str(node_process_info.gids()), "", 0.0)
-                if element == 'io_counters':
-                    rospy.loginfo("io_counters: " + str(node_process_info.io_counters()))
-                    monitor.addValue("io_counters", str(node_process_info.io_counters()), "", 0.0)
-                if element == 'ionice':
-                    rospy.loginfo("ionice: " + str(node_process_info.ionice()))
-                    monitor.addValue("ionice", str(node_process_info.ionice()), "", 0.0)
-                if element == 'is_running':
-                    rospy.loginfo("is_running: " + str(node_process_info.is_running()))
-                    monitor.addValue("is_running", str(node_process_info.is_running()), "", 0.0)
-                if element == 'memory_info':
-                    rospy.loginfo("memory_info: " + str(node_process_info.memory_info()))
-                    monitor.addValue("memory_info", str(node_process_info.memory_info()), "", 0.0)
-                if element == 'memory_info_ex':
-                    rospy.loginfo("memory_info_ex: " + str(node_process_info.memory_info_ex()))
-                    monitor.addValue("memory_info_ex", str(node_process_info.memory_info_ex()), "", 0.0)
-                if element == 'memory_maps':
-                    rospy.loginfo("memory_maps: " + str(node_process_info.memory_maps()))
-                    monitor.addValue("memory_maps", str(node_process_info.memory_maps()), "", 0.0)
-                if element == 'memory_percent':
-                    rospy.loginfo("memory_percent: " + str(node_process_info.memory_percent()))
-                    monitor.addValue("memory_percent", str(node_process_info.memory_percent()), "", 0.0)
-                if element == 'name':
-                    rospy.loginfo("name: " + str(node_process_info.name()))
-                    monitor.addValue("name", str(node_process_info.name()), "", 0.0)
-                if element == 'nice':
-                    rospy.loginfo("nice: " + str(node_process_info.nice()))
-                    monitor.addValue("nice", str(node_process_info.nice()), "", 0.0)
-                if element == 'num_ctx_switches':
-                    rospy.loginfo("num_ctx_switches: " + str(node_process_info.num_ctx_switches()))
-                    monitor.addValue("num_ctx_switches", str(node_process_info.num_ctx_switches()), "", 0.0)
-                if element == 'num_fds':
-                    rospy.loginfo("num_fds: " + str(node_process_info.num_fds()))
-                    monitor.addValue("num_fds", str(node_process_info.num_fds()), "", 0.0)
-                if element == 'num_handles':
-                    rospy.loginfo("num_handles: " + str(node_process_info.num_handles()))
-                    monitor.addValue("num_handles", str(node_process_info.num_handles()), "", 0.0)
-                if element == 'num_threads':
-                    rospy.loginfo("num_threads: " + str(node_process_info.num_threads()))
-                    monitor.addValue("num_threads", str(node_process_info.num_threads()), "", 0.0)
-                if element == 'open_files':
-                    rospy.loginfo("open_files: " + str(node_process_info.open_files()))
-                    monitor.addValue("open_files", str(node_process_info.open_files()), "", 0.0)
-                if element == 'parent':
-                    rospy.loginfo("parent: " + str(node_process_info.parent()))
-                    monitor.addValue("parent", str(node_process_info.parent()), "", 0.0)
-                if element == 'pid':
-                    rospy.loginfo("pid: " + str(node_process_info.pid()))
-                    monitor.addValue("pid", str(node_process_info.pid()), "", 0.0)
-                if element == 'ppid':
-                    rospy.loginfo("ppid: " + str(node_process_info.ppid()))
-                    monitor.addValue("ppid", str(node_process_info.ppid()), "", 0.0)
-                if element == 'rlimit':
-                    rospy.loginfo("rlimit: " + str(node_process_info.rlimit()))
-                    monitor.addValue("rlimit", str(node_process_info.rlimit()), "", 0.0)
-                if element == 'status':
-                    rospy.loginfo("status: " + str(node_process_info.status()))
-                    monitor.addValue("status", str(node_process_info.status()), "", 0.0)
-                if element == 'terminal':
-                    rospy.loginfo("terminal: " + str(node_process_info.terminal()))
-                    monitor.addValue("terminal", str(node_process_info.terminal()), "", 0.0)
-                if element == 'threads':
-                    rospy.loginfo("threads: " + str(node_process_info.threads()))
-                    monitor.addValue("threads", str(node_process_info.threads()), "", 0.0)
-                if element == 'uids':
-                    rospy.loginfo("uids: " + str(node_process_info.uids()))
-                    monitor.addValue("uids", str(node_process_info.uids()), "", 0.0)
-                if element == 'username':
-                    rospy.loginfo("username: " + str(node_process_info.username()))
-                    monitor.addValue("username", str(node_process_info.username()), "", 0.0)
-
-            monitor.publish()
-        else:
-            rospy.logerr(name + " not in whitelist")
 
 def gather_info():
     """
     obtains list of all running nodes by calling get_node_list()
-    calls get_process_info() for each retrieved node
-    calls print_info_to_console() for each retrieved node
+    calls print_to_console_and_monitor for each retrieved node
     """
     node_list = get_node_list()
     for i in node_list:
         try:
-            get_process_info(i.pid)
             print_to_console_and_monitor(i.name, i.pid)
             rospy.loginfo("------------------------------")
         except psutil._exceptions.NoSuchProcess:
             rospy.logerr("----------NO_SUCH_PROCESS_ERROR---------------")
             pass
-
+    monitor.publish()
     rospy.loginfo("=============================")
+
+def print_to_console_and_monitor(name, pid):
+    #get all values belonging to pid
+    try:
+        node_process_info = get_process_info(pid)
+    except psutil._exceptions.NoSuchProcess:
+        pass
+    #check if there is a node with the same name in filter config
+    if rospy.has_param('/node_ressource_monitor' + name):
+        node_filter = rospy.get_param('/node_ressource_monitor' + name)
+    else:
+        rospy.logwarn(name + " has no filter entry")
+        return
+    #add name of current node to monitor
+    monitor_string, monitor_value, monitor_unit, monitor_errorlvl = name_to_monitor(name)
+    monitor.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+
+    #iterate over all keys given for node in node_filter
+    for key in node_filter.get("values"):
+        #if psutil delivers a value for a key, send this value to its dedicated function
+        if key in node_process_info.keys():
+            value = node_process_info.get(key)
+            if value_dict.has_key(key):
+                #call dedicated function for key and retrieve relevant monitoring parameters
+                monitor_string, monitor_value, monitor_unit, monitor_errorlvl = value_dict[key](value)
+                #add parameters to monitor
+                monitor.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+
+
+def children_to_monitor(value):
+    rospy.loginfo("children: " + str(value))
+    monitor_string = "children"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def cmdline_to_monitor(value):
+    rospy.loginfo("cmdline: " + str(value))
+    monitor_string = "cmdline"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def connections_to_monitor(value):
+    rospy.loginfo("connections: " + str(value))
+    monitor_string = "connections"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def cpu_affinity_to_monitor(value):
+    rospy.loginfo("cpu_affinity: " + str(value))
+    monitor_string = "cpu_affinity"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def cpu_percent_to_monitor(value):
+    rospy.loginfo("cpu_percent: " + str(value))
+    monitor_string = "cpu_percent"
+    monitor_value = str(value)
+    monitor_unit = "percent"
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def cpu_times_to_monitor(value):
+    rospy.loginfo("cpu_times: " + str(value))
+    monitor_string = "cpu_times"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def create_time_to_monitor(value):
+    rospy.loginfo("create_time: " + str(value))
+    monitor_string = "create_time"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def cwd_to_monitor(value):
+    rospy.loginfo("cwd: " + str(value))
+    monitor_string = "cwd"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def exe_to_monitor(value):
+    rospy.loginfo("exe-path: " + str(value))
+    monitor_string = "exe"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def gids_to_monitor(value):
+    rospy.loginfo("gids: " + str(value))
+    monitor_string = "gids"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def io_counters_to_monitor(value):
+    rospy.loginfo("io_counters: " + str(value))
+    monitor_string = "io_counters"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def ionice_to_monitor(value):
+    rospy.loginfo("ionice: " + str(value))
+    monitor_string = "ionice"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def is_running_to_monitor(value):
+    rospy.loginfo("is_running: " + str(value))
+    monitor_string = "is_running"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def memory_info_to_monitor(value):
+    rospy.loginfo("memory_info: " + str(value))
+    monitor_string = "memory_info"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def memory_info_ex_to_monitor(value):
+    rospy.loginfo("memory_info_ex: " + str(value))
+    monitor_string = "memory_info_ex"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def memory_maps_to_monitor(value):
+    rospy.loginfo("memory_maps: " + str(value))
+    monitor_string = "memory_maps"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def memory_percent_to_monitor(value):
+    rospy.loginfo("memory_percent: " + str(value))
+    monitor_string = "memory_percent"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def name_to_monitor(value):
+    rospy.loginfo("name: " + str(value))
+    monitor_string = "name"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def nice_to_monitor(value):
+    rospy.loginfo("nice: " + str(value))
+    monitor_string = "nice"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def num_ctx_switches_to_monitor(value):
+    rospy.loginfo("num_ctx_switches: " + str(value))
+    monitor_string = "num_ctx_switches"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def num_fds_to_monitor(value):
+    rospy.loginfo("num_fds: " + str(value))
+    monitor_string = "num_fds"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def num_handles_to_monitor(value):
+    rospy.loginfo("num_handles: " + str(value))
+    monitor_string = "num_handles"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def num_threads_to_monitor(value):
+    rospy.loginfo("num_threads: " + str(value))
+    monitor_string = "num_threads"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def open_files_to_monitor(value):
+    rospy.loginfo("open_files: " + str(value))
+    monitor_string = "open_files"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def parent_to_monitor(value):
+    rospy.loginfo("parent: " + str(value))
+    monitor_string = "parent"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def pid_to_monitor(value):
+    rospy.loginfo("pid: " + str(value))
+    monitor_string = "pid"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def ppid_to_monitor(value):
+    rospy.loginfo("ppid: " + str(value))
+    monitor_string = "ppid"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def rlimit_to_monitor(value):
+    rospy.loginfo("rlimit: " + str(value))
+    monitor_string = "rlimit"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def status_to_monitor(value):
+    rospy.loginfo("status: " + str(value))
+    monitor_string = "status"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def terminal_to_monitor(value):
+    rospy.loginfo("terminal: " + str(value))
+    monitor_string = "terminal"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def threads_to_monitor(value):
+    rospy.loginfo("threads: " + str(value))
+    monitor_string = "threads"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def uids_to_monitor(value):
+    rospy.loginfo("uids: " + str(value))
+    monitor_string = "uids"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+def username_to_monitor(value):
+    rospy.loginfo("username: " + str(value))
+    monitor_string = "username"
+    monitor_value = str(value)
+    monitor_unit = " "
+    monitor_errorlvl = 0
+
+    return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
+
+value_dict = {
+  'children': children_to_monitor,
+  'cmdline': cmdline_to_monitor,
+  'connections': connections_to_monitor,
+  'cpu_affinity': cpu_affinity_to_monitor,
+  'cpu_percent': cpu_percent_to_monitor,
+  'cpu_times': cpu_times_to_monitor,
+  'create_time': create_time_to_monitor,
+  'cwd': cwd_to_monitor,
+  'exe': exe_to_monitor,
+  'gids': gids_to_monitor,
+  'io_counters': io_counters_to_monitor,
+  'ionice': ionice_to_monitor,
+  'is_running': is_running_to_monitor,
+  'memory_info': memory_info_to_monitor,
+  'memory_info_ex': memory_info_ex_to_monitor,
+  'memory_maps': memory_maps_to_monitor,
+  'memory_percent': memory_percent_to_monitor,
+  'name': name_to_monitor,
+  'nice': nice_to_monitor,
+  'num_ctx_switches': num_ctx_switches_to_monitor,
+  'num_fds': num_fds_to_monitor,
+  'num_handles': num_handles_to_monitor,
+  'num_threads': num_threads_to_monitor,
+  'open_files': open_files_to_monitor,
+  'parent': parent_to_monitor,
+  'pid': pid_to_monitor,
+  'ppid': ppid_to_monitor,
+  'rlimit': rlimit_to_monitor,
+  'status': status_to_monitor,
+  'terminal': terminal_to_monitor,
+  'threads': threads_to_monitor,
+  'uids': uids_to_monitor,
+  'username': username_to_monitor}
+
 
 if __name__ == '__main__':
     frequency, filter_type = init()

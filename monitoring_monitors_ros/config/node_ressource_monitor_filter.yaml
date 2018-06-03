@@ -1,8 +1,14 @@
-nodes:
-  node1:
-      name: /rosout
-      values:
-        - exe
-        - cmdline
-        - ppid
-        - status
+frequency: 1
+# 0 = default(list all), 1 = whitelist, 2 = blacklist
+filter_type: 1
+
+rosout:
+  values:
+    - cmdline
+    - cpu_percent
+    - memory_percent
+node_ressource_monitor:
+  values:
+    - exe
+    - cpu_percent
+    - memory_percent
