@@ -32,5 +32,3 @@ class Monitor:
         mi.name = rospy.get_name()
         mi.description = self.description
         self.ma.info.append(mi)
-
-

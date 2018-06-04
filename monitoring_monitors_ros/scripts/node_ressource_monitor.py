@@ -36,7 +36,6 @@ def init():
     Init rospy node
     check for frequency parameter (default = 1Hz)
     check for filter_type (0 = default (list all), 1 = whitelist, 2 = black list)
-    init monitoring
     Return: frequency and filter_type
     """
     rospy.init_node('node_ressource_monitor', anonymous=True)
@@ -104,9 +103,6 @@ def print_to_console_and_monitor(name, pid):
     else:
         rospy.logwarn(name + " has no filter entry")
         return
-    #add name of current node to monitor
-    monitor_string, monitor_value, monitor_unit, monitor_errorlvl = name_to_monitor(name)
-    monitor.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
     #iterate over all keys given for node in node_filter
     for key in node_filter.get("values"):
@@ -115,302 +111,302 @@ def print_to_console_and_monitor(name, pid):
             value = node_process_info.get(key)
             if value_dict.has_key(key):
                 #call dedicated function for key and retrieve relevant monitoring parameters
-                monitor_string, monitor_value, monitor_unit, monitor_errorlvl = value_dict[key](value)
+                monitor_string, monitor_value, monitor_unit, monitor_errorlvl = value_dict[key](value, name)
                 #add parameters to monitor
                 monitor.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 
-def children_to_monitor(value):
+def children_to_monitor(value, name):
     rospy.loginfo("children: " + str(value))
-    monitor_string = "children"
+    monitor_string = name.replace("/","") + "_" +  "children"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def cmdline_to_monitor(value):
+def cmdline_to_monitor(value, name):
     rospy.loginfo("cmdline: " + str(value))
-    monitor_string = "cmdline"
+    monitor_string = name.replace("/","") + "_" +  "cmdline"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def connections_to_monitor(value):
+def connections_to_monitor(value, name):
     rospy.loginfo("connections: " + str(value))
-    monitor_string = "connections"
+    monitor_string = name.replace("/","") + "_" +  "connections"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def cpu_affinity_to_monitor(value):
+def cpu_affinity_to_monitor(value, name):
     rospy.loginfo("cpu_affinity: " + str(value))
-    monitor_string = "cpu_affinity"
+    monitor_string = name.replace("/","") + "_" +  "cpu_affinity"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def cpu_percent_to_monitor(value):
+def cpu_percent_to_monitor(value, name):
     rospy.loginfo("cpu_percent: " + str(value))
-    monitor_string = "cpu_percent"
+    monitor_string = name.replace("/","") + "_" + "cpu_percent"
     monitor_value = str(value)
     monitor_unit = "percent"
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def cpu_times_to_monitor(value):
+def cpu_times_to_monitor(value, name):
     rospy.loginfo("cpu_times: " + str(value))
-    monitor_string = "cpu_times"
+    monitor_string = name.replace("/","") + "_" +  "cpu_times"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def create_time_to_monitor(value):
+def create_time_to_monitor(value, name):
     rospy.loginfo("create_time: " + str(value))
-    monitor_string = "create_time"
+    monitor_string = name.replace("/","") + "_" +  "create_time"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def cwd_to_monitor(value):
+def cwd_to_monitor(value, name):
     rospy.loginfo("cwd: " + str(value))
-    monitor_string = "cwd"
+    monitor_string = name.replace("/","") + "_" +  "cwd"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def exe_to_monitor(value):
+def exe_to_monitor(value, name):
     rospy.loginfo("exe-path: " + str(value))
-    monitor_string = "exe"
+    monitor_string = name.replace("/","") + "_" +  "exe"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def gids_to_monitor(value):
+def gids_to_monitor(value, name):
     rospy.loginfo("gids: " + str(value))
-    monitor_string = "gids"
+    monitor_string = name.replace("/","") + "_" +  "gids"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def io_counters_to_monitor(value):
+def io_counters_to_monitor(value, name):
     rospy.loginfo("io_counters: " + str(value))
-    monitor_string = "io_counters"
+    monitor_string = name.replace("/","") + "_" +  "io_counters"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def ionice_to_monitor(value):
+def ionice_to_monitor(value, name):
     rospy.loginfo("ionice: " + str(value))
-    monitor_string = "ionice"
+    monitor_string = name.replace("/","") + "_" +  "ionice"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def is_running_to_monitor(value):
+def is_running_to_monitor(value, name):
     rospy.loginfo("is_running: " + str(value))
-    monitor_string = "is_running"
+    monitor_string = name.replace("/","") + "_" +  "is_running"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def memory_info_to_monitor(value):
+def memory_info_to_monitor(value, name):
     rospy.loginfo("memory_info: " + str(value))
-    monitor_string = "memory_info"
+    monitor_string = name.replace("/","") + "_" +  "memory_info"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def memory_info_ex_to_monitor(value):
+def memory_info_ex_to_monitor(value, name):
     rospy.loginfo("memory_info_ex: " + str(value))
-    monitor_string = "memory_info_ex"
+    monitor_string = name.replace("/","") + "_" +  "memory_info_ex"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def memory_maps_to_monitor(value):
+def memory_maps_to_monitor(value, name):
     rospy.loginfo("memory_maps: " + str(value))
-    monitor_string = "memory_maps"
+    monitor_string = name.replace("/","") + "_" +  "memory_maps"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def memory_percent_to_monitor(value):
+def memory_percent_to_monitor(value, name):
     rospy.loginfo("memory_percent: " + str(value))
-    monitor_string = "memory_percent"
+    monitor_string = name.replace("/","") + "_" +  "memory_percent"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def name_to_monitor(value):
+def name_to_monitor(value, name):
     rospy.loginfo("name: " + str(value))
-    monitor_string = "name"
+    monitor_string = name.replace("/","") + "_" +  "name"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def nice_to_monitor(value):
+def nice_to_monitor(value, name):
     rospy.loginfo("nice: " + str(value))
-    monitor_string = "nice"
+    monitor_string = name.replace("/","") + "_" +  "nice"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def num_ctx_switches_to_monitor(value):
+def num_ctx_switches_to_monitor(value, name):
     rospy.loginfo("num_ctx_switches: " + str(value))
-    monitor_string = "num_ctx_switches"
+    monitor_string = name.replace("/","") + "_" +  "num_ctx_switches"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def num_fds_to_monitor(value):
+def num_fds_to_monitor(value, name):
     rospy.loginfo("num_fds: " + str(value))
-    monitor_string = "num_fds"
+    monitor_string = name.replace("/","") + "_" +  "num_fds"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def num_handles_to_monitor(value):
+def num_handles_to_monitor(value, name):
     rospy.loginfo("num_handles: " + str(value))
-    monitor_string = "num_handles"
+    monitor_string = name.replace("/","") + "_" +  "num_handles"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def num_threads_to_monitor(value):
+def num_threads_to_monitor(value, name):
     rospy.loginfo("num_threads: " + str(value))
-    monitor_string = "num_threads"
+    monitor_string = name.replace("/","") + "_" +  "num_threads"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def open_files_to_monitor(value):
+def open_files_to_monitor(value, name):
     rospy.loginfo("open_files: " + str(value))
-    monitor_string = "open_files"
+    monitor_string = name.replace("/","") + "_" +  "open_files"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def parent_to_monitor(value):
+def parent_to_monitor(value, name):
     rospy.loginfo("parent: " + str(value))
-    monitor_string = "parent"
+    monitor_string = name.replace("/","") + "_" +  "parent"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def pid_to_monitor(value):
+def pid_to_monitor(value, name):
     rospy.loginfo("pid: " + str(value))
-    monitor_string = "pid"
+    monitor_string = name.replace("/","") + "_" +  "pid"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def ppid_to_monitor(value):
+def ppid_to_monitor(value, name):
     rospy.loginfo("ppid: " + str(value))
-    monitor_string = "ppid"
+    monitor_string = name.replace("/","") + "_" +  "ppid"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def rlimit_to_monitor(value):
+def rlimit_to_monitor(value, name):
     rospy.loginfo("rlimit: " + str(value))
-    monitor_string = "rlimit"
+    monitor_string = name.replace("/","") + "_" +  "rlimit"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def status_to_monitor(value):
+def status_to_monitor(value, name):
     rospy.loginfo("status: " + str(value))
-    monitor_string = "status"
+    monitor_string = name.replace("/","") + "_" +  "status"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def terminal_to_monitor(value):
+def terminal_to_monitor(value, name):
     rospy.loginfo("terminal: " + str(value))
-    monitor_string = "terminal"
+    monitor_string = name.replace("/","") + "_" +  "terminal"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def threads_to_monitor(value):
+def threads_to_monitor(value, name):
     rospy.loginfo("threads: " + str(value))
-    monitor_string = "threads"
+    monitor_string = name.replace("/","") + "_" +  "threads"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def uids_to_monitor(value):
+def uids_to_monitor(value, name):
     rospy.loginfo("uids: " + str(value))
-    monitor_string = "uids"
+    monitor_string = name.replace("/","") + "_" +  "uids"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
-def username_to_monitor(value):
+def username_to_monitor(value, name):
     rospy.loginfo("username: " + str(value))
-    monitor_string = "username"
+    monitor_string = name.replace("/","") + "_" +  "username"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0

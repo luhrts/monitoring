@@ -4,6 +4,7 @@ filter_type: 1
 
 rosout:
   values:
+    - name
     - cmdline
     - cpu_percent
     - memory_percent
