@@ -7,12 +7,11 @@
  Supports a filter function in order to only retrieve information of specific
  nodes with specific values.
 
-# TODO: Filter enumration
 # TODO: Add units to monitor output
 # TODO: nur alle lokalen nodes, wenn whitelist aber auf anderem rechner dann warning
 """
 
-
+import enum
 import rospy
 import psutil
 import rosnode
@@ -21,15 +20,20 @@ import xmlrpclib
 from std_msgs.msg import String
 from monitoring_core.monitor import Monitor
 from collections import namedtuple
+from enum import Enum
 
 ID = "NODEINFO"
-filter_type = None
 monitor = Monitor("node_ressource_monitor")
 
 class node:
         def __init__(self, name, pid):
             self.pid = pid
             self.name = name
+
+class Filter_type:
+    DEFAULT = 0
+    WHITLELIST = 1
+    BLACKLIST = 2
 
 def init():
     """
@@ -46,7 +50,7 @@ def init():
     if rospy.has_param('node_ressource_monitor/filter_type'):
         filter_type = rospy.get_param('node_ressource_monitor/filter_type')
     else:
-        filter_type = 0
+        filter_type = Filter_type.DEFAULT
     return frequency, filter_type
 
 def get_node_list():
@@ -98,14 +102,17 @@ def print_to_console_and_monitor(name, pid):
     except psutil._exceptions.NoSuchProcess:
         pass
     #check if there is a node with the same name in filter config
-    if rospy.has_param('/node_ressource_monitor' + name):
-        node_filter = rospy.get_param('/node_ressource_monitor' + name)
-    else:
-        rospy.logwarn(name + " has no filter entry")
-        return
-
+    if filter_type == Filter_type.WHITLELIST:
+        if rospy.has_param('/node_ressource_monitor' + name):
+            node_value_filter = rospy.get_param('/node_ressource_monitor' + name)
+        else:
+            rospy.logwarn(name + " has no filter entry")
+            return
+    if filter_type == Filter_type.DEFAULT:
+        node_value_filter = {'values':['cpu_affinity','cpu_percent','cpu_times'
+        ,'io_counters','ionice','memory_percent','name','nice','num_ctx_switches','status']}
     #iterate over all keys given for node in node_filter
-    for key in node_filter.get("values"):
+    for key in node_value_filter.get("values"):
         #if psutil delivers a value for a key, send this value to its dedicated function
         if key in node_process_info.keys():
             value = node_process_info.get(key)
@@ -452,7 +459,7 @@ value_dict = {
 if __name__ == '__main__':
     frequency, filter_type = init()
     rate = rospy.Rate(frequency)
-    rospy.loginfo(frequency)
+
     while not rospy.is_shutdown():
         try:
             gather_info()
