@@ -1,0 +1,12 @@
+frequency: 1
+topics: [Test_topic_int16]
+Test_topic_int16:
+  topic: /Test_topic_int16
+  source: /pub_for_test
+  destination: /sub_for_test
+  frequency: 10
+  size: 2
+  dFrequency: 2
+  dSize: 1
+  type: std_msgs::int16
+  errorlevel: 0.5
