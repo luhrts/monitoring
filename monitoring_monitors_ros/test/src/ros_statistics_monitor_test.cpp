@@ -48,14 +48,14 @@ public:
              if (keyValue.key == "Sub: "){
                    EXPECT_EQ(keyValue.value,"sub_for_test");
              }
-             if (keyValue.key == "Test_topic_string/TopicMissing"){
+             if (keyValue.key == "Test_topic_int16/TopicMissing"){
                   EXPECT_EQ(keyValue.errorlevel,1.0);
              }
-             if (keyValue.key == "Test_topic_string/frequency" && !keyValue.errorlevel == 0.5){
+             if (keyValue.key == "Test_topic_int16/frequency" && !keyValue.errorlevel == 0.5){
                     EXPECT_LE("10.2",keyValue.value);
                     EXPECT_GE("9.8",keyValue.value);
              }
-             if (keyValue.key == "Test_topic_string/frequency" && keyValue.errorlevel == 0.5){
+             if (keyValue.key == "Test_topic_int16/frequency" && keyValue.errorlevel == 0.5){
                     EXPECT_LE("9.8",keyValue.value);
                     EXPECT_GE("10.2",keyValue.value);
              }
