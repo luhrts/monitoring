@@ -16,7 +16,7 @@
 
      ros::Rate loop_rate(10);
 
-     std_msgs::String  Test_msgs_string;
+    // std_msgs::String  Test_msgs_string;
 
      std_msgs::Int16 Test_msgs_int;
 
