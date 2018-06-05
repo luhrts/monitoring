@@ -6,7 +6,7 @@ Test_topic_int16:
   destination: /sub_for_test
   frequency: 10
   size: 2
-  dFrequency: 2
+  dFrequency: 0.2
   dSize: 1
   type: std_msgs::int16
   errorlevel: 0.5
