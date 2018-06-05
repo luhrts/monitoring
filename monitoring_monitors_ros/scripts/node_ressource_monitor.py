@@ -8,7 +8,6 @@
  nodes with specific values.
 
 # TODO: Add units to monitor output
-# TODO: nur alle lokalen nodes, wenn whitelist aber auf anderem rechner dann warning
 """
 
 import enum
@@ -83,6 +82,7 @@ def gather_info():
     """
     obtains list of all running nodes by calling get_node_list()
     calls print_to_console_and_monitor for each retrieved node
+    calls monitor.publish() after iterating over alle nodes in list
     """
     node_list = get_node_list()
     for i in node_list:
@@ -96,10 +96,17 @@ def gather_info():
     rospy.loginfo("=============================")
 
 def print_to_console_and_monitor(name, pid):
+    """
+    print node values to console
+    publish node values to /monitioring topic
+    check for filter options
+    define DEFAULT options
+    """
     #get all values belonging to pid
     try:
         node_process_info = get_process_info(pid)
     except psutil._exceptions.NoSuchProcess:
+        rospy.logerr("No process with pid: " + pid)
         pass
     #check if there is a node with the same name in filter config
     if filter_type == Filter_type.WHITLELIST:
@@ -108,6 +115,7 @@ def print_to_console_and_monitor(name, pid):
         else:
             rospy.logwarn(name + " has no filter entry")
             return
+    #Define DEFAULT values to publish
     if filter_type == Filter_type.DEFAULT:
         node_value_filter = {'values':['cpu_affinity','cpu_percent','cpu_times'
         ,'io_counters','ionice','memory_percent','name','nice','num_ctx_switches','status']}
