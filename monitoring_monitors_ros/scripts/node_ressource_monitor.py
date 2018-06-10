@@ -174,7 +174,7 @@ def cpu_percent_to_monitor(value, name):
     rospy.loginfo("cpu_percent: " + str(value))
     monitor_string = name.replace("/","") + "_" + "cpu_percent"
     monitor_value = str(value)
-    monitor_unit = "percent"
+    monitor_unit = "%"
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
@@ -183,7 +183,7 @@ def cpu_times_to_monitor(value, name):
     rospy.loginfo("cpu_times: " + str(value))
     monitor_string = name.replace("/","") + "_" +  "cpu_times"
     monitor_value = str(value)
-    monitor_unit = " "
+    monitor_unit = "sec"
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
@@ -192,7 +192,7 @@ def create_time_to_monitor(value, name):
     rospy.loginfo("create_time: " + str(value))
     monitor_string = name.replace("/","") + "_" +  "create_time"
     monitor_value = str(value)
-    monitor_unit = " "
+    monitor_unit = "ms"
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
@@ -282,7 +282,7 @@ def memory_percent_to_monitor(value, name):
     rospy.loginfo("memory_percent: " + str(value))
     monitor_string = name.replace("/","") + "_" +  "memory_percent"
     monitor_value = str(value)
-    monitor_unit = " "
+    monitor_unit = "%"
     monitor_errorlvl = 0
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
