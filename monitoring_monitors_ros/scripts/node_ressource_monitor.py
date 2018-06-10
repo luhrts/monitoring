@@ -118,7 +118,7 @@ def print_to_console_and_monitor(name, pid):
     #Define DEFAULT values to publish
     if filter_type == Filter_type.DEFAULT:
         node_value_filter = {'values':['cpu_affinity','cpu_percent','cpu_times'
-        ,'io_counters','ionice','memory_percent','name','nice','num_ctx_switches','status']}
+        ,'create_time','exe','io_counters','memory_percent','name','num_ctx_switches','status']}
     #iterate over all keys given for node in node_filter
     for key in node_value_filter.get("values"):
         #if psutil delivers a value for a key, send this value to its dedicated function
@@ -130,6 +130,9 @@ def print_to_console_and_monitor(name, pid):
                 #add parameters to monitor
                 monitor.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
+"""
+psutil values to monitor functions
+"""
 
 def children_to_monitor(value, name):
     rospy.loginfo("children: " + str(value))
@@ -428,6 +431,10 @@ def username_to_monitor(value, name):
 
     return monitor_string, monitor_value, monitor_unit, monitor_errorlvl
 
+"""
+This dictionary maps the keys of node_value_filter to the corrseponding
+value return functions
+"""
 value_dict = {
   'children': children_to_monitor,
   'cmdline': cmdline_to_monitor,
