@@ -19,7 +19,7 @@ int main(int argc, char **argv)
 
   RecoverySDK example(n);
 
-  RestartNodeHandler rnh;
+  RestartNodeHandler rnh("nodename");
   //StopLaunchFile slf;
   OutputErrorMessage oem;
   ErrorToSpeech ets(n);
