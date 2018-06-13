@@ -30,8 +30,10 @@ void StatisticMonitor::compareStatisticDataWithRequirements() {
     //ROS_INFO("Topic: %s", tr.topic.c_str());
     //Find corresponding statisticdata from list
     StatisticsInfo si;
+//    ROS_INFO("statisticData size: %d", statisticData.size());
     bool siFound = false;
     for(StatisticsInfo stin:statisticData) { //searching for coresponding recorded statistic data
+//      ROS_INFO("COMPARE: %s, %s - %s, %s - %s, %s", stin.topic.c_str(), tr.topic.c_str(), stin.sub.c_str(), tr.destination.c_str(), stin.pub.c_str(), tr.source.c_str());
       if(stin.topic==tr.topic && stin.sub==tr.destination && stin.pub==tr.source) {
         siFound = true;
         si = stin;
@@ -42,7 +44,7 @@ void StatisticMonitor::compareStatisticDataWithRequirements() {
     msg->addValue("Pub: ", tr.source, "", 0.0);
     if(!siFound) {//testing if topic is available
       msg->addValue(tr.topic+ "/TopicMissing", 0.0, "", 1.0);
-      ROS_WARN("Topic missing: %s",tr.topic);
+      ROS_WARN("Topic missing: %s, source: %s , dest: %s",tr.topic.c_str(),tr.source.c_str(), tr.destination.c_str());
       continue;
     }
 
@@ -50,7 +52,7 @@ void StatisticMonitor::compareStatisticDataWithRequirements() {
     if(tr.frequency-tr.dFrequency <si.frequency && si.frequency < tr.frequency+tr.dFrequency){
       msg->addValue(tr.topic+ "/frequency", si.frequency, "Hz", 0);
     } else {
-      ROS_WARN("%s wrong freuqency: %d",tr.topic, si.frequency);
+      ROS_WARN("%s wrong freuqency: %d",tr.topic.c_str(), si.frequency);
       if(tr.frequency != -1) { //if frequency is -1, it should not be checked
         msg->addValue(tr.topic+ "/frequency", si.frequency, "Hz", tr.errorlevel);
       }
