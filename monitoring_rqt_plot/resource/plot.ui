@@ -50,16 +50,9 @@
       <number>5</number>
      </property>
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QPushButton" name="refresh_list_button">
        <property name="text">
-        <string>Topic</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="topic_edit">
-       <property name="text">
-        <string>/</string>
+        <string>refresh</string>
        </property>
       </widget>
      </item>

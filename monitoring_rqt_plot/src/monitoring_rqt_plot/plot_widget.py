@@ -41,40 +41,29 @@ from python_qt_binding.QtWidgets import QAction, QMenu, QWidget
 
 import rospy
 
-from rqt_py_common.topic_completer import TopicCompleter
-from rqt_py_common import topic_helpers
-
 from . rosplot import ROSData, RosPlotException
 
+from std_msgs.msg import String
 from monitoring_msgs.msg import *
 
-def is_plottable(topic_name):
-    fields, message = get_plot_fields(topic_name)
-    return len(fields) > 0, message
 
 def monitoring_listener():
-    #rospy.init_node('monitoring_rqt_plot_listener', anonymous=True)
     msg = rospy.wait_for_message("monitoring", MonitoringArray)
-    #get_all_monitored_values(msg)
     return msg
-    #rospy.Subscriber("monitoring", MonitoringArray, get_all_monitored_values)
 
-def get_all_monitored_values(msg):
-    #rospy.logout(msg)
-    #rospy.logout(msg.info[0])
-    for element in msg.info[0].values:
-        rospy.logout(element.key)
-        rospy.logout(element.value)
-        #rospy.logout(element)
-
-def get_topic_value(node_value_name):
+def get_topic_name(node_value_name):
     msg = monitoring_listener()
     i = 0
     for element in msg.info[0].values:
         if node_value_name == str(element.key):
-            value = "/monitoring/info[0]/values[%d]/value" % i
-            return value, node_value_name
+            topic_name = "/monitoring/info[0]/values[%d]/value" % i
+            return topic_name, node_value_name
         i = i + 1
+
+def get_node_value_name(topic_name):
+    msg = monitoring_listener()
+    for element in msg.info[0].values:
+        rospy.logout(element)
 
 class PlotWidget(QWidget):
     _redraw_interval = 40
@@ -88,8 +77,6 @@ class PlotWidget(QWidget):
         """
         ML: Changed path to ui file
         """
-        #monitoring_listener()
-
         ui_file = os.path.join(rp.get_path('monitoring_rqt_plot'), 'resource', 'plot.ui')
         loadUi(ui_file, self)
         self.subscribe_topic_button.setIcon(QIcon.fromTheme('list-add'))
@@ -97,14 +84,9 @@ class PlotWidget(QWidget):
         self.pause_button.setIcon(QIcon.fromTheme('media-playback-pause'))
         self.clear_button.setIcon(QIcon.fromTheme('edit-clear'))
         self.data_plot = None
-        self.listWidget.addItem("asd")
         self.subscribe_topic_button.setEnabled(True)
         if start_paused:
             self.pause_button.setChecked(True)
-
-        self._topic_completer = TopicCompleter(self.topic_edit)
-        self._topic_completer.update_topics()
-        self.topic_edit.setCompleter(self._topic_completer)
 
         self._start_time = rospy.get_time()
         self._rosdata = {}
@@ -142,9 +124,10 @@ class PlotWidget(QWidget):
         self._subscribed_topics_changed()
 
     @Slot()
-    def on_topic_edit_returnPressed(self):
+    def on_refresh_list_button_clicked(self):
         #if self.subscribe_topic_button.isEnabled():
             #self.add_topic(str(self.topic_edit.text()))
+        self.listWidget.clear()    
         msg = monitoring_listener()
         for element in msg.info[0].values:
             self.listWidget.addItem(element.key)
@@ -153,12 +136,8 @@ class PlotWidget(QWidget):
     @Slot()
     def on_subscribe_topic_button_clicked(self):
         #self.add_topic(str(self.topic_edit.text()))
-        topic_name, node_value_name = get_topic_value(self.listWidget.currentItem().text())
+        topic_name, node_value_name = get_topic_name(self.listWidget.currentItem().text())
         self.add_topic(topic_name, node_value_name)
-        """
-        ML: Get selected Item from Widget list
-        """
-        #rospy.logout(self.listWidget.currentItem().text())
 
     @Slot(bool)
     def on_pause_button_clicked(self, checked):
@@ -219,26 +198,7 @@ class PlotWidget(QWidget):
         self.remove_topic_button.setMenu(self._remove_topic_menu)
 
     def add_topic(self, topic_name, node_value_name):
-        """
-        rospy.logout("add topic1")
-        rospy.logout(topic_name)
-        topics_changed = False
-        rospy.logout(get_plot_fields(topic_name)[0])
-        for topic_name in get_plot_fields(topic_name)[0]:
-            rospy.logout("add topic2")
-            rospy.logout(topic_name)
-            if topic_name in self._rosdata:
-                qWarning('PlotWidget.add_topic(): topic already subscribed: %s' % topic_name)
-                continue
-            self._rosdata[topic_name] = ROSData(topic_name, self._start_time)
-            if self._rosdata[topic_name].error is not None:
-                qWarning(str(self._rosdata[topic_name].error))
-                del self._rosdata[topic_name]
-            else:
-                data_x, data_y = self._rosdata[topic_name].next()
-                self.data_plot.add_curve(topic_name, topic_name, data_x, data_y)
-                topics_changed = True
-        """
+
         topics_changed = False
         self._rosdata[topic_name] = ROSData(topic_name, self._start_time)
         data_x, data_y = self._rosdata[topic_name].next()
