@@ -27,7 +27,7 @@ void StatisticMonitor::compareStatisticDataWithRequirements() {
   for(int i=0;i<topicRequirements.size(); i++) {
     TopicRequirement tr = topicRequirements[i];
  //   msg->addNewInfoTree(tr.topic, "from " + tr.source + " to " + tr.destination);   //TODO: Find new way to handle
-    ROS_INFO("Topic: %s", tr.topic.c_str());
+    //ROS_INFO("Topic: %s", tr.topic.c_str());
     //Find corresponding statisticdata from list
     StatisticsInfo si;
     bool siFound = false;
@@ -42,6 +42,7 @@ void StatisticMonitor::compareStatisticDataWithRequirements() {
     msg->addValue("Pub: ", tr.source, "", 0.0);
     if(!siFound) {//testing if topic is available
       msg->addValue(tr.topic+ "/TopicMissing", 0.0, "", 1.0);
+      ROS_WARN("Topic missing: %s",tr.topic);
       continue;
     }
 
@@ -49,6 +50,7 @@ void StatisticMonitor::compareStatisticDataWithRequirements() {
     if(tr.frequency-tr.dFrequency <si.frequency && si.frequency < tr.frequency+tr.dFrequency){
       msg->addValue(tr.topic+ "/frequency", si.frequency, "Hz", 0);
     } else {
+      ROS_WARN("%s wrong freuqency: %d",tr.topic, si.frequency);
       if(tr.frequency != -1) { //if frequency is -1, it should not be checked
         msg->addValue(tr.topic+ "/frequency", si.frequency, "Hz", tr.errorlevel);
       }
