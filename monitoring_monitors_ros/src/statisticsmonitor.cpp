@@ -12,8 +12,8 @@ StatisticMonitor::StatisticMonitor(ros::NodeHandle &n) {
     // ROS_INFO("Statistics check");
     compareStatisticDataWithRequirements();
 
-    std::vector<StatisticsInfo> newSD;
-    statisticData = newSD;
+//    std::vector<StatisticsInfo> newSD;
+//    statisticData = newSD;
     ros::spinOnce();
     loop_rate.sleep();
   }
@@ -23,8 +23,19 @@ StatisticMonitor::~StatisticMonitor() {
   delete msg;
 }
 
+void StatisticMonitor::deleteOldMessages() {
+  ros::Time now =ros::Time::now();
+  for(int i=statisticData.size()-1;i>=0; i--) {
+    ros::Duration oldness = now-statisticData[i].time;
+    if(oldness.toSec() > timeTilDeletingOldMessages) {
+      statisticData.erase(statisticData.begin()+i);
+    }
+  }
+}
+
 void StatisticMonitor::compareStatisticDataWithRequirements() {
 //  ROS_INFO("compare");
+  deleteOldMessages();
   for(int i=0;i<topicRequirements.size(); i++) {
     TopicRequirement tr = topicRequirements[i];
  //   msg->addNewInfoTree(tr.topic, "from " + tr.source + " to " + tr.destination);   //TODO: Find new way to handle
@@ -84,6 +95,14 @@ void StatisticMonitor::loadConfig(ros::NodeHandle &n) {
   {
     ROS_WARN("No frequency supplied. Working with %f Hz.", freq);
   }
+
+  timeTilDeletingOldMessages= 3.0;
+  if (!n.getParam("timeTilDelete", timeTilDeletingOldMessages))
+  {
+    ROS_WARN("No time til delete supplied. Working with %f sec.", timeTilDeletingOldMessages);
+  }
+
+
   std::vector<std::string> topics;
   if(n.getParam("topics", topics)) {
     for(std::string name: topics) {
@@ -163,6 +182,7 @@ void StatisticMonitor::statisticsCallback(rosgraph_msgs::TopicStatistics stats) 
   } else {
     si.size = stats.delivered_msgs/stats.traffic; //TODO
   }
+  si.time = ros::Time::now();
 
   /// si.type =  TODO
 //  ROS_INFO("pushback");
