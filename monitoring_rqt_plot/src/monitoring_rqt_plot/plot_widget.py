@@ -62,8 +62,14 @@ def get_topic_name(node_value_name):
 
 def get_node_value_name(topic_name):
     msg = monitoring_listener()
-    for element in msg.info[0].values:
-        rospy.logout(element)
+    temp = str(topic_name)
+    temp = temp.replace("value","key")
+    temp = temp.replace("keys", "values")
+    temp = temp.replace("/monitoring/","msg.")
+    temp = temp.replace("/",".")
+    temp_eval = eval(temp)
+    rospy.logout(temp_eval)
+    return(temp_eval)
 
 class PlotWidget(QWidget):
     _redraw_interval = 40
@@ -127,7 +133,7 @@ class PlotWidget(QWidget):
     def on_refresh_list_button_clicked(self):
         #if self.subscribe_topic_button.isEnabled():
             #self.add_topic(str(self.topic_edit.text()))
-        self.listWidget.clear()    
+        self.listWidget.clear()
         msg = monitoring_listener()
         for element in msg.info[0].values:
             self.listWidget.addItem(element.key)
@@ -186,7 +192,8 @@ class PlotWidget(QWidget):
 
         self._remove_topic_menu.clear()
         for topic_name in sorted(self._rosdata.keys()):
-            action = QAction(topic_name, self._remove_topic_menu)
+            node_value_name = get_node_value_name(topic_name)
+            action = QAction(node_value_name, self._remove_topic_menu)
             action.triggered.connect(make_remove_topic_function(topic_name))
             self._remove_topic_menu.addAction(action)
 
