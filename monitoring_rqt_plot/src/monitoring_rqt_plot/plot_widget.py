@@ -48,10 +48,18 @@ from monitoring_msgs.msg import *
 
 
 def monitoring_listener():
+    """
+    retrieve just one message from the monitoring topic,
+    containing the MonitoringArray
+    """
     msg = rospy.wait_for_message("monitoring", MonitoringArray)
     return msg
 
 def get_topic_name(node_value_name):
+    """
+    retrieve the absolut path to a topic within the MonitoringArray,
+    by searching for the node_value_name and retrieving its position within the Array
+    """
     msg = monitoring_listener()
     i = 0
     for element in msg.info[0].values:
@@ -61,6 +69,12 @@ def get_topic_name(node_value_name):
         i = i + 1
 
 def get_node_value_name(topic_name):
+    """
+    Oposing function to get_topic_name
+    get absolute path in MonitoringArray to topic,
+    convert the string to access the msg element at the correct spot
+    and retrieve the node_value_name
+    """
     msg = monitoring_listener()
     temp = str(topic_name)
     temp = temp.replace("value","key")
@@ -68,8 +82,8 @@ def get_node_value_name(topic_name):
     temp = temp.replace("/monitoring/","msg.")
     temp = temp.replace("/",".")
     temp_eval = eval(temp)
-    rospy.logout(temp_eval)
-    return(temp_eval)
+    node_value_name = temp_eval
+    return(node_value_name)
 
 class PlotWidget(QWidget):
     _redraw_interval = 40
@@ -103,45 +117,26 @@ class PlotWidget(QWidget):
         self._update_plot_timer.timeout.connect(self.update_plot)
 
     def switch_data_plot_widget(self, data_plot):
-        self.enable_timer(enabled=False)
 
+        self.enable_timer(enabled=False)
         self.data_plot_layout.removeWidget(self.data_plot)
         if self.data_plot is not None:
             self.data_plot.close()
-
         self.data_plot = data_plot
         self.data_plot_layout.addWidget(self.data_plot)
         self.data_plot.autoscroll(self.autoscroll_checkbox.isChecked())
-
-        # setup drag 'n drop
-        self.data_plot.dropEvent = self.dropEvent
-        self.data_plot.dragEnterEvent = self.dragEnterEvent
-
-        if self._initial_topics:
-            for topic_name in self._initial_topics:
-                self.add_topic(topic_name)
-            self._initial_topics = None
-        else:
-            for topic_name, rosdata in self._rosdata.items():
-                data_x, data_y = rosdata.next()
-                rospy.logout(data_x + "" + data_y)
-                self.data_plot.add_curve(topic_name, topic_name, data_x, data_y)
 
         self._subscribed_topics_changed()
 
     @Slot()
     def on_refresh_list_button_clicked(self):
-        #if self.subscribe_topic_button.isEnabled():
-            #self.add_topic(str(self.topic_edit.text()))
         self.listWidget.clear()
         msg = monitoring_listener()
         for element in msg.info[0].values:
             self.listWidget.addItem(element.key)
-            #self.listWidget.addItem("/monitoring/info[0]/values[1]/value")
 
     @Slot()
     def on_subscribe_topic_button_clicked(self):
-        #self.add_topic(str(self.topic_edit.text()))
         topic_name, node_value_name = get_topic_name(self.listWidget.currentItem().text())
         self.add_topic(topic_name, node_value_name)
 
@@ -165,11 +160,7 @@ class PlotWidget(QWidget):
             for topic_name, rosdata in self._rosdata.items():
                 try:
                     data_x, data_y = rosdata.next()
-
                     if data_x or data_y:
-                        """
-                        ML: added rosout for data_x,data_y
-                        """
                         rospy.logout(data_x)
                         rospy.logout(data_y)
                         self.data_plot.update_values(topic_name, data_x, data_y)
