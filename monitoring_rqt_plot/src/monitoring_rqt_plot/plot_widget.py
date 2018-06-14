@@ -87,6 +87,7 @@ def get_node_value_name(topic_name):
 
 class PlotWidget(QWidget):
     _redraw_interval = 40
+    list_of_elements_in_plot = []
 
     def __init__(self, initial_topics=None, start_paused=False):
         super(PlotWidget, self).__init__()
@@ -94,9 +95,6 @@ class PlotWidget(QWidget):
         self._initial_topics = initial_topics
 
         rp = rospkg.RosPack()
-        """
-        ML: Changed path to ui file
-        """
         ui_file = os.path.join(rp.get_path('monitoring_rqt_plot'), 'resource', 'plot.ui')
         loadUi(ui_file, self)
         self.subscribe_topic_button.setIcon(QIcon.fromTheme('list-add'))
@@ -138,7 +136,9 @@ class PlotWidget(QWidget):
     @Slot()
     def on_subscribe_topic_button_clicked(self):
         topic_name, node_value_name = get_topic_name(self.listWidget.currentItem().text())
-        self.add_topic(topic_name, node_value_name)
+        if topic_name not in self.list_of_elements_in_plot:
+            self.list_of_elements_in_plot.append(topic_name)
+            self.add_topic(topic_name, node_value_name)
 
     @Slot(bool)
     def on_pause_button_clicked(self, checked):
@@ -210,7 +210,7 @@ class PlotWidget(QWidget):
         self._rosdata[topic_name].close()
         del self._rosdata[topic_name]
         self.data_plot.remove_curve(topic_name)
-
+        self.list_of_elements_in_plot.remove(topic_name)
         self._subscribed_topics_changed()
 
     def clear_plot(self):
