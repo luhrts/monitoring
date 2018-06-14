@@ -24,6 +24,7 @@ StatisticMonitor::~StatisticMonitor() {
 }
 
 void StatisticMonitor::compareStatisticDataWithRequirements() {
+//  ROS_INFO("compare");
   for(int i=0;i<topicRequirements.size(); i++) {
     TopicRequirement tr = topicRequirements[i];
  //   msg->addNewInfoTree(tr.topic, "from " + tr.source + " to " + tr.destination);   //TODO: Find new way to handle
@@ -40,23 +41,24 @@ void StatisticMonitor::compareStatisticDataWithRequirements() {
         break;
       }
     }
-    msg->addValue("Sub: ", tr.destination, "", 0.0);
-    msg->addValue("Pub: ", tr.source, "", 0.0);
+    msg->addValue(tr.topic+"/Sub: ", tr.destination, "", 0.0);
+    msg->addValue(tr.topic+"/Pub: ", tr.source, "", 0.0);
     if(!siFound) {//testing if topic is available
       msg->addValue(tr.topic+ "/TopicMissing", 0.0, "", 1.0);
       ROS_WARN("Topic missing: %s, source: %s , dest: %s",tr.topic.c_str(),tr.source.c_str(), tr.destination.c_str());
       continue;
     }
-
+//    ROS_ERROR("Topic richtig");
     //checking frequency
     if(tr.frequency-tr.dFrequency <si.frequency && si.frequency < tr.frequency+tr.dFrequency){
       msg->addValue(tr.topic+ "/frequency", si.frequency, "Hz", 0);
     } else {
-      ROS_WARN("%s wrong freuqency: %d",tr.topic.c_str(), si.frequency);
+      ROS_WARN("%s wrong freuqency: %f",tr.topic.c_str(), si.frequency);
       if(tr.frequency != -1) { //if frequency is -1, it should not be checked
         msg->addValue(tr.topic+ "/frequency", si.frequency, "Hz", tr.errorlevel);
       }
     }
+//    ROS_INFO("Frequency checked");
 
     if(tr.size-tr.dSize <si.size && si.size < tr.size+tr.dSize){
       msg->addValue(tr.topic+ "/size", si.size, "Byte", 0);
@@ -65,6 +67,8 @@ void StatisticMonitor::compareStatisticDataWithRequirements() {
         msg->addValue(tr.topic+ "/size", si.size, "Byte", tr.errorlevel);
       }
     }
+//    ROS_INFO("Size checked");
+
 
   /*  if(tr.type!=si.type) { //type is not included in statistics
       msg->addValue("type error", si.type, "", tr.errorlevel);
@@ -121,7 +125,7 @@ void StatisticMonitor::loadConfig(ros::NodeHandle &n) {
 }
 
 void StatisticMonitor::statisticsCallback(rosgraph_msgs::TopicStatistics stats) {
-  // ROS_INFO("Statistics incoming");
+//  ROS_INFO("Statistics incoming");
   StatisticsInfo si;
   std::string topic(stats.topic);
   std::string sub(stats.node_sub);
@@ -130,6 +134,7 @@ void StatisticMonitor::statisticsCallback(rosgraph_msgs::TopicStatistics stats) 
   // ROS_INFO("mean: %f", stats.period_mean.toSec());
   bool siFound = false;
   int siIndex;
+//  ROS_INFO("check if already inserted");
   for(int i=0; i<statisticData.size(); i++) {
     if(statisticData[i].topic == topic && statisticData[i].pub == pub && statisticData[i].sub == sub) {
       si = statisticData[i];
@@ -138,23 +143,29 @@ void StatisticMonitor::statisticsCallback(rosgraph_msgs::TopicStatistics stats) 
       break;
     }
   }
-
+//  ROS_INFO("create new one?");
   if(!siFound)  {
     si.topic = topic;
     si.pub = pub;
     si.sub = sub;
   }
+//  ROS_INFO("calculate");
   ros::Duration difference = stats.window_stop - stats.window_start;
   double frequency = 1/stats.period_mean.toSec();
   double frequency1 = stats.delivered_msgs/difference.toSec();
   // ROS_INFO("Frequence: %f", si.frequence);
   // ROS_INFO("Frequence1: %f", frequence1);
+//  ROS_INFO("set values");
   si.frequency =  frequency1;//TODO sum or mean?!?
-
-  si.size = stats.delivered_msgs/stats.traffic; //TODO
+//  ROS_INFO("delmsgs: %f, traffic: %f", stats.delivered_msgs, stats.traffic);
+  if(stats.traffic == 0) {
+    si.size = 0;
+  } else {
+    si.size = stats.delivered_msgs/stats.traffic; //TODO
+  }
 
   /// si.type =  TODO
-
+//  ROS_INFO("pushback");
   statisticData.push_back(si);
 }
 
