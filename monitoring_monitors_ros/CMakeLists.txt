@@ -8,7 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   monitoring_core
   roscpp
   rospy
-  
+  tf
 )
 
 catkin_package(
@@ -24,12 +24,17 @@ include_directories(
 
 add_executable(statistics_monitoring_node src/statisticsmonitor.cpp)
 
+add_executable(tf_monitoring_node src/tf_monitor.cpp)
+
 add_executable(pub_for_test  test/src/Test_pub_ros_monitore.cpp )
 
 add_executable(sub_for_test  test/src/Test_sub_ros_monitore.cpp )
 
 
 target_link_libraries(statistics_monitoring_node 
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(tf_monitoring_node 
   ${catkin_LIBRARIES}
 )
 target_link_libraries(pub_for_test 
