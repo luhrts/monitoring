@@ -56,7 +56,7 @@ void StatisticMonitor::compareStatisticDataWithRequirements() {
     msg->addValue(tr.topic+"/Pub: ", tr.source, "", 0.0);
     if(!siFound) {//testing if topic is available
       msg->addValue(tr.topic+ "/TopicMissing", 0.0, "", 1.0);
-      ROS_WARN("Topic missing: %s, source: %s , dest: %s",tr.topic.c_str(),tr.source.c_str(), tr.destination.c_str());
+      //ROS_WARN("Topic missing: %s, source: %s , dest: %s",tr.topic.c_str(),tr.source.c_str(), tr.destination.c_str());
       continue;
     }
 //    ROS_ERROR("Topic richtig");
