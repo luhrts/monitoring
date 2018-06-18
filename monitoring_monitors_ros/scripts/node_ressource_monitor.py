@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
  Author: Michael Lange, Leibniz Universitaet Hannover, 2018
- 
+
  This scripts lists all running rosnodes and displays all values the
  psutil package is providing for each node.
  Some values returned by psutil that contain a dictionary of values will be
@@ -9,6 +9,7 @@
  to plot these values.
  Supports a filter function in order to only retrieve information of specific
  nodes with specific values.
+ 
 """
 
 import enum
