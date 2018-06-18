@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 """
- Author: Michael Lange
- pass the data to the ros monitoring system
+ Author: Michael Lange, Leibniz Universitaet Hannover, 2018
+ 
  This scripts lists all running rosnodes and displays all values the
  psutil package is providing for each node.
+ Some values returned by psutil that contain a dictionary of values will be
+ divided into single fields. This will allow the rqt plugin "monitoring_rqt_plot"
+ to plot these values.
  Supports a filter function in order to only retrieve information of specific
  nodes with specific values.
-
-# TODO: Add units to monitor output
 """
 
 import enum
@@ -118,7 +119,7 @@ def print_to_console_and_monitor(name, pid):
     #Define DEFAULT values to publish
     if filter_type == Filter_type.DEFAULT:
         node_value_filter = {'values':['cpu_affinity','cpu_percent','cpu_times'
-        ,'create_time','exe','io_counters','memory_percent','name','num_ctx_switches','status']}
+        ,'create_time','exe','io_counters','memory_info','memory_percent','name','num_ctx_switches','status']}
     #iterate over all keys given for node in node_filter
     for key in node_value_filter.get("values"):
         #if psutil delivers a value for a key, send this value to its dedicated function
@@ -251,10 +252,30 @@ def is_running_to_monitor(value, name):
     monitor.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def memory_info_to_monitor(value, name):
+    """
+    added two additional blocks that divide the value string into one field for
+    rss and vms.
+    """
     rospy.loginfo("memory_info: " + str(value))
     monitor_string = name.replace("/","") + "_" +  "memory_info"
     monitor_value = str(value)
     monitor_unit = " "
+    monitor_errorlvl = 0
+
+    monitor.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+
+    rospy.loginfo("memory_info_rss: " + str(value.rss))
+    monitor_string = name.replace("/","") + "_" +  "memory_info_rss"
+    monitor_value = str(value.rss)
+    monitor_unit = "byte"
+    monitor_errorlvl = 0
+
+    monitor.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+
+    rospy.loginfo("memory_info_vms: " + str(value.vms))
+    monitor_string = name.replace("/","") + "_" +  "memory_info_vms"
+    monitor_value = str(value.vms)
+    monitor_unit = "byte"
     monitor_errorlvl = 0
 
     monitor.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)

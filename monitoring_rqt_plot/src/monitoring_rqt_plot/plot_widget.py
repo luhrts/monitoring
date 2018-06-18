@@ -1,5 +1,14 @@
 #!/usr/bin/env python
 
+"""
+Original Copyright notice: see below
+Modified by Michael Lange, Leibniz Universitaet Hannover, 2018
+This program is a modified version of "rqt_plot" by Dorian Scholz.
+It will now display a list of all values published under /monitoring topic.
+The user may select items from the list and add them to the plot.
+Errors are thrown if a value is not convertable to float.
+"""
+
 # Copyright (c) 2011, Dorian Scholz, TU Darmstadt
 # All rights reserved.
 #
