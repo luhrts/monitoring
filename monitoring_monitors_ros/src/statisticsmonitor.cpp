@@ -110,15 +110,25 @@ void StatisticMonitor::loadConfig(ros::NodeHandle &n) {
 
       if(!n.getParam(name + "/topic", tr.topic)) {
         ROS_ERROR("%s Statistics: No topic supplied.", name.c_str());
+      } else {
+        if(tr.topic.front() != '/') {
+          tr.topic.insert(0, "/");
+        }
       }
+
       if(!n.getParam(name + "/source", tr.source)) {
         ROS_ERROR("%s Statistics: No source supplied.", name.c_str());
-      }
-      if(!n.getParam(name + "/source", tr.source)) {
-        ROS_ERROR("%s Statistics: No source supplied.", name.c_str());
+      }else {
+        if(tr.source.front() != '/') {
+          tr.source.insert(0, "/");
+        }
       }
       if(!n.getParam(name + "/destination", tr.destination)) {
         ROS_ERROR("%s Statistics: No destination supplied.", name.c_str());
+      }else {
+        if(tr.destination.front() != '/') {
+          tr.destination.insert(0, "/");
+        }
       }
       if(!n.getParam(name + "/frequency", tr.frequency)) {
         ROS_ERROR("%s Statistics: No frequency supplied.", name.c_str());
