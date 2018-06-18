@@ -35,16 +35,44 @@
 *********************************************************************/
 
 #include "ros/ros.h"
-#include <proc/sysinfo.h>
 
 #include "monitoring_core/monitor.h"
 
 
+int readMaxCPUFrequency(int cpuNumb) {
+  char path[80];
+  FILE* file;
+  sprintf(path, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_max_freq", cpuNumb);
+//  ROS_INFO("checking: %s", path);
+  file = fopen(path, "r");
+  int input = 0;
+  fscanf(file, "%d", &input);
+  fclose(file);
+  return input;
+}
+
+int readCurCPUFrequency(int cpuNumb) {
+  char path[80];
+  FILE* file;
+  sprintf(path, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_cur_freq", cpuNumb);
+//  ROS_INFO("checking: %s", path);
+  file = fopen(path, "r");
+  int input = 0;
+  fscanf(file, "%d", &input);
+  fclose(file);
+  return input;
+}
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "ram_monitor");
+  ros::init(argc, argv, "cpu_frequency_monitor");
   ros::NodeHandle n("~");
+
+  int numCPU = sysconf(_SC_NPROCESSORS_ONLN);
+  std::vector<int> maxFrequencys;
+  for(int i=0; i<numCPU; i++) {
+    maxFrequencys.push_back(readMaxCPUFrequency(i));
+  }
 
   float freq = 1;
   if (!n.getParam("frequency", freq))
@@ -52,36 +80,27 @@ int main(int argc, char **argv)
     ROS_WARN("No frequency supplied. Working with %f Hz.", freq);
   }
 
-  bool bUsed = false;
-  if (n.getParam("used", bUsed))
-  {
-  }
 
-  bool bPercent = false;
-  if (n.getParam("percent", bPercent))
-  {
-  }
 
   ros::Rate loop_rate(freq);
 
-  Monitor msg(n, "RAM-Monitor" );
+  Monitor msg(n, "CPU-Frequency-Monitor" );
+
+  ROS_INFO("Init done");
   while (ros::ok())
   {
+    for(int i=0; i<numCPU; i++) {
+      float freq = readCurCPUFrequency(i);
 
-    meminfo();		//geting ram info via sysinfo lib
-    /* OUTPUT: kb_main_total, kb_main_used, kb_main_free,
-     kb_main_shared, kb_main_buffers, kb_main_cached*/
 
-    char value[200];
-    if (bUsed)
-    {
-      msg.addValue("RAM used", kb_main_used, "kb", 0);
+      if(maxFrequencys[i]-freq>10) {
+
+        msg.addValue("cpu" + std::to_string(i) + "/frequency", freq, "Hz", 0.4);
+      } else {
+        msg.addValue("cpu" + std::to_string(i) + "/frequency", freq, "Hz", 0.0);
+      }
     }
-    if (bPercent)
-    {
-      float perc = ((float)kb_main_used / (float)kb_main_total) * 100.0;
-      msg.addValue("RAM % used", perc, "%", 0);
-    }
+
     ros::spinOnce();
 
     loop_rate.sleep();

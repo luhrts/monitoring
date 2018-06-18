@@ -14,6 +14,7 @@ struct StatisticsInfo{
   std::string pub;
   int size;
   std::string type;
+  ros::Time time;
 };
 
 struct TopicRequirement{
@@ -52,10 +53,14 @@ private:
    * @brief compareStatisticDataWithRequirements compares statisticData and topicRequirements
    */
   void compareStatisticDataWithRequirements();
+  void deleteOldMessages();
   ros::Subscriber stats_sub;  ///< subscirber for topic statistics
   Monitor *msg;   ///< msg that saves information that will be published
   float freq;   ///< working frequency
   std::vector<StatisticsInfo> statisticData;    ///< contains data from ros_statistics
   std::vector<TopicRequirement> topicRequirements;    ///< contains user defined topic requirements
+
+  double timeTilDeletingOldMessages;
+
 };
 #endif /* SRC_STATISTICSMONITOR_H_ */

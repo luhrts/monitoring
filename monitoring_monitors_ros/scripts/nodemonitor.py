@@ -7,8 +7,13 @@ from monitoring_core.monitor import Monitor
 
 def nodemonitor():
     rospy.init_node("nodemonitor")
-    frequency = rospy.get_param(rospy.get_name() + '/frequency')
-    nodes = set(rospy.get_param(rospy.get_name() + '/nodes'))
+    try:
+        frequency = rospy.get_param(rospy.get_name() + '/frequency')
+        nodes = set(rospy.get_param(rospy.get_name() + '/nodes'))
+    except KeyError:
+        print "value not set"
+        quit()
+
     rate = rospy.Rate(frequency)
     monitor = Monitor("nodemonitor")
     #pub = rospy.Publisher('/monitoring', MonitoringArray, queue_size=1)
@@ -25,7 +30,7 @@ def nodemonitor():
                 rospy.logwarn("Can not ping node: %s", node)
                 monitor.addValue("node unavailable", node, "", 0.5)
             
-        monitor.publish()
+
         rate.sleep()
 
 

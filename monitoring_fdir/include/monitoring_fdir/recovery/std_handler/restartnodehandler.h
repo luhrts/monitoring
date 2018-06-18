@@ -7,12 +7,12 @@
 class RestartNodeHandler : public ErrorHandlerInterface
 {
 public:
-  RestartNodeHandler();
+  RestartNodeHandler(std::string nodename);
 
   void checkError(monitoring_msgs::Error msg);
 
 private:
-
+  std::string name;
 };
 
 #endif // RESTARTNODEHANDLER_H

@@ -271,7 +271,6 @@ int main(int argc, char **argv)
   //starting looping over the options and publishing at the end
   while (ros::ok())
   {
-    msg.resetMsg();
 
     if (bPercent)
     {
@@ -299,7 +298,7 @@ int main(int argc, char **argv)
         msg.addValue(key, pCore, "%", 0);
       }
     }
-    msg.publish();
+    ros::spinOnce();
     loop_rate.sleep();
   }
 }

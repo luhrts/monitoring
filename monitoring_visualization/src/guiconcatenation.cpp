@@ -54,9 +54,12 @@ void GuiConcatenation::monitor_cb(monitoring_msgs::MonitoringArray ma) {
 
 			msg.infos.push_back(gi);
 		}
-		meanerror = meanerror / mi.values.size();
+		if(mi.values.size()!=0) {
+			meanerror = meanerror / mi.values.size();
+		}
 		gi1.errorlevel = meanerror;		//TODO ist die reihenfolge wichtig???
-		msg.infos.push_back(gi1);
+    gi1.unit = "";
+    msg.infos.push_back(gi1);
 	}
 
 }

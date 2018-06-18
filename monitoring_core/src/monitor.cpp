@@ -7,7 +7,7 @@
 
 #include "monitoring_core/monitor.h"
 
-Monitor::Monitor(ros::NodeHandle &n, std::string monitorDescription) {
+Monitor::Monitor(ros::NodeHandle &n, std::string monitorDescription, bool autoPublishing) {
   monitor_description_ = monitorDescription;
   pub = n.advertise<monitoring_msgs::MonitoringArray> ("/monitoring", 1);
   monitoring_msgs::MonitoringInfo mi;
@@ -16,12 +16,27 @@ Monitor::Monitor(ros::NodeHandle &n, std::string monitorDescription) {
   ma.info.push_back(mi);
   miIndex = 0;
 
+  if(autoPublishing) {
+    int frequency = 1;
+    if (!n.getParam("monitoring/frequency", frequency))
+    {
+      ROS_WARN("No frequency supplied for monitoring (%s/monitoring/frequency. Working with %d Hz.", mi.name.c_str(), frequency);
+    }
+
+    timer = n.createTimer(ros::Duration(1/frequency), &Monitor::timerCallback, this);
+  }
+
 }
 
 Monitor::~Monitor() {
 	// TODO Auto-generated destructor stub
 
 }
+
+void Monitor::timerCallback(const ros::TimerEvent& te) {
+  publish();
+}
+
 
 void Monitor::addValue(std::string key, std::string value, std::string unit, float errorlevel) {
 

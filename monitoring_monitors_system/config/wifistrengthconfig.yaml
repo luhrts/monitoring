@@ -1,0 +1,4 @@
+frequency: 2   #calculation frequency
+wifiInterface: wlp2s0
+monitoring:
+    frequency: 2

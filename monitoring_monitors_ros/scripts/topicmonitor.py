@@ -9,8 +9,13 @@ import time
 
 def topicmonitor():
     rospy.init_node("topicmonitor")
-    topics = rospy.get_param(rospy.get_name() + '/topics')
-    frequency = rospy.get_param(rospy.get_name() + '/frequency')
+    try:
+        topics = rospy.get_param(rospy.get_name() + '/topics')
+        frequency = rospy.get_param(rospy.get_name() + '/frequency')
+    except KeyError:
+        print "value not set"
+        quit()
+
     rate = rospy.Rate(frequency)
     monitor = Monitor("simple_monitor_python")
     
@@ -24,7 +29,7 @@ def topicmonitor():
         
         hzMonitors[entry['name']] = rthz
              
-    pub = rospy.Publisher('/monitoring', MonitoringArray, queue_size=1)
+
     startTimestamp = time.time()
     while not rospy.is_shutdown():  # main loop
 
@@ -46,7 +51,7 @@ def topicmonitor():
                 value = "Topic " + entry['name'] + " is on " + str(freq) + "Hz, Expected: " + str(entry['frequency'])
                 monitor.addValue("slow topic", value, "", 0.3)
                 
-        monitor.publish()
+
         rate.sleep()
 
 

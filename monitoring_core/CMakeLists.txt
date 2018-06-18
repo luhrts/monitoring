@@ -31,3 +31,14 @@ target_link_libraries(monitoring_core
 add_dependencies(monitoring_core monitoring_msgs_generate_messages_cpp)
 
 catkin_python_setup()
+
+
+if(CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+  add_rostest_gtest(simple_mointor_test test/launch/simple_monitor_test.test test/src/simple_mointor_test.cpp)
+  target_link_libraries(simple_mointor_test
+    ${catkin_LIBRARIES}
+    monitoring_core
+  )
+
+endif()

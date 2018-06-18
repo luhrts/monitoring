@@ -1,8 +1,8 @@
 #include "monitoring_fdir/recovery/std_handler/restartnodehandler.h"
 
-RestartNodeHandler::RestartNodeHandler()
+RestartNodeHandler::RestartNodeHandler(std::string nodename)
 {
-
+  name = nodename;
 }
 
 /**
@@ -10,6 +10,6 @@ RestartNodeHandler::RestartNodeHandler()
  */
 void RestartNodeHandler::checkError(monitoring_msgs::Error msg) {
   char cmd[80];
-  sprintf(cmd, "killall %s", msg.value.c_str());
+  sprintf(cmd, "killall %s", name.c_str());
   system(cmd);
 }

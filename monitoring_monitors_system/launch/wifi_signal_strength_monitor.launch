@@ -1,0 +1,6 @@
+<launch>
+        <node pkg="monitoring_monitors_system" type="wifi_signal_strength_monitoring_node" name="cpu_monitor" output="screen" respawn="true">
+                <rosparam command="load" file="$(find monitoring_monitors_system)/config/wifistrengthconfig.yaml" />
+
+        </node>
+</launch>

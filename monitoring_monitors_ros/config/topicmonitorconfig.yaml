@@ -1,2 +1,4 @@
 frequency: 2
+monitoring:
+    frequency: 2
 topics: [{name: /monitoring, frequency: 3}]
