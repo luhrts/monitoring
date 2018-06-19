@@ -9,7 +9,7 @@
  to plot these values.
  Supports a filter function in order to only retrieve information of specific
  nodes with specific values.
- 
+
 """
 
 import enum
