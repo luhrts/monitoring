@@ -14,7 +14,7 @@ class Monitor:
         if(autoPublishing):
             try:
                 frequency = 1
-                frequency = rospy.get_param(rospy.get_name() + '/monitoring/frequency')
+                frequency = rospy.get_param(rospy.get_name() + '/monitoring/frequency', 1)
                 if(frequency == 0):
                     rospy.logerr("frequency can not be 0, using 1")
                     frequency = 1
@@ -49,5 +49,3 @@ class Monitor:
         mi.name = rospy.get_name()
         mi.description = self.description
         self.ma.info.append(mi)
-
-
