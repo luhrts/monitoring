@@ -17,19 +17,19 @@ def nodemonitor():
     rate = rospy.Rate(frequency)
     monitor = Monitor("nodemonitor")
     #pub = rospy.Publisher('/monitoring', MonitoringArray, queue_size=1)
-    
+
     while not rospy.is_shutdown():  # main loop
 
-        
+
         currentNodes = set(get_node_names())
         if(not nodes.issubset(currentNodes)):
             rospy.logwarn("missing nodes!")
-        
+
         for node in nodes:
             if(not rosnode_ping(node, 1)):
                 rospy.logwarn("Can not ping node: %s", node)
-                monitor.addValue("node unavailable", node, "", 0.5)
-            
+                monitor.addValue(node, "node unavailable", "", 0.5)
+
 
         rate.sleep()
 
