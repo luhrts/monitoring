@@ -21,9 +21,9 @@ def nodemonitor():
     while not rospy.is_shutdown():  # main loop
 
 
-        currentNodes = set(get_node_names())
-        if(not nodes.issubset(currentNodes)):
-            rospy.logwarn("missing nodes!")
+        #currentNodes = set(get_node_names())
+        #if(not nodes.issubset(currentNodes)):
+        #    rospy.logwarn("missing nodes!")
 
         for node in nodes:
             if(not rosnode_ping(node, 1)):
