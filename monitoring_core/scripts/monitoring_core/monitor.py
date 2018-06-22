@@ -25,7 +25,6 @@ class Monitor:
                 quit()
 
     def timercallback(self, event):
-        rospy.loginfo( "callback")
         self.publish()
 
 
