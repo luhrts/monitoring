@@ -23,8 +23,12 @@ include_directories(
 
 
 add_executable(statistics_monitoring_node src/statisticsmonitor.cpp)
-
 target_link_libraries(statistics_monitoring_node
+  ${catkin_LIBRARIES}
+)
+
+add_executable(topic_value_monitor src/topic_value_monitor.cpp)
+target_link_libraries(topic_value_monitor
   ${catkin_LIBRARIES}
 )
 

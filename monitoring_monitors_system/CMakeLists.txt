@@ -9,7 +9,8 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
 )
 
-find_library(PROCPS procps)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(PROCPS libprocps)
 if(NOT PROCPS_FOUND)
       message(WARNING "[MOnitoring] libprocps-dev not found, RAM Monitor nodes will not be build")
 else()
