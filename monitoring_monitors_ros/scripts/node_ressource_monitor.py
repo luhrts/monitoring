@@ -47,7 +47,7 @@ def init():
     if rospy.has_param('node_ressource_monitor/frequency'):
         frequency = rospy.get_param('node_ressource_monitor/frequency')
     else:
-        frequency = 1
+        frequency = 10
     if rospy.has_param('node_ressource_monitor/filter_type'):
         filter_type = rospy.get_param('node_ressource_monitor/filter_type')
     else:
@@ -120,13 +120,20 @@ def print_to_console_and_monitor(name, pid):
             return
     #Define DEFAULT values to publish
     if filter_type == Filter_type.DEFAULT:
+        """
         node_value_filter = {'values':['cpu_affinity','cpu_percent','cpu_times'
         ,'create_time','exe','io_counters','memory_info','memory_percent','name','num_ctx_switches','status']}
+        """
+        node_value_filter = {'values':['name']}
     #iterate over all keys given for node in node_filter
     for key in node_value_filter.get("values"):
         #if psutil delivers a value for a key, send this value to its dedicated function
         if key in node_process_info.keys():
-            value = node_process_info.get(key)
+            if key == "cpu_percent":
+                temp = psutil.Process(pid)
+                value = temp.cpu_percent(0.1)
+            else:
+                value = node_process_info.get(key)
             if value_dict.has_key(key):
                 #call dedicated function for key which adds relevant monitoring parameters to
                 #/monitoring topic
