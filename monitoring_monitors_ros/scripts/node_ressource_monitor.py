@@ -108,7 +108,8 @@ def print_to_console_and_monitor(name, pid):
     try:
         node_process_info = get_process_info(pid)
     except psutil._exceptions.NoSuchProcess:
-        rospy.logerr("No process with pid: " + pid)
+        #rospy.logerr("No process with pid: " + pid) #THROWS ERROR PLS FIX
+        node_process_info = {} #Need to initialize var in order to prevent error
         pass
     #check if there is a node with the same name in filter config
     if filter_type == Filter_type.WHITLELIST:
