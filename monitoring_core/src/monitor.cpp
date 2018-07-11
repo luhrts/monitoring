@@ -6,12 +6,25 @@
  */
 
 #include "monitoring_core/monitor.h"
+#include <unistd.h>
 
 Monitor::Monitor(ros::NodeHandle &n, std::string monitorDescription, bool autoPublishing) {
   monitor_description_ = monitorDescription;
   pub = n.advertise<monitoring_msgs::MonitoringArray> ("/monitoring", 1);
   monitoring_msgs::MonitoringInfo mi;
-  mi.name = ros::this_node::getName(),
+
+  char hostname[HOST_NAME_MAX];
+  int result;
+  result = gethostname(hostname, HOST_NAME_MAX);
+  if (result)
+      {
+        perror("gethostname");
+        return;
+      }
+  host_name_ =  hostname;
+  node_name_ = ros::this_node::getName();
+
+  mi.name = host_name_+node_name_;
   mi.description = monitorDescription;
   ma.info.push_back(mi);
   miIndex = 0;
@@ -65,7 +78,7 @@ void Monitor::resetMsg(){
   monitoring_msgs::MonitoringArray newMA;
 	ma = newMA;
   monitoring_msgs::MonitoringInfo mi;
-  mi.name = ros::this_node::getName(),
+  mi.name = host_name_+node_name_;
   mi.description = monitor_description_;
   ma.info.push_back(mi);
   miIndex = 0;
