@@ -104,7 +104,7 @@ void CpuMonitor::init()
     sprintf(path, "/sys/class/hwmon/hwmon%d/name", i);
     fname = fopen(path, "r");
     char name[30];
-    fscanf(fname, "%s", &name);
+    fscanf(fname, "%s", name);
     fclose(fname);
     if (strcmp(name, "coretemp") == 0)
     {	//check which is coretemp
@@ -171,6 +171,8 @@ double CpuMonitor::getCPUCoreLoad(int n)
 
   file = fopen("/proc/stat", "r");
 
+  int old_n = n;
+
   char buffer[256];
   for (int i = 0; i <= n; i++)
   {
@@ -179,8 +181,8 @@ double CpuMonitor::getCPUCoreLoad(int n)
   fscanf(file, "cpu%d %llu %llu %llu %llu", &n, &totalUser, &totalUserLow, &totalSys, &totalIdle);
   fclose(file);
 
-  if (totalUser < lastTotalUser[n] || totalUserLow < lastTotalUserLow[n] || totalSys < lastTotalSys[n]
-      || totalIdle < lastTotalIdle[n])
+  if (totalUser < lastTotalUser[n+1] || totalUserLow < lastTotalUserLow[n+1] || totalSys < lastTotalSys[n+1]
+      || totalIdle < lastTotalIdle[n+1])
   {
     //Overflow detection. Just skip this value.
     percent = -1.0;
@@ -188,18 +190,18 @@ double CpuMonitor::getCPUCoreLoad(int n)
   else
   {
     //because the value is incrementel, you need to calculate the deltas
-    total = (totalUser - lastTotalUser[n]) + (totalUserLow - lastTotalUserLow[n]) + (totalSys - lastTotalSys[n]);	//if total is 0 a nan value is possible TODO!!!
+    total = (totalUser - lastTotalUser[n+1]) + (totalUserLow - lastTotalUserLow[n+1]) + (totalSys - lastTotalSys[n+1]);	//if total is 0 a nan value is possible TODO!!!
     percent = total;
-    total += (totalIdle - lastTotalIdle[n]);
+    total += (totalIdle - lastTotalIdle[n+1]);
     percent /= total;
     percent *= 100;
 
   }
 
-  lastTotalUser[n] = totalUser;
-  lastTotalUserLow[n] = totalUserLow;
-  lastTotalSys[n] = totalSys;
-  lastTotalIdle[n] = totalIdle;
+  lastTotalUser[n+1] = totalUser;
+  lastTotalUserLow[n+1] = totalUserLow;
+  lastTotalSys[n+1] = totalSys;
+  lastTotalIdle[n+1] = totalIdle;
   return percent;
 
 }
@@ -237,36 +239,25 @@ int main(int argc, char **argv)
 
   int numCPU = sysconf(_SC_NPROCESSORS_ONLN);
 
+  double freq;
+  n.param<double>("frequency", freq, 1.0);
 
-  float freq = 1;
-  if (!n.getParam("frequency", freq))
-  {
-    ROS_WARN("No frequency supplied. Working with %d Hz.", freq);
-  }
-  bool bAvarage = false;
-  if (n.getParam("avarage", bAvarage))
-  {
-  }
-  bool bPercent = false;
-  if (n.getParam("percent", bPercent))
-  {
-  }
-  bool bPercentPerCore = false;
-  if (n.getParam("percentPerCore", bPercentPerCore))
-  {
-  }
-  bool bTemp = false;
-  if (n.getParam("temperature", bTemp))
-  {
-  }
+  bool bAvarage;
+  n.param<bool>("avarage", bAvarage, true);
+
+  bool bPercent ;
+  n.param<bool>("percent", bPercent, true);
+
+  bool bPercentPerCore;
+  n.param<bool>("percentPerCore", bPercentPerCore, true);
+
+  bool bTemp;
+  n.param<bool>("temperature", bTemp, true);
 
   ros::Rate loop_rate(freq);
   CpuMonitor cpum;
 
-
-  char value[50];
   Monitor msg(n, "A CPU-Monitor");
-
 
   //starting looping over the options and publishing at the end
   while (ros::ok())
