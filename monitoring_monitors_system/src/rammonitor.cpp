@@ -46,21 +46,14 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "ram_monitor");
   ros::NodeHandle n("~");
 
-  float freq = 1;
-  if (!n.getParam("frequency", freq))
-  {
-    ROS_WARN("No frequency supplied. Working with %f Hz.", freq);
-  }
+  double freq;
+  n.param<double>("frequency", freq, 1.0);
 
-  bool bUsed = false;
-  if (n.getParam("used", bUsed))
-  {
-  }
+  bool bUsed;
+  n.param<bool>("used", bUsed, true);
 
-  bool bPercent = false;
-  if (n.getParam("percent", bPercent))
-  {
-  }
+  bool bPercent;
+  n.param<bool>("percent", bPercent, true);
 
   ros::Rate loop_rate(freq);
 
