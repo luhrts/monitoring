@@ -102,7 +102,7 @@ private:
    * @param info is the name that needs to be read
    * @return value of the read value
    */
-  unsigned int readNetworkInfo(char nwinterface[], char info[]);
+  unsigned int readNetworkInfo(char nwinterface[], const char info[]);
   /**
    * @brief readRXbytes reads the Received bytes
    * @param nwinterface is the network interface name
