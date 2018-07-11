@@ -124,7 +124,10 @@ class ROSData(object):
                 self.buff_y.append(self._get_data(msg))
                 # #944: use message header time if present
                 if msg.__class__._has_header:
-                    self.buff_x.append(msg.header.stamp.to_sec() - self.start_time)
+                    rospy.logout("msg has header")
+                    #self.buff_x.append(msg.header.stamp.to_sec() - self.start_time)
+                    #Test: don't use header time
+                    self.buff_x.append(rospy.get_time() - self.start_time)
                 else:
                     self.buff_x.append(rospy.get_time() - self.start_time)
                 #self.axes[index].plot(datax, buff_y)

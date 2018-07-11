@@ -55,6 +55,8 @@ from . rosplot import ROSData, RosPlotException
 from std_msgs.msg import String
 from monitoring_msgs.msg import *
 
+monitoring_topic_overview_list = []
+testlist = []
 
 def monitoring_listener():
     """
@@ -64,17 +66,26 @@ def monitoring_listener():
     msg = rospy.wait_for_message("monitoring", MonitoringArray)
     return msg
 
+def monitoring_topic_overview_list_manager(msg):
+    global monitoring_topic_msg
+    monitoring_topic_msg = msg
+    for element in msg.infos:
+        if not element.name in monitoring_topic_overview_list:
+            monitoring_topic_overview_list.append(element.name)
+            testp, testn = get_topic_name(element.name)
+            testlist.append({'name':element.name,'path': testp})
+
 def get_topic_name(node_value_name):
     """
     retrieve the absolut path to a topic within the MonitoringArray,
     by searching for the node_value_name and retrieving its position within the Array
     """
-    msg = monitoring_listener()
+    msg = monitoring_topic_msg
     i = 0
-    for element in msg.info[0].values:
-        if node_value_name == str(element.key):
-            topic_name = "/monitoring/info[0]/values[%d]/value" % i
-            return topic_name, node_value_name
+    for element in msg.infos:
+        if node_value_name == str(element.name):
+            topic_absolute_path = "/monitoring/gui/infos[%d]/value" % i
+            return topic_absolute_path, node_value_name
         i = i + 1
 
 def get_node_value_name(topic_name):
@@ -93,6 +104,17 @@ def get_node_value_name(topic_name):
     temp_eval = eval(temp)
     node_value_name = temp_eval
     return(node_value_name)
+
+def check_value_existence(topic_absolute_path, node_value_name):
+    temp_str = topic_absolute_path
+    temp_str = temp_str.replace("value","name")
+    temp_str = temp_str.replace("/monitoring/gui/","monitoring_topic_msg.")
+    temp_str = temp_str.replace("/",".")
+    temp_name = eval(temp_str)
+    if temp_name == node_value_name:
+        return True
+    else:
+        return False
 
 class PlotWidget(QWidget):
     _redraw_interval = 40
@@ -123,6 +145,8 @@ class PlotWidget(QWidget):
         self._update_plot_timer = QTimer(self)
         self._update_plot_timer.timeout.connect(self.update_plot)
 
+        rospy.Subscriber("/monitoring/gui", Gui, monitoring_topic_overview_list_manager)
+
     def switch_data_plot_widget(self, data_plot):
 
         self.enable_timer(enabled=False)
@@ -138,16 +162,21 @@ class PlotWidget(QWidget):
     @Slot()
     def on_refresh_list_button_clicked(self):
         self.listWidget.clear()
+        """
         msg = monitoring_listener()
         for element in msg.info[0].values:
             self.listWidget.addItem(element.key)
+        """
+        for element in monitoring_topic_overview_list:
+            self.listWidget.addItem(element)
 
     @Slot()
     def on_subscribe_topic_button_clicked(self):
-        topic_name, node_value_name = get_topic_name(self.listWidget.currentItem().text())
-        if topic_name not in self.list_of_elements_in_plot:
-            self.list_of_elements_in_plot.append(topic_name)
-            self.add_topic(topic_name, node_value_name)
+        topic_absolute_path, node_value_name = get_topic_name(self.listWidget.currentItem().text())
+        #topic_name = self.listWidget.currentItem().text()
+        if topic_absolute_path not in self.list_of_elements_in_plot:
+            self.list_of_elements_in_plot.append(topic_absolute_path)
+            self.add_topic(topic_absolute_path, node_value_name)
 
     @Slot(bool)
     def on_pause_button_clicked(self, checked):
@@ -164,24 +193,30 @@ class PlotWidget(QWidget):
         self.clear_plot()
 
     def update_plot(self):
+
         if self.data_plot is not None:
             needs_redraw = False
-            for topic_name, rosdata in self._rosdata.items():
-                try:
-                    data_x, data_y = rosdata.next()
-                    if data_x or data_y:
-                        rospy.logout(data_x)
-                        rospy.logout(data_y)
-                        self.data_plot.update_values(topic_name, data_x, data_y)
-                        needs_redraw = True
-                except RosPlotException as e:
-                    qWarning('PlotWidget.update_plot(): error in rosplot: %s' % e)
+            for topic_absolute_path, rosdata in self._rosdata.items():
+                for element in testlist:
+                    if element['path'] == topic_absolute_path:
+                        if check_value_existence(topic_absolute_path, element['name']):
+                            try:
+                                data_x, data_y = rosdata.next()
+                                if data_x or data_y:
+                                    rospy.logout(data_x)
+                                    rospy.logout(data_y)
+                                    self.data_plot.update_values(topic_absolute_path, data_x, data_y)
+                                    needs_redraw = True
+                            except RosPlotException as e:
+                                qWarning('PlotWidget.update_plot(): error in rosplot: %s' % e)
             if needs_redraw:
                 self.data_plot.redraw()
 
     def _subscribed_topics_changed(self):
-        self._update_remove_topic_menu()
+        #self._update_remove_topic_menu()
+        rospy.logout("_subscribed_topics_changed")
         if not self.pause_button.isChecked():
+            rospy.logout("enable timer")
             # if pause button is not pressed, enable timer based on subscribed topics
             self.enable_timer(self._rosdata)
         self.data_plot.redraw()
@@ -204,18 +239,17 @@ class PlotWidget(QWidget):
 
         self.remove_topic_button.setMenu(self._remove_topic_menu)
 
-    def add_topic(self, topic_name, node_value_name):
-
+    def add_topic(self, topic_absolute_path, node_value_name):
         topics_changed = False
-        self._rosdata[topic_name] = ROSData(topic_name, self._start_time)
-        data_x, data_y = self._rosdata[topic_name].next()
-        self.data_plot.add_curve(topic_name, node_value_name, data_x, data_y)
+        self._rosdata[topic_absolute_path] = ROSData(topic_absolute_path, self._start_time)
+        data_x, data_y = self._rosdata[topic_absolute_path].next()
+        self.data_plot.add_curve(topic_absolute_path, node_value_name, data_x, data_y)
         topics_changed = True
-
         if topics_changed:
             self._subscribed_topics_changed()
 
     def remove_topic(self, topic_name):
+        rospy.logout("remove topic")
         self._rosdata[topic_name].close()
         del self._rosdata[topic_name]
         self.data_plot.remove_curve(topic_name)
@@ -223,11 +257,13 @@ class PlotWidget(QWidget):
         self._subscribed_topics_changed()
 
     def clear_plot(self):
+        rospy.logout("clear plot")
         for topic_name, _ in self._rosdata.items():
             self.data_plot.clear_values(topic_name)
         self.data_plot.redraw()
 
     def clean_up_subscribers(self):
+        rospy.logout("clean up subscribers")
         for topic_name, rosdata in self._rosdata.items():
             rosdata.close()
             self.data_plot.remove_curve(topic_name)
@@ -237,6 +273,8 @@ class PlotWidget(QWidget):
 
     def enable_timer(self, enabled=True):
         if enabled:
+            rospy.logout("Timer enabled")
             self._update_plot_timer.start(self._redraw_interval)
         else:
+            rospy.logout("Timer stopped")
             self._update_plot_timer.stop()
