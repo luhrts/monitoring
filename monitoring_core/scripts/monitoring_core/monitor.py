@@ -33,7 +33,7 @@ class Monitor:
 
     def addValue(self, key, value, unit, errorlevel):
 
-        # Check if key conrains whitespace
+        # Check if key contains whitespace
         if " " in key:
             rospy.logwarn("[%s] whitespaces are not allowed in monitoring keys!", self.node_name)
 
