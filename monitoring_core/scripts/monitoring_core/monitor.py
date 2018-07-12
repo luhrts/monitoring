@@ -14,7 +14,7 @@ class Monitor:
         mi.name =  self.host_name + self.node_name
         mi.description = self.description
         self.ma.info.append(mi)
-        if(autoPublishing):
+        if autoPublishing:
             try:
                 frequency = 1
                 frequency = rospy.get_param(rospy.get_name() + '/monitoring/frequency', 1)
@@ -29,7 +29,6 @@ class Monitor:
 
     def timercallback(self, event):
         self.publish()
-
 
     def addValue(self, key, value, unit, errorlevel):
         kv = KeyValue()

@@ -54,14 +54,15 @@ class StatusItem(object):
     """
     def __init__(self, item=None):
         self._children = {}
-        self.updated = False
+        #self.updated = False
+        self.data_age = 0
         if item is not None:
             self._item = item
         else:
             self._item = _StatusItem("NONAME")
 
     def update(self, info, displayname):
-        self.updated = True
+        self.data_age = 0
         self.displayname = displayname
         self._item.name = info.name
         self._item.setText(0, self.displayname)
@@ -72,8 +73,10 @@ class StatusItem(object):
 
     def prune(self):
         stale = []
+        min_age = 999
         for child in self._children:
-            if not self._children[child].updated:
+            min_age = min(min_age, self._children[child].data_age)
+            if self._children[child].data_age > 10:
                 stale.append(child)
             else:
                 self._children[child].prune()
@@ -81,7 +84,7 @@ class StatusItem(object):
             for child in stale:
                 self._item.removeChild(self._children[child]._item)
                 del self._children[child]
-        self.updated = False
+        self.data_age+= 1 # = min_age
 
     # functions that make this object behave like a dict
     def __getitem__(self, key):
