@@ -12,7 +12,7 @@ if __name__ == '__main__':
     rate = rospy.Rate(1) # 10hz
     monitor = Monitor("ntp_monitor")
 
-    ntp_servers = rospy.get_param('ntp_servers', ['pool.ntp.org'])
+    ntp_servers = rospy.get_param('ntp_servers', ['pool.ntp.org', '130.0.0.0'])
     ntp_client = ntplib.NTPClient()
     while not rospy.is_shutdown():
         for server in ntp_servers:

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from monitoring_msgs.msg import *
+import socket
 
 class Monitor:
     def __init__(self, monitorDescription, autoPublishing = True):
@@ -8,7 +9,9 @@ class Monitor:
         self.ma = MonitoringArray()
         self.description = monitorDescription
         mi = MonitoringInfo()
-        mi.name = rospy.get_name()
+        self.host_name = socket.gethostname()
+        self.node_name = rospy.get_name()
+        mi.name =  self.host_name + self.node_name
         mi.description = self.description
         self.ma.info.append(mi)
         if(autoPublishing):
@@ -45,6 +48,6 @@ class Monitor:
     def resetMsg(self):
         self.ma = MonitoringArray()
         mi = MonitoringInfo()
-        mi.name = rospy.get_name()
+        mi.name =  self.host_name + self.node_name
         mi.description = self.description
         self.ma.info.append(mi)
