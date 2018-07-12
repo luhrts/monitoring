@@ -3,6 +3,7 @@
 Required:
 
 sudo apt install libprocps4-dev
+sudo pip install ntplib
 
 ---
 
