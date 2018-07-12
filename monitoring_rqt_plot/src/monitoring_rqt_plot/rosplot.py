@@ -43,7 +43,7 @@ import roslib.message
 import roslib.names
 import rospy
 from std_msgs.msg import Bool
-
+from monitoring_msgs.msg import Gui
 
 class RosPlotException(Exception):
     pass
@@ -102,13 +102,13 @@ class ROSData(object):
         self.buff_x = []
         self.buff_y = []
 
-        topic_type, real_topic, fields = get_topic_type(topic)
-        if topic_type is not None:
-            self.field_evals = generate_field_evals(fields)
-            data_class = roslib.message.get_message_class(topic_type)
-            self.sub = rospy.Subscriber(real_topic, data_class, self._ros_cb)
-        else:
-            self.error = RosPlotException("Can not resolve topic type of %s" % topic)
+#        topic_type, real_topic, fields = get_topic_type(topic)
+#        if topic_type is not None:
+  #      self.field_evals = generate_field_evals(fields)
+#            data_class = roslib.message.get_message_class(topic_type)
+        self.sub = rospy.Subscriber("/monitoring/gui", Gui, self._ros_cb)
+#        else:
+#            self.error = RosPlotException("Can not resolve topic type of %s" % topic)
 
     def close(self):
         self.sub.unregister()
@@ -121,16 +121,21 @@ class ROSData(object):
         try:
             self.lock.acquire()
             try:
-                self.buff_y.append(self._get_data(msg))
-                # #944: use message header time if present
-                if msg.__class__._has_header:
-                    rospy.logout("msg has header")
-                    #self.buff_x.append(msg.header.stamp.to_sec() - self.start_time)
-                    #Test: don't use header time
-                    self.buff_x.append(rospy.get_time() - self.start_time)
-                else:
-                    self.buff_x.append(rospy.get_time() - self.start_time)
-                #self.axes[index].plot(datax, buff_y)
+                value_found = False
+                for info in msg.infos:
+                    if info.name == self.name:
+                        value_found = True
+                        self.buff_y.append(float(info.value))
+                if value_found:
+                    # #944: use message header time if present
+                    if msg.__class__._has_header:
+                        rospy.logout("msg has header")
+                        #self.buff_x.append(msg.header.stamp.to_sec() - self.start_time)
+                        #Test: don't use header time
+                        self.buff_x.append(rospy.get_time() - self.start_time)
+                    else:
+                        self.buff_x.append(rospy.get_time() - self.start_time)
+                    #self.axes[index].plot(datax, buff_y)
             except AttributeError as e:
                 self.error = RosPlotException("Invalid topic spec [%s]: %s" % (self.name, str(e)))
         finally:
@@ -153,23 +158,6 @@ class ROSData(object):
         finally:
             self.lock.release()
         return buff_x, buff_y
-
-    def _get_data(self, msg):
-        val = msg
-        try:
-            if not self.field_evals:
-                if isinstance(val, Bool):
-                    # extract boolean field from bool messages
-                    val = val.data
-                return float(val)
-            for f in self.field_evals:
-                val = f(val)
-            return float(val)
-        except IndexError:
-            self.error = RosPlotException("[%s] index error for: %s" % (self.name, str(val).replace('\n', ', ')))
-        except TypeError:
-            self.error = RosPlotException("[%s] value was not numeric: %s" % (self.name, val))
-
 
 def _array_eval(field_name, slot_num):
     """

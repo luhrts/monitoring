@@ -72,8 +72,10 @@ def monitoring_topic_overview_list_manager(msg):
     for element in msg.infos:
         if not element.name in monitoring_topic_overview_list:
             monitoring_topic_overview_list.append(element.name)
-            testp, testn = get_topic_name(element.name)
-            testlist.append({'name':element.name,'path': testp})
+            rospy.loginfo(element.name)
+            #testp, testn = get_topic_name(element.name)
+            #rospy.loginfo("testp: %s", testp)
+            testlist.append({'name':element.name,'path': element.name})
 
 def get_topic_name(node_value_name):
     """
@@ -106,12 +108,13 @@ def get_node_value_name(topic_name):
     return(node_value_name)
 
 def check_value_existence(topic_absolute_path, node_value_name):
-    temp_str = topic_absolute_path
-    temp_str = temp_str.replace("value","name")
-    temp_str = temp_str.replace("/monitoring/gui/","monitoring_topic_msg.")
-    temp_str = temp_str.replace("/",".")
-    temp_name = eval(temp_str)
-    if temp_name == node_value_name:
+ #   rospy.loginfo("check existence - topic: %s node: %s", topic_absolute_path, node_value_name)
+#    temp_str = topic_absolute_path
+#    temp_str = temp_str.replace("value","name")
+#    temp_str = temp_str.replace("/monitoring/gui/","monitoring_topic_msg.")
+#    temp_str = temp_str.replace("/",".")
+#    temp_name = eval(temp_str)
+    if topic_absolute_path == node_value_name:
         return True
     else:
         return False
@@ -227,7 +230,7 @@ class PlotWidget(QWidget):
 
         self._remove_topic_menu.clear()
         for topic_name in sorted(self._rosdata.keys()):
-            node_value_name = get_node_value_name(topic_name)
+            node_value_name = topic_name
             action = QAction(node_value_name, self._remove_topic_menu)
             action.triggered.connect(make_remove_topic_function(topic_name))
             self._remove_topic_menu.addAction(action)
@@ -241,9 +244,10 @@ class PlotWidget(QWidget):
 
     def add_topic(self, topic_absolute_path, node_value_name):
         topics_changed = False
-        self._rosdata[topic_absolute_path] = ROSData(topic_absolute_path, self._start_time)
-        data_x, data_y = self._rosdata[topic_absolute_path].next()
-        self.data_plot.add_curve(topic_absolute_path, node_value_name, data_x, data_y)
+        rospy.logwarn("new value with path: %s and name: %s", topic_absolute_path, node_value_name)
+        self._rosdata[node_value_name] = ROSData(node_value_name, self._start_time)
+        data_x, data_y = self._rosdata[node_value_name].next()
+        self.data_plot.add_curve(node_value_name, node_value_name, data_x, data_y)
         topics_changed = True
         if topics_changed:
             self._subscribed_topics_changed()
