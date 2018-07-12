@@ -1,7 +1,7 @@
 <launch>
-	
+
         <node pkg="monitoring_monitors_ros" type="node_ressource_monitor.py" name="node_ressource_monitor" output="screen" respawn="true">
-                <rosparam command="load" file="$(find monitoring_monitors_ros)/config/node_ressource_monitor_config.yaml" />
+          <rosparam command="load" file="$(find monitoring_monitors_ros)/config/node_ressource_monitor_filter.yaml" />
 	</node>
-	
+
 </launch>
