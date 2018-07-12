@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from monitoring_msgs.msg import *
+
 import socket
 
 class Monitor:
@@ -31,6 +32,11 @@ class Monitor:
         self.publish()
 
     def addValue(self, key, value, unit, errorlevel):
+
+        # Check if key conrains whitespace
+        if " " in key:
+            rospy.logwarn("[%s] whitespaces are not allowed in monitoring keys!", self.node_name)
+
         kv = KeyValue()
         kv.key = str(key)
         kv.value = str(value)
