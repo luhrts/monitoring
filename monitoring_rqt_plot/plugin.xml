@@ -5,7 +5,7 @@
     </description>
     <qtgui>
       <group>
-        <label>Test</label>
+        <label>Monitoring Tools</label>
         <icon type="theme">folder</icon>
         <statustip>Plugins related to visualization.</statustip>
       </group>

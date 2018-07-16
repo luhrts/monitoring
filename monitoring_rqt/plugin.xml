@@ -5,7 +5,7 @@
     </description>
     <qtgui>
       <group>
-        <label>Monitor Tools</label>
+        <label>Monitoring Tools</label>
         <icon type="theme">folder</icon>
         <statustip>Plugins related to robot tools.</statustip>
       </group>

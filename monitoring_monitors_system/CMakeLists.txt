@@ -60,11 +60,17 @@ target_link_libraries(wifi_signal_strength_monitoring_node
 )
 
 
+add_executable(clockdiff_monitor_node src/clockdiffmonitor.cpp)
+target_link_libraries(clockdiff_monitor_node
+  ${catkin_LIBRARIES}
+)
 
-
-
-
-
-
-
+#add_custom_command(TARGET clockdiff_monitor_node POST_BUILD
+#    COMMAND sudo setcap cap_net_raw+ep clockdiff_monitor_node
+#    WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
+#)
+string(ASCII 27 ESCAPE)
+add_custom_command(
+  OUTPUT message
+  COMMAND sudo -n sh -c 'cd ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION}\; chown root.root ping_monitor.py\; chmod 4755 ping_monitor.py' || (echo "${ESCAPE}[34m#\ type\ following\ command\ before\ execute\ rosping...\ sudo\ chown\ root.root\ ./bin/rosping\;\ sudo\ chmod 4755\ ./bin/rosping${ESCAPE}[0m"))
 
