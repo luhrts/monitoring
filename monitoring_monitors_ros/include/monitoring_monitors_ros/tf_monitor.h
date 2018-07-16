@@ -46,6 +46,8 @@ using namespace ros;
 using namespace std;
 
 
+
+
 class TFMonitor
 {
 public:
@@ -58,29 +60,21 @@ public:
 
   void process_callback(const tf::tfMessage& message, const std::string & authority, bool is_static);
 
-  std::string outputFrameInfo(const std::map<std::string, std::vector<double> >::iterator& it, const std::string& frame_authority);
-
-  void spin();
-
 private:
 
   ros::NodeHandle node_;
-  ros::Subscriber subscriber_tf_, subscriber_tf_static_;
-  std::map<std::string, std::string> frame_authority_map;
-  std::map<std::string, std::vector<double> > delay_map;
-  std::map<std::string, std::vector<double> > authority_map;
-  std::map<std::string, std::vector<double> > authority_frequency_map;
+  ros::Subscriber subscriber_tf_;
+  ros::Subscriber subscriber_tf_static_;
 
   TransformListener tf_;
+  Monitor* monitor_;
 
   tf::tfMessage message_;
 
   boost::mutex map_lock_;
 
-  struct TransformData{
+  struct TransformData {
       std::string frame;
-
-      bool has_parent;
       std::string parent;
 
       bool is_static;
@@ -88,8 +82,6 @@ private:
       tf::StampedTransform last_transform;
 
       std::string authority;
-
-
   };
 
   std::map<std::string, TransformData> transforms_;

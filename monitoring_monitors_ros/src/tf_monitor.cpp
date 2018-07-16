@@ -38,6 +38,9 @@ using namespace std;
 
 TFMonitor::TFMonitor()
 {
+    ros::NodeHandle nh;
+    monitor_ = new Monitor(nh, "tf_monitor");
+
     subscriber_tf_ = node_.subscribe<tf::tfMessage>("tf", 100, boost::bind(&TFMonitor::callback, this, _1));
     subscriber_tf_static_ = node_.subscribe<tf::tfMessage>("tf_static", 100, boost::bind(&TFMonitor::static_callback, this, _1));
 }
@@ -59,12 +62,45 @@ void TFMonitor::static_callback(const ros::MessageEvent<tf::tfMessage const>& ms
 
 void TFMonitor::process_callback(const tf::tfMessage& message, const std::string & authority, bool is_static)
 {
-    double average_offset = 0;
-    boost::mutex::scoped_lock my_lock(map_lock_);
     for (unsigned int i = 0; i < message.transforms.size(); i++)
     {
-        frame_authority_map[message.transforms[i].child_frame_id] = authority;
+        bool new_frame = false;
+        std::string frame = message.transforms[i].child_frame_id;
+        std::string parent = message.transforms[i].header.frame_id;
 
+        //Check if Frame is knowkn
+        if(transforms_.count(frame) == 0){
+            transforms_[frame] = TransformData();
+            transforms_[frame].frame = frame;
+
+            ROS_INFO("New Frame: %s", frame.c_str());
+            new_frame = true;
+        }
+
+        //Static change
+        if(transforms_[frame].is_static != is_static && !new_frame){
+            ROS_WARN("TF_Monitor: static changed for frame: %s, old_parent: %d new_parent: %d", frame.c_str(), transforms_[frame].is_static, is_static);
+            monitor_->addValue(parent+"/"+frame+"/static_changed", -1, "", 1.0);
+        }
+        transforms_[frame].is_static = is_static;
+
+        //TF Parent Change =>
+        if(transforms_[frame].parent != parent && !new_frame){
+            ROS_WARN("TF_Monitor: parent changed for frame: %s, old_parent: %s new_parent: %s", frame.c_str(), transforms_[frame].parent.c_str(), parent.c_str());
+            monitor_->addValue(parent+"/"+frame+"/parent_changed", -1, "", 1.0);
+
+        }
+        transforms_[frame].parent = parent;
+
+        //Autohrity change
+        if(transforms_[frame].authority != authority && !new_frame){
+            ROS_WARN("TF_Monitor: authority changed for frame: %s, old_authority: %s new_authority: %s", frame.c_str(), transforms_[frame].authority.c_str(), authority.c_str());
+            monitor_->addValue(parent+"/"+frame+"/authority_changed", -1, "", 1.0);
+        }
+        transforms_[frame].authority = authority;
+
+
+        //offset
         double offset;
         if (is_static)
         {
@@ -74,112 +110,52 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
         {
             offset = (ros::Time::now() - message.transforms[i].header.stamp).toSec();
         }
-        average_offset  += offset;
+        monitor_->addValue(parent+"/"+frame+"/timestamp_delay", offset, "s", 0.0);
 
-        std::map<std::string, std::vector<double> >::iterator it = delay_map.find(message.transforms[i].child_frame_id);
-        if (it == delay_map.end())
-        {
-            delay_map[message.transforms[i].child_frame_id] = std::vector<double>(1,offset);
-        }
-        else
-        {
-            it->second.push_back(offset);
-            if (it->second.size() > 1000)
-                it->second.erase(it->second.begin());
-        }
+        // If has parent get Transform data
+        //Stamped Transform compare
+        tf::StampedTransform current_transform;
+        tf::transformStampedMsgToTF(message.transforms[i], current_transform);
 
-    }
+        //calculate deltas
+        if(!new_frame){
+            double dx, dy, dz, droll, dpitch, dyaw;
+            ros::Duration dTime;
 
-    average_offset /= max((size_t) 1, message.transforms.size());
+            dx = current_transform.getOrigin().getX() - transforms_[frame].last_transform.getOrigin().getX();
+            dy = current_transform.getOrigin().getY() - transforms_[frame].last_transform.getOrigin().getY();
+            dz = current_transform.getOrigin().getZ() - transforms_[frame].last_transform.getOrigin().getZ();
 
-    //create the authority log
-    std::map<std::string, std::vector<double> >::iterator it2 = authority_map.find(authority);
-    if (it2 == authority_map.end())
-    {
-        authority_map[authority] = std::vector<double>(1,average_offset);
-    }
-    else
-    {
-        it2->second.push_back(average_offset);
-        if (it2->second.size() > 1000)
-            it2->second.erase(it2->second.begin());
-    }
+            double current_roll, current_pitch, current_yaw;
+            tf::Matrix3x3(current_transform.getRotation()).getRPY(current_roll, current_pitch, current_yaw);
 
-    //create the authority frequency log
-    std::map<std::string, std::vector<double> >::iterator it3 = authority_frequency_map.find(authority);
-    if (it3 == authority_frequency_map.end())
-    {
-        authority_frequency_map[authority] = std::vector<double>(1,ros::Time::now().toSec());
-    }
-    else
-    {
-        it3->second.push_back(ros::Time::now().toSec());
-        if (it3->second.size() > 1000)
-            it3->second.erase(it3->second.begin());
-    }
+            double last_roll, last_pitch, last_yaw;
+            tf::Matrix3x3(transforms_[frame].last_transform.getRotation()).getRPY(current_roll, current_pitch, current_yaw);
 
-}
+            droll = current_roll - last_roll;
+            dpitch = current_pitch - last_pitch;
+            dyaw = current_yaw - last_yaw;
 
-std::string TFMonitor::outputFrameInfo(const std::map<std::string, std::vector<double> >::iterator& it, const std::string& frame_authority)
-{
-    std::stringstream ss;
-    double average_delay = 0;
-    double max_delay = 0;
-    for (unsigned int i = 0; i < it->second.size(); i++)
-    {
-        average_delay += it->second[i];
-        max_delay = std::max(max_delay, it->second[i]);
-    }
-    average_delay /= it->second.size();
-    ss << "Frame: " << it->first <<" published by "<< frame_authority << " Average Delay: " << average_delay << " Max Delay: " << max_delay << std::endl;
-    return ss.str();
-}
+            dTime = current_transform.stamp_ - transforms_[frame].last_transform.stamp_;
 
-void TFMonitor::spin()
-{
-    // create tf listener
-    double max_diff = 0;
-    double avg_diff = 0;
-    double lowpass = 0.01;
-    unsigned int counter = 0;
 
-    while (node_.ok()){
-        tf::StampedTransform tmp;
-        counter++;
-        //    printf("looping %d\n", counter);
-        Duration(0.01).sleep();
-        if (counter > 20){
-            counter = 0;
+            monitor_->addValue(parent+"/"+frame+"/dx", dx, "m", 0.0);
+            monitor_->addValue(parent+"/"+frame+"/dy", dy, "m", 0.0);
+            monitor_->addValue(parent+"/"+frame+"/dz", dz, "m", 0.0);
 
-            std::cout <<std::endl<< std::endl<< std::endl<< "RESULTS: for all Frames" <<std::endl;
-            boost::mutex::scoped_lock lock(map_lock_);
-            std::cout <<std::endl << "Frames:" <<std::endl;
-            std::map<std::string, std::vector<double> >::iterator it = delay_map.begin();
-            for ( ; it != delay_map.end() ; ++it)
-            {
-               cout << outputFrameInfo(it, frame_authority_map[it->first]);
-            }
-            std::cerr <<std::endl<< "All Broadcasters:" << std::endl;
-            std::map<std::string, std::vector<double> >::iterator it1 = authority_map.begin();
-            std::map<std::string, std::vector<double> >::iterator it2 = authority_frequency_map.begin();
-            for ( ; it1 != authority_map.end() ; ++it1, ++it2)
-            {
-                double average_delay = 0;
-                double max_delay = 0;
-                for (unsigned int i = 0; i < it1->second.size(); i++)
-                {
-                    average_delay += it1->second[i];
-                    max_delay = std::max(max_delay, it1->second[i]);
-                }
-                average_delay /= it1->second.size();
-                double frequency_out = (double)(it2->second.size())/std::max(0.00000001, (it2->second.back() - it2->second.front()));
-                //cout << "output" <<&(*it2) <<" " << it2->second.back() <<" " << it2->second.front() <<" " << std::max((size_t)1, it2->second.size()) << " " << frequency_out << endl;
-                cout << "Node: " <<it1->first << " " << frequency_out <<" Hz, Average Delay: " << average_delay << " Max Delay: " << max_delay << std::endl;
-            }
+            monitor_->addValue(parent+"/"+frame+"/droll", droll, "degree", 0.0);
+            monitor_->addValue(parent+"/"+frame+"/dpitch", dpitch, "degree", 0.0);
+            monitor_->addValue(parent+"/"+frame+"/dyaw", dyaw, "degree", 0.0);
+
+            monitor_->addValue(parent+"/"+frame+"/tdoa", dTime.toSec(), "s", 0.0);
+
+            ROS_DEBUG("%s -> %s:  \t xyz [%f, %f, %f] rpy [%f, %f, %f] dtime: %f s", parent.c_str(), frame.c_str(), dx, dy, dz, droll, dpitch, dyaw, dTime.toSec());
 
         }
-    }
+        transforms_[frame].last_transform = current_transform;
 
+
+    }
 }
 
 int main(int argc, char ** argv)
@@ -205,113 +181,15 @@ int main(int argc, char ** argv)
         ros::WallDuration(0.1).sleep();
     }
 
-    ros::NodeHandle nh;
-    boost::thread spinner( boost::bind( &ros::spin ));
+    ROS_INFO("init done");
     TFMonitor monitor;
-    monitor.spin();
-    spinner.join();
+
+
+
+    ros::spin();
+
     return 0;
 
 }
 
 
-
-//tf::TransformListener* listener;
-
-
-
-
-//void updateFrames(std::vector<std::string> tf_frames){
-
-
-//    for(std::string frame : tf_frames){
-//        bool new_frame = false;
-
-//        //Check if Frame is knowkn
-//        if(transforms_.count(frame) == 0){
-//            transforms_[frame] = Transform();
-//            transforms_[frame].frame = frame;
-
-//            ROS_INFO("New Frame: %s", frame.c_str());
-//            new_frame = true;
-//        }
-
-
-//        //Check Parent
-//        std::string parent;
-//        if (!listener->getParent(frame, ros::Time(0), parent)){
-//            ROS_DEBUG("TF_Monitor: getParent failed for: %s", frame.c_str());
-//            transforms_[frame].has_parent = false;
-
-//        } else {
-//            transforms_[frame].has_parent = true;
-//        }
-
-//        //TF Parent Change =>
-//        if(transforms_[frame].parent != parent && !new_frame){
-//            ROS_WARN("TF_Monitor: getParent missmatch frame: %s, old_parent: %s new_parent: %s", frame.c_str(), transforms_[frame].parent.c_str(), parent.c_str());
-//        }
-
-//        transforms_[frame].parent = parent;
-
-
-//        // If has parent get Transform data
-//        if (transforms_[frame].has_parent) {
-//            //Stamped Transform compare
-//            tf::StampedTransform current_transform;
-//            listener->lookupTransform(frame, parent, ros::Time(0), current_transform);
-
-//            //calculate deltas
-//            if(!new_frame){
-//                double dx, dy, dz, droll, dpitch, dyaw;
-//                ros::Duration dTime;
-
-//                dx = current_transform.getOrigin().getX() - transforms_[frame].last_transform.getOrigin().getX();
-//                dy = current_transform.getOrigin().getY() - transforms_[frame].last_transform.getOrigin().getY();
-//                dz = current_transform.getOrigin().getZ() - transforms_[frame].last_transform.getOrigin().getZ();
-
-//                double current_roll, current_pitch, current_yaw;
-//                tf::Matrix3x3(current_transform.getRotation()).getRPY(current_roll, current_pitch, current_yaw);
-
-//                double last_roll, last_pitch, last_yaw;
-//                tf::Matrix3x3(transforms_[frame].last_transform.getRotation()).getRPY(current_roll, current_pitch, current_yaw);
-
-//                droll = current_roll - last_roll;
-//                dpitch = current_pitch - last_pitch;
-//                dyaw = current_yaw - last_yaw;
-
-//                dTime = current_transform.stamp_ - transforms_[frame].last_transform.stamp_;
-
-//                ROS_INFO("%s -> %s:  \t xyz [%f, %f, %f] rpy [%f, %f, %f] dtime: %f s", parent.c_str(), frame.c_str(), dx, dy, dz, droll, dpitch, dyaw, dTime.toSec());
-
-//            }
-//            transforms_[frame].last_transform = current_transform;
-//        }
-
-
-
-
-//    }
-
-//}
-
-
-
-//int main(int argc, char *argv[]) {
-//    ros::init(argc, argv, "tf_monitor");
-//    ros::NodeHandle n("~");
-
-//    listener = new tf::TransformListener();
-
-//    ros::Rate rate(1.0);
-//    while (n.ok()){
-//        ROS_INFO("________________________________________________________________________________________________");
-//        std::vector<std::string> tf_frames;
-//        listener->getFrameStrings(tf_frames);
-//        updateFrames(tf_frames);
-
-
-//        rate.sleep();
-//    }
-//    return 0;
-//}
