@@ -1,0 +1,9 @@
+monitoring:
+ frequency: 10
+Transform_check: [turtle1_to_2,world_to_turtle]
+turtle1_to_2:
+  Frame_List : [world,/turtle1,/turtle2]
+  errorlevel: 1.0
+world_to_turtle:
+  Frame_List : [world,/turtle1,/carrort]
+  errorlevel: 0.5
