@@ -69,18 +69,17 @@
 """
 
 
-import os, sys, socket, struct, select, time
+import os, sys, socket, struct, select, time, datetime
 
-if sys.platform == "win32":
-    # On Windows, the best timer is time.clock()
-    default_timer = time.clock
-else:
-    # On most other platforms the best timer is time.time()
-    default_timer = time.time
+default_timer = time.time
 
 # From /usr/include/linux/icmp.h; your milage may vary.
 ICMP_ECHO_REQUEST = 8 # Seems to be the same on Solaris.
+ICMP_ECHO_RESPONSE = 0
+ICMP_TIMESTAMP_REQUEST = 13
+ICMP_TIMSTAMP_RESPONSE = 14
 
+sequence = 0
 
 def checksum(source_string):
     """
@@ -110,11 +109,101 @@ def checksum(source_string):
 
     return answer
 
+def receive_one_timestamp(my_socket, ID, timeout):
+    """
+    receive the ping from the socket.
+    """
+
+    rtt = -1
+
+    timeLeft = timeout
+    while True:
+        startedSelect = time.time()
+        whatReady = select.select([my_socket], [], [], timeLeft)
+        howLongInSelect = (time.time() - startedSelect)
+        if whatReady[0] == []: # Timeout
+            return
+
+        lt = datetime.datetime.utcnow()
+        timeRecvClient  = ((lt.hour * 60 + lt.minute) * 60 + lt.second) * 1000 + lt.microsecond / 1000
+        recPacket, addr = my_socket.recvfrom(1024)
+        icmpHeader = recPacket[20:28]
+        type, code, checksum, packetID, sequence = struct.unpack(
+            "bbHHh", icmpHeader
+        )
+#        print "type: "+str(type)
+#        print "code: "+str(code)
+#        print "checksum: "+str(hex(checksum))
+#        print "packetID: "+str(packetID)
+#        print "sequence: "+str(sequence)
+
+        # Filters out the echo request itself.
+        # This can be tested by pinging 127.0.0.1
+        # You'll see your own request
+        if type == ICMP_TIMSTAMP_RESPONSE and packetID == ID:
+
+#            print "len recv: "+str(len(recPacket))
+            timeSentClient, timeRecvServer, timeSentServer = struct.unpack("!iii", recPacket[28:])
+
+#            print "sent_client: "+str(timeSentClient)
+#            print "recv_server: "+str(timeRecvServer)
+#            print "sent_server: "+str(timeSentServer)
+#            print "recv_client: "+str(timeRecvClient)
+
+            A = timeRecvServer - timeSentClient
+            B = timeRecvClient - timeSentServer
+#            print A
+#            print B
+            offset = (A - B)/2.0
+            return offset
+        else:
+            print "received icmp type: "+str(type)
+
+        timeLeft = timeLeft - howLongInSelect
+        if timeLeft <= 0:
+            return
+
+
+def send_one_timestamp(my_socket, dest_addr, ID):
+    """
+    Send one ping to the given >dest_addr<.
+    """
+    global sequence
+    dest_addr  =  socket.gethostbyname(dest_addr)
+
+    # Header is type (8), code (8), checksum (16), id (16), sequence (16)
+    my_checksum = 0
+    sequence += 1
+
+    # Make a dummy heder with a 0 checksum.
+    header = struct.pack("bbHHh", ICMP_TIMESTAMP_REQUEST, 0, my_checksum, ID, sequence)
+    lt = datetime.datetime.utcnow()
+
+
+    timestamp  = ((lt.hour * 60 + lt.minute) * 60 + lt.second) * 1000 + lt.microsecond / 1000
+#    print " "
+#    print "send_ts: "+str(timestamp)
+    data = struct.pack("!lll", timestamp, 0, 0)
+
+    # Calculate the checksum on the data and the dummy header.
+    my_checksum = checksum(header + data)
+
+    # Now that we have the right checksum, we put that in. It's just easier
+    # to make up a new header than to stuff it into the dummy.
+    header = struct.pack(
+        "bbHHh", ICMP_TIMESTAMP_REQUEST, 0, socket.htons(my_checksum), ID, sequence
+    )
+    packet = header + data
+    my_socket.sendto(packet, (dest_addr, 1)) # Don't know about the 1
+
 
 def receive_one_ping(my_socket, ID, timeout):
     """
     receive the ping from the socket.
     """
+
+    rtt = -1
+
     timeLeft = timeout
     while True:
         startedSelect = default_timer()
@@ -135,7 +224,10 @@ def receive_one_ping(my_socket, ID, timeout):
         if type != 8 and packetID == ID:
             bytesInDouble = struct.calcsize("d")
             timeSent = struct.unpack("d", recPacket[28:28 + bytesInDouble])[0]
-            return timeReceived - timeSent
+            rtt = timeReceived - timeSent
+            return rtt
+        else:
+            print "received icmp type: "+str(type)
 
         timeLeft = timeLeft - howLongInSelect
         if timeLeft <= 0:
@@ -176,6 +268,10 @@ def do_one(dest_addr, timeout):
     icmp = socket.getprotobyname("icmp")
     try:
         my_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, icmp)
+        SO_TIMESTAMPNS = 35
+        #s = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.htons(3))
+        my_socket.setsockopt(socket.SOL_SOCKET, SO_TIMESTAMPNS, 1)
+
     except socket.error, (errno, msg):
         if errno == 1:
             # Operation not permitted
@@ -189,10 +285,13 @@ def do_one(dest_addr, timeout):
     my_ID = os.getpid() & 0xFFFF
 
     send_one_ping(my_socket, dest_addr, my_ID)
-    delay = receive_one_ping(my_socket, my_ID, timeout)
+    rtt = receive_one_ping(my_socket, my_ID, timeout)
+
+    send_one_timestamp(my_socket, dest_addr, my_ID)
+    offset = receive_one_timestamp(my_socket, my_ID, timeout)
 
     my_socket.close()
-    return delay
+    return rtt, offset
 
 
 def verbose_ping(dest_addr, timeout = 2, count = 4):
@@ -203,21 +302,27 @@ def verbose_ping(dest_addr, timeout = 2, count = 4):
     for i in xrange(count):
         print "ping %s..." % dest_addr,
         try:
-            delay  =  do_one(dest_addr, timeout)
+            rtt, offset  =  do_one(dest_addr, timeout)
         except socket.gaierror, e:
             print "failed. (socket error: '%s')" % e[1]
             break
 
-        if delay  ==  None:
+        if rtt  ==  None:
             print "failed. (timeout within %ssec.)" % timeout
         else:
-            delay  =  delay * 1000
-            print "get ping in %0.4fms" % delay
+            rtt  =  rtt * 1000
+            print "RTT: %f ms" % (rtt),
+
+        if offset  ==  None:
+            print "failed. (timeout within %ssec.)" % timeout
+        else:
+            print "Offset: %f ms" % (offset)
+
     print
 
 
 if __name__ == '__main__':
-    verbose_ping("heise.de")
-    verbose_ping("google.com")
-    verbose_ping("a-test-url-taht-is-not-available.com")
-    verbose_ping("192.168.1.1")
+    verbose_ping("130.75.137.10")
+    verbose_ping("130.75.137.127")
+
+    #verbose_ping("google.de")
