@@ -58,6 +58,37 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
             monitor_->addValue(parent+"/"+frame+"/parent_changed", -1, "", 1.0);
 
         }
+
+        //Seperation detection
+        if(new_frame){
+           if(transforms_.count(transforms_[frame].parent)==0 ||transforms_[frame].parent !=base_parent_frame){
+               //new base
+               if(frame==base_parent_frame){
+               base_parent_frame=transforms_[frame].parent;
+               }
+               else{
+                 ROS_WARN("xxxxx");
+                 monitor_->addValue();
+
+               }
+
+           }
+        }
+
+        while (transforms_[frame].parent!= parent && !new_frame) {
+            if(transforms_[frame].parent==base_parent_frame){
+                break;
+            }
+            else{
+
+                if(transforms_.count(transforms_[active_frame_child].parent)==0){
+                    ////Seperation
+                    ROS_WARN("xxxxx");
+                    monitor_->addValue();
+                };
+
+            }
+        }
         transforms_[frame].parent = parent;
 
         //Autohrity change
@@ -66,6 +97,7 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
             monitor_->addValue(parent+"/"+frame+"/authority_changed", -1, "", 1.0);
         }
         transforms_[frame].authority = authority;
+
 
 
         //offset

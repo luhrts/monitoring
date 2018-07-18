@@ -45,14 +45,14 @@ private:
   struct TransformData {
       std::string frame;
       std::string parent;
-
+      
       bool is_static;
 
       tf::StampedTransform last_transform;
 
       std::string authority;
   };
-
+  std::string base_parent_frame;
   std::map<std::string, TransformData> transforms_;
 
 };
