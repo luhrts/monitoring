@@ -332,10 +332,29 @@ def nice_to_monitor(value, name):
     monitor.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def num_ctx_switches_to_monitor(value, name):
+    """
+    added two additional blocks that divide the value string into one field for
+    voluntary and involuntary context switches.
+    """
     rospy.loginfo("num_ctx_switches: " + str(value))
     monitor_string = name + "/num_ctx_switches"
     monitor_value = str(value)
     monitor_unit = " "
+    monitor_errorlvl = 0
+
+    monitor.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    rospy.loginfo("voluntary_ctx_switches: " + str(value.voluntary))
+    monitor_string = name + "/num_ctx_switches_voluntary"
+    monitor_value = str(value.voluntary)
+    monitor_unit = "ctx_switches"
+    monitor_errorlvl = 0
+
+    monitor.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+
+    rospy.loginfo("involuntary_ctx_switches: " + str(value.involuntary))
+    monitor_string = name + "/num_ctx_switches_involuntary"
+    monitor_value = str(value.involuntary)
+    monitor_unit = "ctx_switches"
     monitor_errorlvl = 0
 
     monitor.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
