@@ -31,9 +31,10 @@ Monitor::Monitor(ros::NodeHandle &n, std::string monitorDescription, bool autoPu
 
   if(autoPublishing) {
     int frequency = 1;
-    if (!n.getParam("monitoring/frequency", frequency))
+    ros::NodeHandle private_n("~");
+    if (!private_n.getParam("monitoring/frequency", frequency))
     {
-      ROS_WARN("No frequency supplied for monitoring (%s/monitoring/frequency. Working with %d Hz.", mi.name.c_str(), frequency);
+      ROS_WARN("No frequency supplied for monitoring (%s/monitoring/frequency. Working with %d Hz.", node_name_.c_str(), frequency);
     }
 
     timer = n.createTimer(ros::Duration(1/frequency), &Monitor::timerCallback, this);
