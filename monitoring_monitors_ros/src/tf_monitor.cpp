@@ -1,4 +1,4 @@
-#include "monitoring_monitors_ros/tf_monitor.h"
+﻿#include "monitoring_monitors_ros/tf_monitor.h"
 
 using namespace tf;
 using namespace ros;
@@ -61,33 +61,33 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
 
         //Seperation detection
         if(new_frame){
-           if(transforms_.count(transforms_[frame].parent)==0 ||transforms_[frame].parent !=base_parent_frame){
-               //new base
-               if(frame==base_parent_frame){
-               base_parent_frame=transforms_[frame].parent;
+           if(transforms_.count(parent)==0 && parent !=base_parent_frame){
+               if(frame==base_parent_frame || transforms_.size()==1){
+               base_parent_frame=parent;
+               ROS_INFO("New base for tf_tree: %s",parent.c_str());
                }
                else{
-                 ROS_WARN("xxxxx");
-                 monitor_->addValue();
+               ////Seperation
+                 ROS_WARN("TF_Monitor: %s dose not connect to base frame",parent.c_str());
+                 monitor_->addValue(parent+"/dose not connect to base frame", -1, "", 1.0);
 
                }
 
            }
         }
 
-        while (transforms_[frame].parent!= parent && !new_frame) {
-            if(transforms_[frame].parent==base_parent_frame){
-                break;
-            }
-            else{
-
-                if(transforms_.count(transforms_[active_frame_child].parent)==0){
+        if (transforms_[frame].parent!= parent && !new_frame) {
+            if(parent!=base_parent_frame || transforms_.count(parent)==0){
                     ////Seperation
-                    ROS_WARN("xxxxx");
-                    monitor_->addValue();
-                };
-
+                    ROS_WARN("TF_Monitor: %s to %s is a Seperation_frame",frame.c_str(),transforms_[frame].parent.c_str());
+                    monitor_->addValue(parent+"/dose not connect to base frame", -1, "", 1.0);
             }
+
+            else if (frame==base_parent_frame){
+                     ROS_WARN("TF_Monitor: %s/ transform to tree's Base",transforms_[frame].parent.c_str());
+                     monitor_->addValue(parent+" /transform to tree's Base", -1, "", 1.0);
+
+                };
         }
         transforms_[frame].parent = parent;
 
