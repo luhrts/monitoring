@@ -1,18 +1,11 @@
 <launch>
-<<<<<<< HEAD
     <node pkg="monitoring_monitors_ros" type="statistics_monitoring_node" name="statistics_monitoring" respawn="true">
                 <rosparam command="load" file="$(find monitoring_monitors_ros)/config/statisticsconfig.yaml" />
     </node>
 
+    <node pkg="monitoring_monitors_ros" type="sub_for_test" name="sub_for_test" respawn="true"/>
+
+    <node pkg="monitoring_monitors_ros" type="pub_for_test" name="pub_for_test" respawn="true"/>
+
     <test test-name="ros_statistics_monitor_test" pkg="monitoring_monitors_ros" type="ros_statistics_monitor_test" />
-=======
-<node pkg="monitoring_monitors_ros" type="statistics_monitoring_node" name="statistics_monitoring" respawn="true">
-                <rosparam command="load" file="$(find monitoring_monitors_ros)/test/config/ros_monitore_test_config.yaml" />
-</node>
-<node pkg="monitoring_monitors_ros" type="sub_for_test" name="sub_for_test" respawn="true">
-</node>
-<node pkg="monitoring_monitors_ros" type="pub_for_test" name="pub_for_test" respawn="true">
-</node>
-  <test test-name="ros_statistics_monitor_test" pkg="monitoring_monitors_ros" type="ros_statistics_monitor_test" />
->>>>>>> 7e980397b2465727873c6d2b1bf0f8bcda5b7b15
 </launch>

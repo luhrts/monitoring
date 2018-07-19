@@ -17,6 +17,7 @@ import rospy
 import psutil
 import rosnode
 import xmlrpclib
+import traceback
 
 from std_msgs.msg import String
 from monitoring_core.monitor import Monitor
@@ -43,7 +44,6 @@ def init():
     check for filter_type (0 = default (list all), 1 = whitelist, 2 = black list)
     Return: frequency and filter_type
     """
-    rospy.init_node('node_ressource_monitor', anonymous=True)
     if rospy.has_param('node_ressource_monitor/frequency'):
         frequency = rospy.get_param('node_ressource_monitor/frequency')
     else:
@@ -91,10 +91,10 @@ def gather_info():
         try:
             print_to_console_and_monitor(i.name, i.pid)
             rospy.loginfo("------------------------------")
-        except psutil._exceptions.NoSuchProcess:
+        except Exception as e:
+            rospy.logerr(traceback.format_exc())
             rospy.logerr("----------NO_SUCH_PROCESS_ERROR---------------")
             pass
-    monitor.publish()
     rospy.loginfo("=============================")
 
 def print_to_console_and_monitor(name, pid):
@@ -517,6 +517,7 @@ value_dict = {
 
 
 if __name__ == '__main__':
+    rospy.init_node('node_ressource_monitor', anonymous=True)
     frequency, filter_type = init()
     rate = rospy.Rate(frequency)
 
@@ -526,4 +527,5 @@ if __name__ == '__main__':
             rate.sleep()
         except rospy.ROSInterruptException:
             rospy.loginfo("ERROR")
-            pass
+        except Exception as e:
+            rospy.logerr(traceback.format_exc())
