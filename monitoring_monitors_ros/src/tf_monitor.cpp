@@ -43,6 +43,7 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
 
             ROS_INFO("New Frame: %s", frame.c_str());
             new_frame = true;
+            NeedToCheckSperation =true;
         }
 
         //Static change
@@ -60,26 +61,10 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
         }
 
         //Seperation detection
-        if(new_frame){
-           if(transforms_.count(parent)==0 && parent !=base_parent_frame){
-               if(frame==base_parent_frame || transforms_.size()==1){
-               base_parent_frame=parent;
-               ROS_INFO("New base for tf_tree: %s",parent.c_str());
-               }
-               else{
-               ////Seperation
-                 ROS_WARN("TF_Monitor: %s dose not connect to base frame",parent.c_str());
-                 monitor_->addValue(parent+"/dose not connect to base frame", -1, "", 1.0);
-
-               }
-
-           }
-        }
-
         if (transforms_[frame].parent!= parent && !new_frame) {
             if(parent!=base_parent_frame || transforms_.count(parent)==0){
                     ////Seperation
-                    ROS_WARN("TF_Monitor: %s to %s is a Seperation_frame",frame.c_str(),transforms_[frame].parent.c_str());
+                    ROS_WARN("TF_Monitor: %s/dose not connect to base frame",parent.c_str());
                     monitor_->addValue(parent+"/dose not connect to base frame", -1, "", 1.0);
             }
 
@@ -89,7 +74,10 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
 
                 };
         }
+
+
         transforms_[frame].parent = parent;
+
 
         //Autohrity change
         if(transforms_[frame].authority != authority && !new_frame){
@@ -156,6 +144,27 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
 
 
     }
+    ////Seperation check
+
+    if(transforms_.size()==last_transform_size && NeedToCheckSperation==true){
+        map<std::string, TransformData>::iterator iter;
+        for(iter = transforms_.begin(); iter!=transforms_.end(); iter++){
+       if(transforms_.count(iter->second.parent)==0 && iter->second.parent !=base_parent_frame){
+           if(iter->first==base_parent_frame || base_parent_frame==""){
+           base_parent_frame=iter->second.parent;
+           ROS_INFO("New base for tf_tree: %s",iter->second.parent.c_str());
+           }
+           else{
+             ROS_WARN("TF_Monitor: %s dose not connect to base frame",iter->second.parent.c_str());
+             monitor_->addValue(iter->second.parent+"/dose not connect to base frame", -1, "", 1.0);
+
+           }
+       }
+
+       }
+    NeedToCheckSperation=false;
+    }
+   last_transform_size=transforms_.size();
 }
 
 int main(int argc, char ** argv)
