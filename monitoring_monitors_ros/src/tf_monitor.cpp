@@ -131,14 +131,16 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
         map<std::string, TransformData>::iterator iter;
         ////Seperation check
         for(iter = transforms_.begin(); iter!=transforms_.end(); iter++){
+
        if(transforms_.count(iter->second.parent)==0 && iter->second.parent !=base_parent_frame){
+
            if(iter->first==base_parent_frame || base_parent_frame==""){
            base_parent_frame=iter->second.parent;
            ROS_INFO("New base for tf_tree: %s",iter->second.parent.c_str());
            }
            else{
-             ROS_WARN("TF_Monitor: %s dose not connect to base frame",iter->second.parent.c_str());
-             monitor_->addValue(iter->second.parent+"/dose not connect to base frame", -1, "", 1.0);
+             ROS_WARN("TF_Monitor: multi base frame:New base:%s and Old base:%s ",iter->second.parent.c_str(),base_parent_frame.c_str());
+             monitor_->addValue("TF_Monitor: multi base frame:New base:"+iter->second.parent+ "and Old base:"+base_parent_frame , -1, "", 1.0);
 
            }
        }
