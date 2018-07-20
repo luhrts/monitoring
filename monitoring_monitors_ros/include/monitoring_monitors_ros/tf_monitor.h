@@ -44,7 +44,9 @@ private:
   boost::mutex map_lock_;
 
   int last_transform_size;
-  bool NeedToCheckSperation;
+  bool NeedToCheckSperationAndLoop;
+  int wait_times_offset=0;
+
 
   struct TransformData {
       std::string frame;

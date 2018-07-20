@@ -43,7 +43,7 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
 
             ROS_INFO("New Frame: %s", frame.c_str());
             new_frame = true;
-            NeedToCheckSperation =true;
+            NeedToCheckSperationAndLoop =true;
         }
 
         //Static change
@@ -57,24 +57,7 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
         if(transforms_[frame].parent != parent && !new_frame){
             ROS_WARN("TF_Monitor: parent changed for frame: %s, old_parent: %s new_parent: %s", frame.c_str(), transforms_[frame].parent.c_str(), parent.c_str());
             monitor_->addValue(parent+"/"+frame+"/parent_changed", -1, "", 1.0);
-
         }
-
-        //Seperation detection
-        if (transforms_[frame].parent!= parent && !new_frame) {
-            if(parent!=base_parent_frame || transforms_.count(parent)==0){
-                    ////Seperation
-                    ROS_WARN("TF_Monitor: %s/dose not connect to base frame",parent.c_str());
-                    monitor_->addValue(parent+"/dose not connect to base frame", -1, "", 1.0);
-            }
-
-            else if (frame==base_parent_frame){
-                     ROS_WARN("TF_Monitor: %s/ transform to tree's Base",transforms_[frame].parent.c_str());
-                     monitor_->addValue(parent+" /transform to tree's Base", -1, "", 1.0);
-
-                };
-        }
-
 
         transforms_[frame].parent = parent;
 
@@ -144,10 +127,9 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
 
 
     }
-    ////Seperation check
-
-    if(transforms_.size()==last_transform_size && NeedToCheckSperation==true){
+    if(transforms_.size()==last_transform_size && NeedToCheckSperationAndLoop==true && wait_times_offset==100){
         map<std::string, TransformData>::iterator iter;
+        ////Seperation check
         for(iter = transforms_.begin(); iter!=transforms_.end(); iter++){
        if(transforms_.count(iter->second.parent)==0 && iter->second.parent !=base_parent_frame){
            if(iter->first==base_parent_frame || base_parent_frame==""){
@@ -162,8 +144,31 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
        }
 
        }
-    NeedToCheckSperation=false;
+        ////loop check
+         std::string checkname;
+        for(iter = transforms_.begin(); iter!=transforms_.end(); iter++){
+            std::string frame_name_in_loop="";
+            checkname=iter->first;
+       while(transforms_.count(checkname)!=0){
+            if(transforms_[checkname].parent==iter->first){
+                frame_name_in_loop+="/"+checkname;
+                ROS_WARN("TF_Monitor:%s is a loop tree ",frame_name_in_loop.c_str());
+                monitor_->addValue(frame_name_in_loop+"is a loop tree ",-1,"",1.0);
+                break;
+            }
+            else{
+                frame_name_in_loop+="/"+checkname;
+                checkname=transforms_[checkname].parent;
+            }
+
+
+           }
+
+       }
+    NeedToCheckSperationAndLoop=false;
+    wait_times_offset=0;
     }
+   wait_times_offset+=1;
    last_transform_size=transforms_.size();
 }
 
