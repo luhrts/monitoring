@@ -57,6 +57,7 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
         if(transforms_[frame].parent != parent && !new_frame){
             ROS_WARN("TF_Monitor: parent changed for frame: %s, old_parent: %s new_parent: %s", frame.c_str(), transforms_[frame].parent.c_str(), parent.c_str());
             monitor_->addValue(parent+"/"+frame+"/parent_changed", -1, "", 1.0);
+            NeedToCheckSperationAndLoop=true;
         }
 
         transforms_[frame].parent = parent;
@@ -128,6 +129,8 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
 
     }
     if( NeedToCheckSperationAndLoop==true && wait_times_offset==10){
+        ROS_INFO("check Speration and loop");
+
         map<std::string, TransformData>::iterator iter;
         ////Seperation check
         for(iter = transforms_.begin(); iter!=transforms_.end(); iter++){
@@ -140,7 +143,7 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
            }
            else{
              ROS_WARN("TF_Monitor: multi base frame:New base:%s and Old base:%s ",iter->second.parent.c_str(),base_parent_frame.c_str());
-             monitor_->addValue(" multi base frame:New base:"+iter->second.parent+ "and Old base:"+base_parent_frame , -1, "", 1.0);
+             monitor_->addValue(" multi base frame:New base:"+iter->second.parent+ " and Old base: "+base_parent_frame , -1, "", 1.0);
 
            }
        }
