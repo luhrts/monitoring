@@ -154,8 +154,8 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
        while(transforms_.count(checkname)!=0){
             if(transforms_[checkname].parent==iter->first){
                 frame_name_in_loop+="/"+checkname;
-                ROS_WARN("TF_Monitor:%s is a loop tree ",frame_name_in_loop.c_str());
-                monitor_->addValue(frame_name_in_loop+"is a loop tree ",-1,"",1.0);
+                ROS_WARN("TF_Monitor:%s is in Loop_tree:%s",checkname.c_str(),frame_name_in_loop.c_str());
+                monitor_->addValue(checkname+"is in Loop_tree:"+frame_name_in_loop,-1,"",1.0);
                 break;
             }
             else{
