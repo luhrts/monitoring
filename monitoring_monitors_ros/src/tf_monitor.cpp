@@ -127,7 +127,7 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
 
 
     }
-    if(transforms_.size()==last_transform_size && NeedToCheckSperationAndLoop==true && wait_times_offset==100){
+    if( NeedToCheckSperationAndLoop==true && wait_times_offset==10){
         map<std::string, TransformData>::iterator iter;
         ////Seperation check
         for(iter = transforms_.begin(); iter!=transforms_.end(); iter++){
@@ -170,7 +170,12 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
     NeedToCheckSperationAndLoop=false;
     wait_times_offset=0;
     }
-   wait_times_offset+=1;
+    if(transforms_.size()==last_transform_size){
+         wait_times_offset+=1;
+    }
+    else{
+         wait_times_offset=0;
+    }
    last_transform_size=transforms_.size();
 }
 
