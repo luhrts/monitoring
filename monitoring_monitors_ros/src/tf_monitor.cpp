@@ -50,6 +50,8 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
         if(transforms_[frame].is_static != is_static && !new_frame){
             ROS_WARN("TF_Monitor: static changed for frame: %s, old_parent: %d new_parent: %d", frame.c_str(), transforms_[frame].is_static, is_static);
             monitor_->addValue(parent+"/"+frame+"/static_changed", -1, "", 1.0);
+            NeedToCheckSperationAndLoop =true;
+
         }
         transforms_[frame].is_static = is_static;
 
@@ -57,7 +59,7 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
         if(transforms_[frame].parent != parent && !new_frame){
             ROS_WARN("TF_Monitor: parent changed for frame: %s, old_parent: %s new_parent: %s", frame.c_str(), transforms_[frame].parent.c_str(), parent.c_str());
             monitor_->addValue(parent+"/"+frame+"/parent_changed", -1, "", 1.0);
-            NeedToCheckSperationAndLoop=true;
+            NeedToCheckSperationAndLoop =true;
         }
 
         transforms_[frame].parent = parent;
@@ -67,6 +69,7 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
         if(transforms_[frame].authority != authority && !new_frame){
             ROS_WARN("TF_Monitor: authority changed for frame: %s, old_authority: %s new_authority: %s", frame.c_str(), transforms_[frame].authority.c_str(), authority.c_str());
             monitor_->addValue(parent+"/"+frame+"/authority_changed", -1, "", 1.0);
+
         }
         transforms_[frame].authority = authority;
 
@@ -128,8 +131,8 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
 
 
     }
-    if( NeedToCheckSperationAndLoop==true && wait_times_offset==10){
-        ROS_INFO("check Speration and loop");
+
+    if( NeedToCheckSperationAndLoop==true && wait_times_offset>10){
 
         map<std::string, TransformData>::iterator iter;
         ////Seperation check
