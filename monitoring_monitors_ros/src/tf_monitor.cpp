@@ -140,7 +140,7 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
            }
            else{
              ROS_WARN("TF_Monitor: multi base frame:New base:%s and Old base:%s ",iter->second.parent.c_str(),base_parent_frame.c_str());
-             monitor_->addValue("TF_Monitor: multi base frame:New base:"+iter->second.parent+ "and Old base:"+base_parent_frame , -1, "", 1.0);
+             monitor_->addValue(" multi base frame:New base:"+iter->second.parent+ "and Old base:"+base_parent_frame , -1, "", 1.0);
 
            }
        }
