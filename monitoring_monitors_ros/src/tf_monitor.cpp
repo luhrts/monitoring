@@ -154,7 +154,7 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
            }
            else{
              ROS_WARN("TF_Monitor: multi base frame:New base:%s and Old base:%s ",iter->second.parent.c_str(),base_parent_frame.c_str());
-             monitor_->addValue("Speration frame  "+base_parent_frame+" and "+iter->second.parent, -1, "", 1.0);
+             monitor_->addValue("multi base frame : Old base:"+base_parent_frame+" multi base: "+iter->second.parent, -1, "", 1.0);
 
            }
        }
@@ -171,13 +171,13 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
                 if(count(checked_frames.begin(),checked_frames.end(),checkname)==1){
                   frame_name_in_loop+="/"+checkname;
                   ROS_WARN("TF_Monitor:%s is a Loop_tree",frame_name_in_loop.c_str());
-                  monitor_->addValue("loop frame"+frame_name_in_loop, -1, "", 1.0);
+                  monitor_->addValue("Loop tree! frame link:"+frame_name_in_loop, -1, "", 1.0);
                 }
                 break;
 
             }
             else{
-                frame_name_in_loop+="/"+checkname;
+                frame_name_in_loop+=" /"+checkname;
                 checkname=transforms_[checkname].parent;
                 checked_frames.push_back(checkname);
             }

@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
   ros::Publisher gui_pub = n.advertise<monitoring_msgs::Gui>("/monitoring/gui",
 			10);
 
-	float freq = 1;
+        float freq = 1;
 	if (!n.getParam("frequency", freq)) {
 		ROS_WARN("No frequency supplied. Working with %f Hz.", freq);
 	}
