@@ -6,7 +6,6 @@ import socket
 
 class Monitor:
     def __init__(self, monitorDescription, autoPublishing = True):
-        self.pub = rospy.Publisher('/monitoring', MonitoringArray, queue_size=1)
         self.ma = MonitoringArray()
         self.description = monitorDescription
         mi = MonitoringInfo()
@@ -15,7 +14,14 @@ class Monitor:
         mi.name =  self.host_name + self.node_name
         mi.description = self.description
         self.ma.info.append(mi)
-        if autoPublishing:
+
+        self.is_initialised = False
+        self.autoPublishing = autoPublishing
+
+    def init_ros(self):
+        self.pub = rospy.Publisher('/monitoring', MonitoringArray, queue_size=1)
+
+        if self.autoPublishing:
             try:
                 frequency = 1
                 frequency = rospy.get_param(rospy.get_name() + '/monitoring/frequency', 1)
@@ -28,10 +34,14 @@ class Monitor:
                 rospy.logerr("monitoring frequency not set (%s/monitoring/frequency)", rospy.get_name())
                 quit()
 
+        self.is_initialised = True
+
     def timercallback(self, event):
         self.publish()
 
     def addValue(self, key, value, unit, errorlevel):
+        if not self.is_initialised:
+            self.init_ros()
 
         # Check if key contains whitespace
         if " " in key:

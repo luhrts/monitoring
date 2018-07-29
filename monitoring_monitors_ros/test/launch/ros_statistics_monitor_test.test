@@ -3,5 +3,9 @@
                 <rosparam command="load" file="$(find monitoring_monitors_ros)/config/statisticsconfig.yaml" />
     </node>
 
+    <node pkg="monitoring_monitors_ros" type="sub_for_test" name="sub_for_test" respawn="true"/>
+
+    <node pkg="monitoring_monitors_ros" type="pub_for_test" name="pub_for_test" respawn="true"/>
+
     <test test-name="ros_statistics_monitor_test" pkg="monitoring_monitors_ros" type="ros_statistics_monitor_test" />
 </launch>

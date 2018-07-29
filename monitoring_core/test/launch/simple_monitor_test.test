@@ -1,5 +1,5 @@
 <launch>
 
-  <test test-name="simple_mointor_test" pkg="monitoring_core" type="simple_mointor_test" />
+  <test test-name="simple_monitor_test" pkg="monitoring_core" type="simple_monitor_test" />
 </launch>
 

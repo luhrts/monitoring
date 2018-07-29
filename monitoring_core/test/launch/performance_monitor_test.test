@@ -1,0 +1,5 @@
+<launch>
+    <node pkg="monitoring_core" type="performance_monitor_test_node"    name="performance_monitor_test_node"/>
+    <test pkg="monitoring_core" type="performance_monitor_test"         test-name="performance_monitor_test" />
+</launch>
+

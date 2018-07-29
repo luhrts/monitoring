@@ -17,6 +17,7 @@ import rospy
 import psutil
 import rosnode
 import xmlrpclib
+import traceback
 
 from std_msgs.msg import String
 from monitoring_core.monitor import Monitor
@@ -43,7 +44,6 @@ def init():
     check for filter_type (0 = default (list all), 1 = whitelist, 2 = black list)
     Return: frequency and filter_type
     """
-    rospy.init_node('node_ressource_monitor', anonymous=True)
     if rospy.has_param('node_ressource_monitor/frequency'):
         frequency = rospy.get_param('node_ressource_monitor/frequency')
     else:
@@ -91,10 +91,10 @@ def gather_info():
         try:
             print_to_console_and_monitor(i.name, i.pid)
             rospy.loginfo("------------------------------")
-        except psutil._exceptions.NoSuchProcess:
+        except Exception as e:
+            rospy.logerr(traceback.format_exc())
             rospy.logerr("----------NO_SUCH_PROCESS_ERROR---------------")
             pass
-    monitor.publish()
     rospy.loginfo("=============================")
 
 def print_to_console_and_monitor(name, pid):
@@ -120,11 +120,8 @@ def print_to_console_and_monitor(name, pid):
             return
     #Define DEFAULT values to publish
     if filter_type == Filter_type.DEFAULT:
-        """
         node_value_filter = {'values':['cpu_affinity','cpu_percent','cpu_times'
         ,'create_time','exe','io_counters','memory_info','memory_percent','name','num_ctx_switches','status']}
-        """
-        node_value_filter = {'values':['name']}
     #iterate over all keys given for node in node_filter
     for key in node_value_filter.get("values"):
         #if psutil delivers a value for a key, send this value to its dedicated function
@@ -335,10 +332,29 @@ def nice_to_monitor(value, name):
     monitor.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def num_ctx_switches_to_monitor(value, name):
+    """
+    added two additional blocks that divide the value string into one field for
+    voluntary and involuntary context switches.
+    """
     rospy.loginfo("num_ctx_switches: " + str(value))
     monitor_string = name + "/num_ctx_switches"
     monitor_value = str(value)
     monitor_unit = " "
+    monitor_errorlvl = 0
+
+    monitor.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    rospy.loginfo("voluntary_ctx_switches: " + str(value.voluntary))
+    monitor_string = name + "/num_ctx_switches_voluntary"
+    monitor_value = str(value.voluntary)
+    monitor_unit = "ctx_switches"
+    monitor_errorlvl = 0
+
+    monitor.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+
+    rospy.loginfo("involuntary_ctx_switches: " + str(value.involuntary))
+    monitor_string = name + "/num_ctx_switches_involuntary"
+    monitor_value = str(value.involuntary)
+    monitor_unit = "ctx_switches"
     monitor_errorlvl = 0
 
     monitor.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
@@ -501,6 +517,7 @@ value_dict = {
 
 
 if __name__ == '__main__':
+    rospy.init_node('node_ressource_monitor', anonymous=True)
     frequency, filter_type = init()
     rate = rospy.Rate(frequency)
 
@@ -510,4 +527,5 @@ if __name__ == '__main__':
             rate.sleep()
         except rospy.ROSInterruptException:
             rospy.loginfo("ERROR")
-            pass
+        except Exception as e:
+            rospy.logerr(traceback.format_exc())
