@@ -9,30 +9,62 @@ import rospy
 from monitoring_core.monitor import Monitor
 from nav_msgs.msg import OccupancyGrid
 
-
-first_map = True
-old_map = None
+first_SLAM_map = True
+old_SLAM_map = None
+first_global_map = True
+old_global_map = None
+first_explorationPlanner_map = True
+old_explorationPlanner_map = None
 monitor = Monitor("map_monitor")
 
 def init():
-     rospy.init_node("map_monitor", anonymous=True)
+     rospy.init_node("map_monitor", anonymous=False)
 
 def subscribe():
-    rospy.Subscriber("/map", OccupancyGrid, map_monitor)
+    rospy.Subscriber("/map", OccupancyGrid, SLAM_map_callback)
+    rospy.Subscriber("/ExplorationPlanner_GridMap", OccupancyGrid, explorationPlanner_map_callback)
+    rospy.Subscriber("/move_base/global_costmap/costmap", OccupancyGrid, global_map_callback)
 
-def map_monitor(msg):
+def explorationPlanner_map_callback(msg):
+    global first_explorationPlanner_map
+    global old_explorationPlanner_map
+    map_name = 'explorationPlanner_map'
+    old_explorationPlanner_map = map_monitor(msg, map_name, first_explorationPlanner_map, old_explorationPlanner_map)
+    if first_explorationPlanner_map:
+        first_explorationPlanner_map = False
+
+def global_map_callback(msg):
+    global first_global_map
+    global old_global_map
+    map_name = 'global_map'
+    old_global_map = map_monitor(msg, map_name, first_global_map, old_global_map)
+    if first_global_map:
+        first_global_map = False
+
+def SLAM_map_callback(msg):
+    global first_SLAM_map
+    global old_SLAM_map
+    map_name = 'SLAM_map'
+    old_SLAM_map = map_monitor(msg, map_name, first_SLAM_map, old_SLAM_map)
+    if first_SLAM_map:
+        first_SLAM_map = False
+
+def map_monitor(msg, map_name, first_map, old_map):
     """
     Compare the current map with the last update. Gather data on total changed tiles,
     percentage of the map discovered and rewritten tiles.
     """
-    global first_map
-    global old_map
     map_size = len(msg.data)
-
+    #print map_size
+    #print len(old_map) + ""+ map_name
     if first_map:
         first_map = False
         old_map = msg.data
-        return
+        return old_map
+    l = len(old_map)
+    if map_size != l:
+        rospy.logerr("KACKE")
+        return None
 
     total_changed_tiles = 0
     newly_discovered = 0
@@ -45,16 +77,18 @@ def map_monitor(msg):
                 newly_discovered = newly_discovered + 1
     if total_changed_tiles != newly_discovered:
         rewritten_tiles = total_changed_tiles - newly_discovered
-    print "total tiles changed since last update: " + str(total_changed_tiles)
-    print "newly_discovered "+str(newly_discovered)
-    print "tiles rewritten: " + str(rewritten_tiles)
-    monitor.addValue("total_changed_tiles",str(total_changed_tiles), "", 0)
-    monitor.addValue("newly_discovered_tiles",str(newly_discovered), "", 0)
-    monitor.addValue("rewritten_tiles",str(rewritten_tiles), "", 0)
+    print map_name + "/total tiles changed since last update: " + str(total_changed_tiles)
+    print map_name + "/newly_discovered "+str(newly_discovered)
+    print map_name + "/tiles rewritten: " + str(rewritten_tiles)
+    monitor.addValue(map_name+"/total_changed_tiles",str(total_changed_tiles), "", 0)
+    monitor.addValue(map_name+"/newly_discovered_tiles",str(newly_discovered), "", 0)
+    monitor.addValue(map_name+"/rewritten_tiles",str(rewritten_tiles), "", 0)
 
     monitor.publish()
 
     oldMap = msg.data
+    print str(len(oldMap)) +""+ map_name
+    return oldMap
 
 if __name__ == '__main__':
     init()
