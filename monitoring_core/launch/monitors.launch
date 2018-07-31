@@ -4,4 +4,6 @@
   <include file="$(find monitoring_monitors_ros)/launch/node_monitor.launch" />
   <include file="$(find monitoring_monitors_system)/launch/nw_monitor.launch" />
   <include file="$(find monitoring_monitors_ros)/launch/topic_monitor.launch" />
+  <include file="$(find monitoring_monitors_ros)/launch/node_ressource_monitor.launch" />
+  <include file="$(find monitoring_visualization)/launch/gui_concat.launch" />
 </launch>

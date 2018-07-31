@@ -47,7 +47,7 @@ def init():
     if rospy.has_param('node_ressource_monitor/frequency'):
         frequency = rospy.get_param('node_ressource_monitor/frequency')
     else:
-        frequency = 10
+        frequency = 1
     if rospy.has_param('node_ressource_monitor/filter_type'):
         filter_type = rospy.get_param('node_ressource_monitor/filter_type')
     else:

@@ -70,6 +70,10 @@
 
 
 import os, sys, socket, struct, select, time, datetime
+import rospy
+from monitoring_core.monitor import Monitor
+
+monitor = Monitor("Ping_Monitor")
 
 default_timer = time.time
 
@@ -295,34 +299,48 @@ def do_one(dest_addr, timeout):
 
 
 def verbose_ping(dest_addr, timeout = 2, count = 4):
+    
     """
     Send >count< ping to >dest_addr< with the given >timeout< and display
     the result.
     """
-    for i in xrange(count):
-        print "ping %s..." % dest_addr,
-        try:
-            rtt, offset  =  do_one(dest_addr, timeout)
-        except socket.gaierror, e:
-            print "failed. (socket error: '%s')" % e[1]
-            break
+    
+    #for i in xrange(count):
+    print "ping %s..." % dest_addr,
+    try:
+        rtt, offset  =  do_one(dest_addr, timeout)
+    except socket.gaierror, e:
+        print "failed. (socket error: '%s')" % e[1]
 
-        if rtt  ==  None:
-            print "failed. (timeout within %ssec.)" % timeout
-        else:
-            rtt  =  rtt * 1000
-            print "RTT: %f ms" % (rtt),
+    if rtt  ==  None:
+        print "failed. (timeout within %ssec.)" % timeout
+    else:
+        rtt  =  rtt * 1000
+        print "RTT: %f ms" % (rtt),
+        monitor.addValue("Ping", str(rtt), "ms", 0)
+        monitor.publish()
+    if offset  ==  None:
+        print "failed. (timeout within %ssec.)" % timeout
+    else:
+        print "Offset: %f ms" % (offset)
+    
 
-        if offset  ==  None:
-            print "failed. (timeout within %ssec.)" % timeout
-        else:
-            print "Offset: %f ms" % (offset)
-
-    print
+print
 
 
 if __name__ == '__main__':
-    verbose_ping("130.75.137.10")
-    verbose_ping("130.75.137.127")
+    rospy.init_node('ping_monitor_node', anonymous=True)
+    frequency = 2
+    rate = rospy.Rate(frequency)
+    
+    while not rospy.is_shutdown():
+        try:
+            verbose_ping("130.75.137.10")
+            
+            rate.sleep()
+        except rospy.ROSInterruptException:
+            rospy.loginfo("ERROR")
+            pass
+    #verbose_ping("130.75.137.127")
 
     #verbose_ping("google.de")

@@ -48,7 +48,12 @@ Monitor::~Monitor() {
 }
 
 void Monitor::timerCallback(const ros::TimerEvent& te) {
-  publish();
+    //try{
+        publish();
+    //}
+    //catch(ros::serialization::StreamOverrunException e){
+     //printf("BUFFER OVERFLOW IN PUBLISHER");
+    //}
 }
 
 
@@ -70,7 +75,13 @@ void Monitor::addValue(std::string key, float value, std::string unit, float err
 
 void Monitor::publish() {
 	ma.header.stamp = ros::Time::now();
-	pub.publish(ma);
+  try{
+	   pub.publish(ma);
+   }
+   catch(ros::serialization::StreamOverrunException e){
+     ROS_WARN("BUFFER OVERFLOW IN PUBLISHER");
+     ROS_WARN("size of values: %d", ma.info[0].values.size());
+   }
 
 	resetMsg();
 }
