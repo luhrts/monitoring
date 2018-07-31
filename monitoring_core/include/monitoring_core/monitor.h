@@ -11,6 +11,13 @@
 #include "monitoring_msgs/MonitoringArray.h"
 #include "ros/ros.h"
 
+enum AggregationStrategies{
+    LAST,
+    FIRST,
+    MIN,
+    MAX
+};
+
 class Monitor {
 public:
     Monitor();
@@ -18,8 +25,8 @@ public:
     Monitor(ros::NodeHandle &n, std::string monitorDescription, bool autoPublishing = true);
     ~Monitor();
 
-    void addValue(std::string key, std::string value, std::string unit, float errorlevel);
-    void addValue(std::string key, float value, std::string unit, float errorlevel);
+    void addValue(std::string key, std::string value, std::string unit, float errorlevel, AggregationStrategies aggregation = LAST);
+    void addValue(std::string key, float value, std::string unit, float errorlevel, AggregationStrategies aggregation = LAST);
     void publish();
 
     void resetMsg();
@@ -46,6 +53,9 @@ private:
     FRIEND_TEST(MonitoringCore, addValueFloat);
     FRIEND_TEST(MonitoringCore, addValueErrorLevel);
     FRIEND_TEST(MonitoringCore, aggregationLast);
+    FRIEND_TEST(MonitoringCore, aggregationFirst);
+    FRIEND_TEST(MonitoringCore, aggregationMin);
+    FRIEND_TEST(MonitoringCore, aggregationMax);
 
 
 

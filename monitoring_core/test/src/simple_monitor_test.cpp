@@ -79,11 +79,52 @@ TEST(MonitoringCore, aggregationLast)
 
     for(int i=0;i<=4;i++)
     {
-        monitor.addValue("test_key", i, "", 0.0);
+        monitor.addValue("test_key", i, "", 0.0, AggregationStrategies::LAST);
     }
     ASSERT_EQ(monitor.ma.info[0].values.size(),1);
     ASSERT_EQ(monitor.ma.info[0].values[0].key, "test_key");
     ASSERT_EQ(atof(monitor.ma.info[0].values[0].value.c_str()), 4);
+}
+
+TEST(MonitoringCore, aggregationFirst)
+{
+    Monitor monitor;
+
+    for(int i=0;i<=4;i++)
+    {
+        monitor.addValue("test_key", i, "", 0.0, AggregationStrategies::FIRST);
+    }
+    ASSERT_EQ(monitor.ma.info[0].values.size(),1);
+    ASSERT_EQ(monitor.ma.info[0].values[0].key, "test_key");
+    ASSERT_EQ(atof(monitor.ma.info[0].values[0].value.c_str()), 0);
+}
+
+TEST(MonitoringCore, aggregationMin)
+{
+    Monitor monitor;
+
+    monitor.addValue("test_key", 13, "", 0.0, AggregationStrategies::MIN);
+    monitor.addValue("test_key", 30, "", 0.0, AggregationStrategies::MIN);
+    monitor.addValue("test_key", 12, "", 0.0, AggregationStrategies::MIN);
+    monitor.addValue("test_key", 14, "", 0.0, AggregationStrategies::MIN);
+
+    ASSERT_EQ(monitor.ma.info[0].values.size(),1);
+    ASSERT_EQ(monitor.ma.info[0].values[0].key, "test_key");
+    ASSERT_EQ(atof(monitor.ma.info[0].values[0].value.c_str()), 12);
+}
+
+TEST(MonitoringCore, aggregationMax)
+{
+    Monitor monitor;
+
+
+    monitor.addValue("test_key", 0, "", 0.0, AggregationStrategies::MAX);
+    monitor.addValue("test_key", 30, "", 0.0, AggregationStrategies::MAX);
+    monitor.addValue("test_key", 12, "", 0.0, AggregationStrategies::MAX);
+
+    ASSERT_EQ(monitor.ma.info[0].values.size(),1);
+    ASSERT_EQ(monitor.ma.info[0].values[0].key, "test_key");
+    ASSERT_EQ(atof(monitor.ma.info[0].values[0].value.c_str()), 30);
 }
 
 
