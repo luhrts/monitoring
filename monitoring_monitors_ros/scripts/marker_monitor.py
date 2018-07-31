@@ -14,9 +14,14 @@ from tf import TransformListener
 
 monitor = Monitor("marker_monitor")
 marker_dict = {"seen_markers":[],"assured_markers":[]}
+seen_marker_dict = {}
+assured_marker_dict = {}
 seen_ids = []
 seen_assured_ids = []
 tf = None
+seen_pub = None
+assured_pub = None
+marker_count = 0
 
 class extended_marker:
     def __init__(self, marker, bot_dist):
@@ -32,53 +37,74 @@ def subscribe():
     rospy.Subscriber("/assured_markers", MarkerArray, assured_markers_callback)
     tf = TransformListener()
 
-def seen_markers_callback(msg):
-    global seen_ids
-    for element in msg.markers:
-        if element.id not in seen_ids:
-            seen_ids.append(element.id)
-            tf.waitForTransform("map", "arm_link_5", rospy.Time(0), rospy.Duration(10.0))
-            trans, rot = tf.lookupTransform("map","arm_link_5", rospy.Time(0))
-            bot_dist = hypot(trans[0] - element.pose.position.x, trans[1] - element.pose.position.y)
-            temp = extended_marker(element,bot_dist)
-            marker_dict['seen_markers'].append(temp)
+def publish():
+    global seen_pub
+    global assured_pub
+    seen_pub = rospy.Publisher('seen_markers_monitor', MarkerArray, queue_size=100)
+    assured_pub = rospy.Publisher('assured_markers_monitor', MarkerArray, queue_size=100)
 
+def seen_markers_callback(msg):
+    global seen_marker_dict
+    global marker_count
+    for element in msg.markers:
+        if str(element.id) not in seen_marker_dict.keys():
+            markerArrray = MarkerArray()
+            seen_marker_dict[str(element.id)] = markerArrray
+        element.header.stamp = rospy.Time(0)
+        element.lifetime = rospy.Time(10000)
+        id = element.id
+        element.id = marker_count
+        seen_marker_dict[str(id)].markers.append(element)
+        marker_count = marker_count + 1
 
 def assured_markers_callback(msg):
-    global seen_assured_ids
+    global assured_marker_dict
+    global marker_count
     for element in msg.markers:
-        if element.id not in seen_assured_ids:
-            seen_assured_ids.append(element.id)
-            tf.waitForTransform("map", "arm_link_5", rospy.Time(0), rospy.Duration(10.0))
-            trans, rot = tf.lookupTransform("map","arm_link_5", rospy.Time(0))
-            bot_dist = hypot(trans[0] - element.pose.position.x, trans[1] - element.pose.position.y)
-            temp = extended_marker(element,bot_dist)
-            marker_dict['assured_markers'].append(temp)
+        if str(element.id) not in assured_marker_dict.keys():
+            markerArrray = MarkerArray()
+            assured_marker_dict[str(element.id)] = markerArrray
+        element.header.stamp = rospy.Time(0)
+        element.lifetime = rospy.Time(10000)
+        id = element.id
+        element.id = marker_count
+        assured_marker_dict[str(id)].markers.append(element)
+        marker_count = marker_count + 1
 
 def marker_monitor():
     global monitor
     ready_to_publish = False
-    for element_seen in marker_dict["seen_markers"]:
-        for element_assured in marker_dict["assured_markers"]:
-            if element_seen.marker.id == element_assured.marker.id:
-                distance = hypot(element_seen.marker.pose.position.x - element_assured.marker.pose.position.x, element_seen.marker.pose.position.y - element_assured.marker.pose.position.y)
-                print 'Marker ID: ' + str(element_seen.marker.id) + ' Distance between seen and assured pos: ' + str(distance) + " m"
-                print 'Marker ID: ' + str(element_seen.marker.id) + ' Distance between Bot and Marker seen: ' + str(element_seen.bot_dist) + " m"
-                print 'Marker ID: ' + str(element_assured.marker.id) + ' Distance between Bot and Marker assured: ' + str(element_assured.bot_dist) + " m"
-                monitor.addValue("Marker_ID_" + str(element_seen.marker.id) + "_" + "dist_between_seen_assured",str(distance), "m",0)
-                monitor.addValue("Marker_ID_" + str(element_seen.marker.id) + "_" + "dist_between_seen_bot",str(element_seen.bot_dist), "m",0)
-                monitor.addValue("Marker_ID_" + str(element_seen.marker.id) + "_" + "dist_between_assured_bot",str(element_assured.bot_dist), "m",0)
-                ready_to_publish = True
+    for key in seen_marker_dict.keys():
+        x = []
+        y = []
+        for element in seen_marker_dict[key].markers:
+            x.append(element.pose.position.x)
+            y.append(element.pose.position.y)
+        avg_x = sum(x)/(len(x)*1.0)
+        avg_y = sum(y)/(len(y)*1.0)
+        distance = []
+        for element in seen_marker_dict[key].markers:
+            distance.append(hypot(avg_x - element.pose.position.x,avg_y - element.pose.position.y))
+        avg_distance = sum(distance)/(len(distance)*1.0)
+        monitor.addValue("Marker_" + key + "/mean_abs_dev_distance",str(avg_distance),"m",0)
+        print "Marker ID: "+ key + "mean_abs_dev_distance"+ str(avg_distance)
+        ready_to_publish = True
+
     if ready_to_publish:
         monitor.publish()
-        print "publishing"
 
 if __name__ == '__main__':
     init()
     subscribe()
+    publish()
     rate = rospy.Rate(1)
     while not rospy.is_shutdown():
         try:
+            #print seen_marker_dict.items()
+            for element in seen_marker_dict.keys():
+                seen_pub.publish(seen_marker_dict[element])
+            for element in assured_marker_dict.keys():
+                assured_pub.publish(assured_marker_dict[element])
             marker_monitor()
             rate.sleep()
         except rospy.ROSInterruptException:
