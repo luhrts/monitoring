@@ -8,19 +8,43 @@
 #include "monitoring_core/monitor.h"
 #include <unistd.h>
 
-Monitor::Monitor(ros::NodeHandle &n, std::string monitorDescription, bool autoPublishing) {
+
+Monitor::Monitor(){
+  init("default");
+}
+
+Monitor::Monitor(ros::NodeHandle &n, std::string monitorDescription, bool autoPublishing) : miIndex(0)
+{
+  init(monitorDescription);
+  initROS(n, autoPublishing);
+}
+
+Monitor::Monitor(std::string monitorDescription, bool autoPublishing) : miIndex(0)
+{
+  ros::NodeHandle n;
+  init(monitorDescription);
+  initROS(n, autoPublishing);
+}
+
+Monitor::~Monitor()
+{
+	// TODO Auto-generated destructor stub
+
+}
+
+void Monitor::init(std::string monitorDescription)
+{
   monitor_description_ = monitorDescription;
-  pub = n.advertise<monitoring_msgs::MonitoringArray> ("/monitoring", 1);
   monitoring_msgs::MonitoringInfo mi;
 
   char hostname[HOST_NAME_MAX];
   int result;
   result = gethostname(hostname, HOST_NAME_MAX);
   if (result)
-      {
-        perror("gethostname");
-        return;
-      }
+  {
+    perror("gethostname");
+    return;
+  }
   host_name_ =  hostname;
   node_name_ = ros::this_node::getName();
 
@@ -28,8 +52,14 @@ Monitor::Monitor(ros::NodeHandle &n, std::string monitorDescription, bool autoPu
   mi.description = monitorDescription;
   ma.info.push_back(mi);
   miIndex = 0;
+}
 
-  if(autoPublishing) {
+void Monitor::initROS(ros::NodeHandle &n, bool autoPublishing)
+{
+  pub = n.advertise<monitoring_msgs::MonitoringArray> ("/monitoring", 1);
+
+  if(autoPublishing)
+  {
     int frequency = 1;
     ros::NodeHandle private_n("~");
     if (!private_n.getParam("monitoring/frequency", frequency))
@@ -39,43 +69,59 @@ Monitor::Monitor(ros::NodeHandle &n, std::string monitorDescription, bool autoPu
 
     timer = n.createTimer(ros::Duration(1/frequency), &Monitor::timerCallback, this);
   }
-
 }
 
-Monitor::~Monitor() {
-	// TODO Auto-generated destructor stub
-
-}
 
 void Monitor::timerCallback(const ros::TimerEvent& te) {
   publish();
 }
 
 
-void Monitor::addValue(std::string key, std::string value, std::string unit, float errorlevel) {
-
+void Monitor::addValue(std::string key, std::string value, std::string unit, float errorlevel)
+{
   monitoring_msgs::KeyValue kv;
   kv.key = key;
   kv.value = value;
   kv.unit = unit;
   kv.errorlevel = errorlevel;
-  ma.info[miIndex].values.push_back(kv);
+
+  //check if the value is already beeing monitored
+  bool found = false;
+  for (int i = 0; i < ma.info[miIndex].values.size(); ++i)
+  {
+    if (ma.info[miIndex].values[i].key == key)
+    {
+      ma.info[miIndex].values[i].value = value;
+      ma.info[miIndex].values[i].unit = unit;
+      ma.info[miIndex].values[i].errorlevel = errorlevel;
+      found = true;
+      break;
+    }
+  }
+
+  // if the key is new, add it to the list
+  if (!found){
+    ma.info[miIndex].values.push_back(kv);
+  }
 }
 
-void Monitor::addValue(std::string key, float value, std::string unit, float errorlevel){
+void Monitor::addValue(std::string key, float value, std::string unit, float errorlevel)
+{
   char stringvalue[100];    //TODO check if 100 is a good number!
 	sprintf(stringvalue, "%f", value);
 	addValue(key, stringvalue, unit, errorlevel);
 }
 
-void Monitor::publish() {
+void Monitor::publish()
+{
 	ma.header.stamp = ros::Time::now();
 	pub.publish(ma);
 
 	resetMsg();
 }
 
-void Monitor::resetMsg(){
+void Monitor::resetMsg()
+{
   monitoring_msgs::MonitoringArray newMA;
 	ma = newMA;
   monitoring_msgs::MonitoringInfo mi;
