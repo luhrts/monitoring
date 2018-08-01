@@ -53,6 +53,21 @@ def seen_markers_callback(msg):
         element.header.stamp = rospy.Time(0)
         element.lifetime = rospy.Time(10000)
         id = element.id
+        if element.id == 3:
+            element.color.r = 0
+            element.color.b = 1
+        if element.id == 4:
+            element.color.r = 0
+            element.color.b = 1
+            element.color.g = 1
+        if element.id == 6:
+            element.color.r = 1
+            element.color.b = 1
+            element.color.g = 0
+        if element.id == 7:
+            element.color.r = 1
+            element.color.b = 0
+            element.color.g = 1
         element.id = marker_count
         seen_marker_dict[str(id)].markers.append(element)
         marker_count = marker_count + 1
@@ -67,6 +82,22 @@ def assured_markers_callback(msg):
         element.header.stamp = rospy.Time(0)
         element.lifetime = rospy.Time(10000)
         id = element.id
+        if element.id == 3:
+            element.color.r = 0.5
+            element.color.b = 1
+            element.color.g = 1
+        if element.id == 4:
+            element.color.r = 1
+            element.color.b = 0.5
+            element.color.g = 1
+        if element.id == 6:
+            element.color.r = 1
+            element.color.b = 1
+            element.color.g = 0.5
+        if element.id == 7:
+            element.color.r = 1
+            element.color.b = 1
+            element.color.g = 1
         element.id = marker_count
         assured_marker_dict[str(id)].markers.append(element)
         marker_count = marker_count + 1
@@ -86,9 +117,26 @@ def marker_monitor():
         for element in seen_marker_dict[key].markers:
             distance.append(hypot(avg_x - element.pose.position.x,avg_y - element.pose.position.y))
         avg_distance = sum(distance)/(len(distance)*1.0)
-        monitor.addValue("Marker_" + key + "/mean_abs_dev_distance",str(avg_distance),"m",0)
-        print "Marker ID: "+ key + "mean_abs_dev_distance"+ str(avg_distance)
+        monitor.addValue("Marker_" + key + "/seen/mean_abs_dev_distance",str(avg_distance),"m",0)
+        print "Marker ID: "+ key + "/seen/mean_abs_dev_distance"+ str(avg_distance)
         ready_to_publish = True
+    for key in assured_marker_dict.keys():
+        x = []
+        y = []
+        for element in assured_marker_dict[key].markers:
+            x.append(element.pose.position.x)
+            y.append(element.pose.position.y)
+        avg_x = sum(x)/(len(x)*1.0)
+        avg_y = sum(y)/(len(y)*1.0)
+        distance = []
+        for element in assured_marker_dict[key].markers:
+            distance.append(hypot(avg_x - element.pose.position.x,avg_y - element.pose.position.y))
+        avg_distance = sum(distance)/(len(distance)*1.0)
+        monitor.addValue("Marker_" + key + "/assured/mean_abs_dev_distance",str(avg_distance),"m",0)
+        monitor.addValue("Marker_" + key + "/assured/marker_count",str(len(distance)),"",0)
+        print "Marker ID: "+ key + "/assured/mean_abs_dev_distance"+ str(avg_distance)
+        ready_to_publish = True
+
 
     if ready_to_publish:
         monitor.publish()
