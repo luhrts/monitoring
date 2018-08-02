@@ -54,6 +54,16 @@ sudo pip install ntplib
 
 ---
 
+#Unit Tests and Ros test
+run tests with:
+
+
+catkin_make run_tests_monitoring_monitors_ros
+
+catkin_make run_tests_monitoring_core
+
+
+
 # Configuration
 
 ## Network monitor
@@ -67,7 +77,7 @@ You should configure one Topicmonitor per pc-system which only monitors local co
 This monitor can only watch data flow from one node to another. If nobody subscribes the topic, the monitor is unable to monitor the content. If you record a rosbag, it subscribes the topic!
 
 ## cpu-monitor
-you should configure the work frequenz and what you want to monitore
+you should configure the work frequenz and what kind of things you want to monitore for CPU
  
 ## wifistrength-monitor
 you need to configure the work frequenz and WIFI-Interface
