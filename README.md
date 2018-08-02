@@ -4,16 +4,27 @@
 This is a python and C++ library with ROS interface .It designed to watch the System  during robot runing.The following monitoring is contained in this Lib:
 
 **Topic-monitor**
+
 **TF-monitor**
+
 **Statistics-monitor**
+
 **clock_diference-monitor** 
+
 **cpu-monitor**
+
 **network-monitor**
+
 **wifistrength-monitor**
+
 **Ram-monitor**
+
 **ntp-monitor**
+
 **ping-monitor**
+
 **node-monitor**
+
 **node-resource-monitor**
 
 
@@ -21,9 +32,9 @@ This is a python and C++ library with ROS interface .It designed to watch the Sy
 
 Documentation for monitor is here:
 
-* [Clock_diference-monitor,CPU-monitor,Network-monitor,WIFIstrength-monitor,Ram-monitor,NTP-monitor,Ping-monitor](https://ws02.rts.uni-hannover.de/monitoring/monitoring/tree/master/monitoring_monitors_system)
+* [Clock_diference-monitor ,CPU-monitor ,Network-monitor ,WIFIstrength-monitor ,Ram-monitor ,NTP-monitor ,Ping-monitor](https://ws02.rts.uni-hannover.de/monitoring/monitoring/tree/master/monitoring_monitors_system)
 
-* [Topic-monitor,Statistics-monitor,TF-monitor,node-monitor,node-resource-monitor](https://ws02.rts.uni-hannover.de/monitoring/monitoring/tree/master/monitoring_monitors_system)
+* [Topic-monitor ,Statistics-monitor ,TF-monitor ,node-monitor ,node-resource-monitor ](https://ws02.rts.uni-hannover.de/monitoring/monitoring/tree/master/monitoring_monitors_system)
 
 
 
@@ -50,9 +61,6 @@ You should configure one Topicmonitor per pc-system which only monitors local co
 ## StatisticsMonitor
 This monitor can only watch data flow from one node to another. If nobody subscribes the topic, the monitor is unable to monitor the content. If you record a rosbag, it subscribes the topic!
 
-
-## clock_diference-monitor 
-
 ## cpu-monitor
 you should configure the work frequenz and what you want to monitore
  
@@ -68,7 +76,7 @@ you need to configure which node do you want to watch
 ## node-resource-monitor
 you need to configure the blacklist and the whitelist for this monitor
 
-## ping-monitor ntp-monitor TF-monitor
+## ping-monitor ntp-monitor TF-monitor clock_diference-monitor 
  you dont need to configure anything
 
 
