@@ -5,7 +5,7 @@ This is a python and C++ library with ROS interface and designed to watch the Sy
 
 The computer system and the ROS communication will be watched .All message will be published in a ROS topic and show with a rqt-plugin.
 User can write the fault detection and recovery itself by SDK.
-More infomation please see the ducumentations and the usage
+More infomation please see the documentations and the usage
 
 
 Features:
@@ -22,6 +22,8 @@ Features:
 
 **monitoring_fdir:** Fault detection and identification
 
+**monitoring_bridge:** the bridge for Diagnostics
+
 # Documentation
 
 Documentation for monitor is here:
@@ -29,6 +31,8 @@ Documentation for monitor is here:
 * [System monitor](https://ws02.rts.uni-hannover.de/monitoring/monitoring/tree/master/monitoring_monitors_system)
 
 * [ROS monitor](https://ws02.rts.uni-hannover.de/monitoring/monitoring/tree/master/monitoring_monitors_system)
+
+* [monitoring_fdir](https://ws02.rts.uni-hannover.de/monitoring/monitoring/tree/master/monitoring_fdir)
 
 
 
@@ -47,11 +51,8 @@ Ros-kinetic (Ubuntu 16.04)
 To build from source, clone the latest version from this repository into your catkin workspace and compile the package using
 
     cd catkin_ws/
-
     git clone https://ws02.rts.uni-hannover.de/monitoring/monitoring.git
-
     cd ..
-
     catkin_make
 
 
@@ -62,40 +63,13 @@ run tests with:
 
 
     catkin_make run_tests_monitoring_monitors_ros
-
     catkin_make run_tests_monitoring_core
 
 
 
 # Configuration
 
-## Network monitor
-if you want to check multiple network interfaces, start and configure one network-monitor-node per interface.
-
-
-## Topic monitor
-You should configure one Topicmonitor per pc-system which only monitors local content to minimize networkload
-
-## StatisticsMonitor
-This monitor can only watch data flow from one node to another. If nobody subscribes the topic, the monitor is unable to monitor the content. If you record a rosbag, it subscribes the topic!
-
-## cpu-monitor
-you should configure the work frequenz and what kind of things you want to monitore for CPU
- 
-## wifistrength-monitor
-you need to configure the work frequenz and WIFI-Interface
-
-## Ram-monitor
-you need to configure the work frequenz and unit type
- 
-## node-monitor
-you need to configure which node do you want to watch
-
-## node-resource-monitor
-you need to configure the blacklist and the whitelist for this monitor
-
-## ping-monitor ntp-monitor TF-monitor clock_diference-monitor 
- you dont need to configure anything
+please see Documentation
 
 
 ---
