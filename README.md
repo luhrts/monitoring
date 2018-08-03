@@ -10,17 +10,17 @@ More infomation please see the ducumentations and the usage
 
 Features:
 
-**monitoring_core**
+**monitoring_core:**other monitor use this pkg to add the value for topic /monitoring
 
-**monitoring_visualization**
+**monitoring_visualization:**take the message form topic /monitoring and give it to GUI.User can see all the message in GUI window 
 
-**monitoring_rqt**
+**monitoring_rqt:**plugin for rqt
 
-**System monitor**
+**System monitor:**monitor for system,please see Documentation
 
-**ROS monitor**
+**ROS monitor:**monitor for ROS,please see Documentation
 
-**monitoring_fdir**
+**monitoring_fdir:**Fault detection and identification
 
 # Documentation
 
@@ -40,6 +40,19 @@ Ros-kinetic (Ubuntu 16.04)
 
 sudo apt install libprocps4-dev
 sudo pip install ntplib
+
+
+building:
+To build from source, clone the latest version from this repository into your catkin workspace and compile the package using
+
+cd catkin_ws/
+
+git clone https://ws02.rts.uni-hannover.de/monitoring/monitoring.git
+
+cd ..
+
+catkin_make
+
 
 ---
 
