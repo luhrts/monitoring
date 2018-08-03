@@ -30,7 +30,7 @@ Documentation for monitor is here:
 
 * [System monitor](https://ws02.rts.uni-hannover.de/monitoring/monitoring/tree/master/monitoring_monitors_system)
 
-* [ROS monitor](https://ws02.rts.uni-hannover.de/monitoring/monitoring/tree/master/monitoring_monitors_system)
+* [ROS monitor](https://ws02.rts.uni-hannover.de/monitoring/monitoring/tree/master/monitoring_monitors_ros)
 
 * [monitoring_fdir](https://ws02.rts.uni-hannover.de/monitoring/monitoring/tree/master/monitoring_fdir)
 
