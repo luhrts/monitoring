@@ -34,25 +34,25 @@ Documentation for monitor is here:
 
 # Installation
 
-Required:
+## Required:
 
 Ros-kinetic (Ubuntu 16.04)
 
-  sudo apt install libprocps4-dev
-  sudo pip install ntplib
+    sudo apt install libprocps4-dev
+    sudo pip install ntplib
 
 
-building:
+## building:
 
 To build from source, clone the latest version from this repository into your catkin workspace and compile the package using
 
-  cd catkin_ws/
+    cd catkin_ws/
 
-  git clone https://ws02.rts.uni-hannover.de/monitoring/monitoring.git
+    git clone https://ws02.rts.uni-hannover.de/monitoring/monitoring.git
 
-  cd ..
+    cd ..
 
-  catkin_make
+    catkin_make
 
 
 ---
@@ -61,9 +61,9 @@ To build from source, clone the latest version from this repository into your ca
 run tests with:
 
 
-  catkin_make run_tests_monitoring_monitors_ros
+    catkin_make run_tests_monitoring_monitors_ros
 
-  catkin_make run_tests_monitoring_core
+    catkin_make run_tests_monitoring_core
 
 
 
