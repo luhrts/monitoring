@@ -1,8 +1,15 @@
 # Monitoring System
 
 # Overview
-This is a python and C++ library with ROS interface .It designed to watch the System  during robot runing.The following monitoring is contained in this Lib:
+This is a python and C++ library with ROS interface .It designed to watch the System  during robot runing.
 
+The following Features is contained in this Lib:
+
+**monitoring_core**
+
+**monitoring_visualization**
+
+**monitoring_rqt**
 
 **System monitor:**
 
@@ -54,7 +61,7 @@ sudo pip install ntplib
 
 ---
 
-#Unit Tests and Ros test
+# Unit Tests and Ros test
 run tests with:
 
 
