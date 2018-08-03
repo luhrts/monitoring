@@ -6,13 +6,13 @@ There are the monitor for System
 **Description**
 * **clock_diference-monitor**:TODO
 
-* **cpu-monitor**:watch the CPU last
+* **cpu-monitor**:watch the CPU frequence ,last and temperatur
 
-* **network-monitor**:TODO
+* **network-monitor**:watch the network,speed and the number of the package will be watched and network error will be checked
 
 * **wifistrength-monitor**: watch the wifi Strength 
 
-* **Ram-monitor**:watch the Ram last
+* **Ram-monitor**:watch the RAM last
 
 * **ntp-monitor**:TODO
 
