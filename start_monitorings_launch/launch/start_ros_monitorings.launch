@@ -1,0 +1,9 @@
+<launch> 
+	<include file="$(find monitoring_monitors_ros)/launch/node_monitor.launch" />
+        <include file="$(find monitoring_monitors_ros)/launch/node_ressource_monitor_whitelist.launch" /> 
+        <!-- or you can chose blacklist mode with( <include file="$(find monitoring_monitors_ros)/launch/node_ressource_monitor_blacklist.launch" /> ) -->
+        <include file="$(find monitoring_monitors_ros)/launch/statistic_monitor.launch" />
+	<include file="$(find monitoring_monitors_ros)/launch/tf_monitor.launch" />
+        <include file="$(find monitoring_monitors_ros)/launch/topic_monitor.launch" />
+</launch> 
+   
