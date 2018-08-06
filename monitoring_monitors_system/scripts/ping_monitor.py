@@ -322,7 +322,7 @@ def verbose_ping(dest_addr, timeout = 2, count = 4):
 
 
 if __name__ == '__main__':
-    verbose_ping("130.75.137.10")
-    verbose_ping("130.75.137.127")
+    #verbose_ping("130.75.137.10")
+    #verbose_ping("130.75.137.127")
 
-    #verbose_ping("google.de")
+    verbose_ping("google.de")

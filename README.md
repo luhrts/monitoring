@@ -43,7 +43,7 @@ Documentation for monitor is here:
 Ros-kinetic (Ubuntu 16.04)
 
     sudo apt install libprocps4-dev
-    sudo pip install ntplib
+    sudo apt-get install python-ntplib
 
 
 ## building:

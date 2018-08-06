@@ -1,10 +1,10 @@
-# System monitor
+# System monitorui
 
 # Overview
 There are the monitor for System
 
 **Description**
-* **clock_diference-monitor**:TODO
+* **clock_diference-monitor**: Checksum routine for Internet Protocol family headers.This routine is very heavily used in the network,code should be modified for each CPU to be as fast as possible.This implementation is TAHOE version.
 
 * **cpu-monitor**:watch the CPU frequence ,last and temperatur
 
@@ -14,10 +14,12 @@ There are the monitor for System
 
 * **Ram-monitor**:watch the RAM last
 
-* **ntp-monitor**:TODO
+* **ntp-monitor**:checkout the time by use NTP
 
-* **ping-monitor**:  A pure python ping implementation using raw socket. Note that ICMP messages can only be sent from processes running as root.
+* **ping-monitor**:  A pure python ping implementation using raw socket. Note that ICMP messages can only be sent from processes running as root.**Does not connect to GUI.**
 
+  use it by 
+    sudo python $monitoring_path/monitoring_monitors_system/scripts/ping_monitor.py
 # Configuration
 
 ## Network monitor
@@ -31,7 +33,13 @@ you need to configure the work frequenz and WIFI-Interface
 
 ## Ram-monitor
 you need to configure the work frequenz and unit type
- 
-## ping-monitor ntp-monitor  clock_diference-monitor 
- you dont need to configure anything
+
+## ping-monitor
+need to configure the IP-adresse in scripts/ping_monitor.py
+
+## ntp-monitor
+dont need to configure anything
+
+## clock_diference-monitor 
+TODO
 
