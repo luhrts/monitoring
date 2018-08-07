@@ -14,7 +14,7 @@ This is the monitor for ROS
 
 * **node-monitor**: this is a monitor for ros-node,check the node if it works or not 
 
-* **node-resource-monitor** :TODO
+* **node-resource-monitor** :  lists all running rosnodes and displays all values the psutil package is providing for each node
 
 # Configuration
 
@@ -28,7 +28,7 @@ This monitor can only watch data flow from one node to another. If nobody subscr
 you need to configure which node do you want to watch
 
 ## node-resource-monitor
-you need to configure the blacklist and the whitelist for this monitor
+you need to configure the blacklist or the whitelist for this monitor
 
 ## TF-monitor
 you dont need to configure anything

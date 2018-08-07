@@ -16,9 +16,7 @@ There are the monitor for System
 
 * **ntp-monitor**:checkout the time by use NTP
 
-* **ping-monitor**:  A pure python ping implementation using raw socket. Note that ICMP messages can only be sent from processes running as root.**Does not connect to GUI.**
-
-  use it by :
+* **ping-monitor**:  A pure python ping implementation using raw socket. Note that ICMP messages can only be sent from processes running as root.**Does not connect to GUI.** use it by :
 
     sudo python $monitoring_path/monitoring_monitors_system/scripts/ping_monitor.py
 # Configuration
