@@ -1,4 +1,4 @@
-frequency: 2    #Publish and calculation frequency
+frequency: 1    #Publish and calculation frequency
 bytes: true     #networktrafic in bytes
 packets: true   #networktrafic in packets
 load: true      #networkload scala 0..1

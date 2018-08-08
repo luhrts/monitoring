@@ -1,4 +1,6 @@
-frequency: 1
+monitoring:
+  frequency: 1
+timeTilDelete: 3
 topics: [scan_1, turtlesim]
 
 scan_1:

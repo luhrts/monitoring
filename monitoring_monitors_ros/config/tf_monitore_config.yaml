@@ -1,5 +1,5 @@
 monitoring:
- frequency: 10
+ frequency: 1
 Transform_check: [turtle1_to_2,world_to_turtle]
 turtle1_to_2:
   Frame_List : [world,/turtle1,/turtle2]
