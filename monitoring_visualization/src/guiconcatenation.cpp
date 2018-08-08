@@ -43,7 +43,7 @@ void GuiConcatenation::monitor_cb(monitoring_msgs::MonitoringArray ma) {
 		float meanerror = 0;
 		for (int i = 0; i < mi.values.size(); i++) {
       monitoring_msgs::GuiInfo gi;
-			char name[100];
+                        char name[1000];
 			sprintf(name, "%s/%s", mi.name.c_str(), mi.values[i].key.c_str());
 			gi.name = name;
 			//gi.description = mi.values[i].;
@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
   ros::Publisher gui_pub = n.advertise<monitoring_msgs::Gui>("/monitoring/gui",
 			10);
 
-	float freq = 1;
+        float freq = 1;
 	if (!n.getParam("frequency", freq)) {
 		ROS_WARN("No frequency supplied. Working with %f Hz.", freq);
 	}

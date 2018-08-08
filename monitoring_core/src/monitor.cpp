@@ -122,10 +122,13 @@ void Monitor::addValue(std::string key, std::string value, std::string unit, flo
   }
 }
 
+
 void Monitor::addValue(std::string key, float value, std::string unit, float errorlevel, AggregationStrategies aggregation)
 {
-  char stringvalue[100];    //TODO check if 100 is a good number!
-	sprintf(stringvalue, "%f", value);
+  char stringvalue[1000];    //TODO check if 1000 is a good number!
+
+    sprintf(stringvalue, "%f", value);
+
   addValue(key, stringvalue, unit, errorlevel, aggregation);
 }
 

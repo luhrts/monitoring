@@ -1,4 +1,4 @@
-#include "monitoring_monitors_ros/tf_monitor.h"
+﻿#include "monitoring_monitors_ros/tf_monitor.h"
 
 using namespace tf;
 using namespace ros;
@@ -43,12 +43,18 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
 
             ROS_INFO("New Frame: %s", frame.c_str());
             new_frame = true;
+            NeedToCheckSperationAndLoop =true;
+            wait_times_offset=0;
         }
 
         //Static change
         if(transforms_[frame].is_static != is_static && !new_frame){
             ROS_WARN("TF_Monitor: static changed for frame: %s, old_parent: %d new_parent: %d", frame.c_str(), transforms_[frame].is_static, is_static);
             monitor_->addValue(parent+"/"+frame+"/static_changed", -1, "", 1.0);
+            NeedToCheckSperationAndLoop =true;
+           wait_times_offset=0;
+
+
         }
         transforms_[frame].is_static = is_static;
 
@@ -57,15 +63,23 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
             ROS_WARN("TF_Monitor: parent changed for frame: %s, old_parent: %s new_parent: %s", frame.c_str(), transforms_[frame].parent.c_str(), parent.c_str());
             monitor_->addValue(parent+"/"+frame+"/parent_changed", -1, "", 1.0);
 
+            NeedToCheckSperationAndLoop =true;
+            wait_times_offset=0;
+
         }
+
         transforms_[frame].parent = parent;
+
 
         //Autohrity change
         if(transforms_[frame].authority != authority && !new_frame){
             ROS_WARN("TF_Monitor: authority changed for frame: %s, old_authority: %s new_authority: %s", frame.c_str(), transforms_[frame].authority.c_str(), authority.c_str());
             monitor_->addValue(parent+"/"+frame+"/authority_changed", -1, "", 1.0);
+
+
         }
         transforms_[frame].authority = authority;
+
 
 
         //offset
@@ -124,6 +138,64 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
 
 
     }
+
+    if( NeedToCheckSperationAndLoop==true && wait_times_offset>10){
+
+        map<std::string, TransformData>::iterator iter=transforms_.begin();
+      ////Seperation check
+        for(iter = transforms_.begin(); iter!=transforms_.end(); iter++){
+
+       if(transforms_.count(iter->second.parent)==0 && iter->second.parent !=base_parent_frame){
+
+           if(iter->first==base_parent_frame || base_parent_frame==""){
+           base_parent_frame=iter->second.parent;
+           ROS_INFO("New base for tf_tree: %s",iter->second.parent.c_str());
+
+           }
+           else{
+             ROS_WARN("TF_Monitor: multi base frame:New base:%s and Old base:%s ",iter->second.parent.c_str(),base_parent_frame.c_str());
+             monitor_->addValue("multi base frame : Old base:"+base_parent_frame+" multi base: "+iter->second.parent, -1, "", 1.0);
+
+           }
+       }
+
+       }
+        ////loop check
+         std::string checkname;
+         std::vector<std::string> checked_frames;
+        for(iter = transforms_.begin(); iter!=transforms_.end(); iter++){
+            std::string frame_name_in_loop="";
+            checkname=iter->first;
+       while(transforms_.count(checkname)!=0){
+            if(transforms_[checkname].parent==iter->first){
+                if(count(checked_frames.begin(),checked_frames.end(),checkname)==1){
+                  frame_name_in_loop+="/"+checkname;
+                  ROS_WARN("TF_Monitor:%s is a Loop_tree",frame_name_in_loop.c_str());
+                  monitor_->addValue("Loop tree! frame link:"+frame_name_in_loop, -1, "", 1.0);
+                }
+                break;
+
+            }
+            else{
+                frame_name_in_loop+=" /"+checkname;
+                checkname=transforms_[checkname].parent;
+                checked_frames.push_back(checkname);
+            }
+
+
+           }
+
+       }
+    NeedToCheckSperationAndLoop=false;
+    wait_times_offset=0;
+    }
+    if(transforms_.size()==last_transform_size){
+         wait_times_offset+=1;
+    }
+    else{
+         wait_times_offset=0;
+    }
+   last_transform_size=transforms_.size();
 }
 
 int main(int argc, char ** argv)
