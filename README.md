@@ -88,7 +88,7 @@ You can create your own FDI node with the SDK (*src/fdir/fdiSDK.cpp*). An exampl
 You can create your own Recovery node with the SDK (*src/recovery/recoverysdk.cpp*). An example implementation is *src/recovery/recoveryExample.cpp*
 
 ## GUI
-There is a rqt plugin to visulaize the monitoring data. To use it, you need to start the *gui_msg_concat_node* node. This node aggregates all messages to send to a remote pc over the topic */monitoring/gui*. You can visualize the data with the *Monitor Viewer*
+There is a rqt plugin to visulaize the monitoring data. To use it, you need to start the *monitoring_visualization.launch*. This node aggregates all messages to send to a remote pc over the topic */monitoring/gui*. You can visualize the data with the *Monitor Viewer*
 
 ## Connect to Diagnostics
 You can connect the monitoring systems to the diagnostics stack. There are two bridges. One for diagnostics to monitoring (node: *diagnostics_to_monitoring*) and one for monitoring to diagnostics (node: *monitoring_to_diagnostics*)

@@ -25,13 +25,13 @@ There are the monitor for System
 if you want to check multiple network interfaces, start and configure one network-monitor-node per interface.
 
 ## cpu-monitor
-you should configure the work frequenz and what kind of things you want to monitore for CPU
+you should configure  what kind of things you want to monitore for CPU
  
 ## wifistrength-monitor
-you need to configure the work frequenz and WIFI-Interface
+you need to configure the  WIFI-Interface
 
 ## Ram-monitor
-you need to configure the work frequenz and unit type
+you need to configure the unit type
 
 ## ping-monitor
 need to configure the IP-adresse in scripts/ping_monitor.py
