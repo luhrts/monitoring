@@ -32,6 +32,8 @@ Documentation for monitor is here:
 
 * [ROS monitor](https://ws02.rts.uni-hannover.de/monitoring/monitoring/tree/master/monitoring_monitors_ros)
 
+* [monitoring_bridge](https://ws02.rts.uni-hannover.de/monitoring/monitoring/tree/master/monitoring_visualization)
+
 * [monitoring_fdir](https://ws02.rts.uni-hannover.de/monitoring/monitoring/tree/master/monitoring_fdir)
 
 
@@ -54,7 +56,7 @@ To use all features the following packages are required.
 
 To build from source, clone the latest version from this repository into your catkin workspace and compile the package using
 
-    cd catkin_ws/
+    cd catkin_ws/src
     git clone https://ws02.rts.uni-hannover.de/monitoring/monitoring.git
     cd ..
     catkin_make

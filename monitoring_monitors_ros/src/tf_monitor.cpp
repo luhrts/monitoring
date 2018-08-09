@@ -103,7 +103,6 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
         if(!new_frame){
             double dx, dy, dz, droll, dpitch, dyaw;
             ros::Duration dTime;
-
             dx = current_transform.getOrigin().getX() - transforms_[frame].last_transform.getOrigin().getX();
             dy = current_transform.getOrigin().getY() - transforms_[frame].last_transform.getOrigin().getY();
             dz = current_transform.getOrigin().getZ() - transforms_[frame].last_transform.getOrigin().getZ();
