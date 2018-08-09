@@ -40,13 +40,17 @@ Documentation for monitor is here:
 
 ## Required:
 
-Ros-kinetic (Ubuntu 16.04)
+The monitoring tolls are tested on:
 
-    sudo apt install libprocps4-dev
-    sudo apt-get install python-ntplib
+- Jade
+- Kinetik
+- Melodic
 
+To use all features the following packages are required.
 
-## building:
+    sudo apt install libprocps4-dev python-ntplib
+
+## Build:
 
 To build from source, clone the latest version from this repository into your catkin workspace and compile the package using
 
@@ -55,26 +59,23 @@ To build from source, clone the latest version from this repository into your ca
     cd ..
     catkin_make
 
+# Tests:
 
----
+Run tests with:
 
-# Unit Tests and Ros test
-run tests with:
-
-
-    catkin_make run_tests_monitoring_monitors_ros
-    catkin_make run_tests_monitoring_core
-
+    catkin_make run_tests
+    catkin_test_results
 
 
 # Configuration
 
 please see Documentation
 
-
----
-
 # Usage
+
+## Example
+
+
 
 ## Monitoring
 The monitors all can be configure via a yaml-config files, you can find examples in the folder *config*.
@@ -95,3 +96,11 @@ You can connect the monitoring systems to the diagnostics stack. There are two b
 
 ## Errorlevel
 The Errorlevel is a value between 0.0 and 1.0 it can be any float value. They are further devided in 3 groups. Ok, Warn and Error states. Ok is between 0 and 0.35. Warn is till 0.7 and Error is till 1.0.
+
+## Aggregation Strategies
+When monitoring a Value, not all values are required to be transmitted. Therefore an aggregation Startegiy can be selected:
+
+- MIN 
+- MAX 
+- FIRST
+- LAST
