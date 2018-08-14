@@ -28,7 +28,7 @@ This monitor can only watch data flow from one node to another. If nobody subscr
 you need to configure which node do you want to watch
 
 ## node-resource-monitor
-you need to configure the blacklist or the whitelist for this monitor
+you need to chose which mode do you want to use,blacklist or whitelist.configure it im start_ros_monitorings.launch.Then you have to configure filter for each node im node_ressource_monitor_filter.yaml.
 
 ## TF-monitor
 you dont need to configure anything

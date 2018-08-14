@@ -1,5 +1,5 @@
 <launch>
-        <node pkg="monitoring_visualization" type="gui_msg_concat_node" name="monitor_gui" output="screen"  respawn="true">
+        <node pkg="monitoring_visualization" type="gui_msg_concat_node" name="monitor_gui" output="screen" respawn="true">
                 <rosparam command="load" file="$(find monitoring_visualization)/config/guiconcatenationconfig.yaml" />
 
 	</node>

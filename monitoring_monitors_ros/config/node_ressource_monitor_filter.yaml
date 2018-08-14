@@ -1,6 +1,3 @@
-frequency: 5
-# 0 = default(list all), 1 = whitelist, 2 = blacklist
-filter_type: 1
 
 rosout:
   values:
