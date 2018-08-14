@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 """
  Author: Michael Lange, Leibniz Universitaet Hannover, 2018
+
+ TODO:
+ - implement argument for all plots in one figure
+ - implement argparse for user friendliness
 """
 
 import rospy
@@ -21,7 +25,7 @@ value_dict = {}
 def init():
     rospy.init_node("monitoring_bag_plot")
     for argument in sys.argv:
-        value_dict[argument] = {'timestamp':[], 'value':[]}
+        value_dict[argument] = {'timestamp':[], 'value':[], 'unit':[]}
     print value_dict
     get_bag_data()
     plot()
@@ -44,14 +48,22 @@ def get_bag_data():
                         temp_time = temp_time.to_sec()
                         value_dict[argument]['timestamp'].append(str(temp_time))
                         value_dict[argument]['value'].append(str(element.value))
+                        value_dict[argument]['unit'].append(str(element.unit))
 
 def plot():
     i = 1
     for key in value_dict.keys():
-        plt.figure(i)
+        #plt.figure(i)
         plt.plot(value_dict[key]['timestamp'],value_dict[key]['value'])
+        plt.title(key)
+        plt.xlabel("time in sec")
+        if not value_dict[key]['unit']:
+            plt.ylabel("")
+        else:
+            plt.ylabel(value_dict[key]['unit'][0])
         i = i + 1
     plt.show()
+
 if __name__ == '__main__':
     init()
     rate = rospy.Rate(1)
