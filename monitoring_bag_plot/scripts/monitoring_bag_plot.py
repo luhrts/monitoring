@@ -2,6 +2,9 @@
 """
  Author: Michael Lange, Leibniz Universitaet Hannover, 2018
 
+Show/Hide graphs by clicking label taken from:
+https://matplotlib.org/examples/event_handling/legend_picking.html
+
  TODO:
  - implement argparse for user friendliness
  - export all data to individual .csv files in individual folder
@@ -24,8 +27,14 @@ start_time = None
 value_dict = {}
 combine = False
 search_for_key = False
-bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_20180726_erstefahrt/fahrt3.bag'
-#bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_20180809_firstbatterydrive/fahrt1.bag'
+legends = []
+lines = []
+legend = None
+fig = None
+ax = None
+lined = {}
+#bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_20180726_erstefahrt/fahrt3.bag'
+bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_20180809_firstbatterydrive/fahrt1.bag'
 
 def init():
     rospy.init_node("monitoring_bag_plot")
@@ -70,8 +79,13 @@ def get_bag_data():
                         value_dict[key]['unit'].append(str(element.unit))
 def plot():
     i = 1
-    legends = []
+    global legend
+    global fig, ax
+    global lined
+
     plt.style.use('ggplot')
+
+    fig, ax = plt.subplots()
     plt.tick_params(colors = 'black')
     for key in value_dict.keys():
         if not value_dict[key]['value'][0].replace('.','',1).isdigit():
@@ -87,14 +101,34 @@ def plot():
             else:
                 plt.ylabel(value_dict[key]['unit'][0])
         else:
-            plt.plot(value_dict[key]['timestamp'],value_dict[key]['value'])
+            temp, = ax.plot(value_dict[key]['timestamp'],value_dict[key]['value'],label = key)
+            lines.append(temp)
             plt.xlabel("time in sec")
-            legends.append(key)
-            plt.legend(legends)
-            plt.grid(True)
+            legend = ax.legend()
+            ax.grid(True)
         i = i + 1
-
+    if combine:
+        for legline, origline in zip(legend.get_lines(), lines):
+            legline.set_picker(5)  # 5 pts tolerance
+            lined[legline] = origline
+        fig.canvas.mpl_connect('pick_event', onpick)
     plt.show()
+
+def onpick(event):
+    global lined
+    # on the pick event, find the orig line corresponding to the
+    # legend proxy line, and toggle the visibility
+    legline = event.artist
+    origline = lined[legline]
+    vis = not origline.get_visible()
+    origline.set_visible(vis)
+    # Change the alpha on the line in the legend so we can see what lines
+    # have been toggled
+    if vis:
+        legline.set_alpha(1.0)
+    else:
+        legline.set_alpha(0.2)
+    fig.canvas.draw()
 
 if __name__ == '__main__':
     init()
