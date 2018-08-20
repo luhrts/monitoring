@@ -2,11 +2,16 @@
 """
  Author: Michael Lange, Leibniz Universitaet Hannover, 2018
 
+Visualize the Data belonging to the monitoring topic contained within a ROS bag
+options:
+    -c combine all plots into one graphs
+    -s search monitoring topic keys containing the specified string
+    -keys give list of explicit keys to plot
+
 Show/Hide graphs by clicking label taken from:
 https://matplotlib.org/examples/event_handling/legend_picking.html
 
  TODO:
- - implement argparse for user friendliness
  - export all data to individual .csv files in individual folder
 """
 
@@ -32,25 +37,17 @@ lines = []
 legend = None
 fig = None
 ax = None
+key_list = None
 lined = {}
-bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_20180816_secondbatterydrive/fahrt1.bag'
-#bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_20180726_erstefahrt/fahrt3.bag'
+#bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_20180816_secondbatterydrive/fahrt1.bag'
+bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_20180726_erstefahrt/fahrt3.bag'
 #bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_20180809_firstbatterydrive/fahrt1.bag'
 
 def init():
     rospy.init_node("monitoring_bag_plot")
-    global combine
-    global search_for_key
-    for argument in sys.argv:
-        if argument == sys.argv[0]:
-            continue
-        if argument == "-c":
-            combine = True
-            continue
-        if argument == "-s":
-            search_for_key = True
-            break
-        value_dict[argument] = {'timestamp':[], 'value':[], 'unit':[]}
+    if key_list:
+        for argument in key_list:
+            value_dict[argument] = {'timestamp':[], 'value':[], 'unit':[]}
     get_bag_data()
     plot()
 
@@ -66,7 +63,7 @@ def get_bag_data():
         if search_for_key:
             if topic == "/monitoring":
                 for element in msg.info[0].values:
-                    for argument in sys.argv:
+                    for argument in search_term:
                         if argument in element.key and element.key not in value_dict.keys():
                             value_dict[element.key] = {'timestamp':[], 'value':[], 'unit':[]}
         for key in value_dict.keys():
@@ -132,6 +129,17 @@ def onpick(event):
     fig.canvas.draw()
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Plot values from ROS Bag')
+    parser.add_argument('-c', help='combine all values into one plot', action = 'store_true')
+    parser.add_argument('-s', help='search for all keys containing this string', nargs=1)
+    parser.add_argument('-keys', help='plot all keys equal to this string', nargs='+')
+    args = parser.parse_args()
+    search_term = None
+    if not args.s == None:
+        search_for_key = True
+        search_term = args.s
+    combine = args.c
+    key_list = args.keys
     init()
     """
     rate = rospy.Rate(1)
