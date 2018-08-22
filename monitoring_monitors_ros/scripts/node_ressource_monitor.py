@@ -26,9 +26,9 @@ ID = "NODEINFO"
 MONITOR_ = Monitor("node_ressource_monitor")
 
 class NODE:
-        def __init__(self, name, pid):
-            self.pid = pid
-            self.name = name
+    def __init__(self, name, pid):
+        self.pid = pid
+        self.name = name
 
 class FILTER_TYPE:
     DEFAULT = 0
@@ -109,17 +109,17 @@ def print_to_console_and_monitor(name, pid):
         node_process_info = {} #Need to initialize var in order to prevent error
 
     #check if there is a node with the same name in filter config
-    if filter_type == FILTER_TYPE.WHITLELIST:
+    if FILTER_TYPE_ == FILTER_TYPE.WHITLELIST:
         if rospy.has_param('/node_ressource_monitor' + name):
             node_value_filter = rospy.get_param('/node_ressource_monitor' + name)
         else:
             rospy.logwarn(name + " has no filter entry")
             return
     #Define DEFAULT values to publish
-    if filter_type == FILTER_TYPE.DEFAULT:
-        node_value_filter = {'values':['cpu_affinity', 'cpu_percent', 'cpu_times'
-        , 'create_time', 'exe', 'io_counters', 'memory_info', 'memory_percent', 'name'
-        , 'num_ctx_switches', 'status']}
+    if FILTER_TYPE_ == FILTER_TYPE.DEFAULT:
+        node_value_filter = {'values':['cpu_affinity', 'cpu_percent', 'cpu_times', 
+        'create_time', 'exe', 'io_counters', 'memory_info', 'memory_percent', 'name', 
+        'num_ctx_switches', 'status']}
     #iterate over all keys given for node in node_filter
     for key in node_value_filter.get("values"):
         #if psutil delivers a value for a key, send this value to its dedicated function
@@ -516,13 +516,13 @@ VALUE_DICT = {
 
 if __name__ == '__main__':
     rospy.init_node('node_ressource_monitor', anonymous=True)
-    frequency, filter_type = init()
-    RATE = rospy.Rate(frequency)
+    FREQUENCY, FILTER_TYPE_ = init()
+    RATE = rospy.Rate(FREQUENCY)
 
     while not rospy.is_shutdown():
         try:
             gather_info()
-            rate.sleep()
+            RATE.sleep()
         except rospy.ROSInterruptException:
             rospy.loginfo("ERROR")
         except Exception:
