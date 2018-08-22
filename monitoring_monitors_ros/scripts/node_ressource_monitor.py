@@ -517,7 +517,7 @@ VALUE_DICT = {
 if __name__ == '__main__':
     rospy.init_node('node_ressource_monitor', anonymous=True)
     frequency, filter_type = init()
-    rate = rospy.Rate(frequency)
+    RATE = rospy.Rate(frequency)
 
     while not rospy.is_shutdown():
         try:
