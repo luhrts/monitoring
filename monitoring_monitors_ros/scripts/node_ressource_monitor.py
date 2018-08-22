@@ -12,16 +12,14 @@
 
 """
 
-import enum
 import rospy
 import psutil
 import rosnode
 import xmlrpclib
 import traceback
 
-from std_msgs.msg import String
+
 from monitoring_core.monitor import Monitor
-from collections import namedtuple
 from enum import Enum
 
 ID = "NODEINFO"
@@ -91,10 +89,10 @@ def gather_info():
         try:
             print_to_console_and_monitor(i.name, i.pid)
             rospy.loginfo("------------------------------")
-        except Exception as e:
+        except Exception :
             rospy.logerr(traceback.format_exc())
             rospy.logerr("----------NO_SUCH_PROCESS_ERROR---------------")
-            pass
+            
     rospy.loginfo("=============================")
 
 def print_to_console_and_monitor(name, pid):
@@ -110,7 +108,7 @@ def print_to_console_and_monitor(name, pid):
     except psutil._exceptions.NoSuchProcess:
         #rospy.logerr("No process with pid: " + pid) #THROWS ERROR PLS FIX
         node_process_info = {} #Need to initialize var in order to prevent error
-        pass
+        
     #check if there is a node with the same name in filter config
     if filter_type == Filter_type.WHITLELIST:
         if rospy.has_param('/node_ressource_monitor' + name):
