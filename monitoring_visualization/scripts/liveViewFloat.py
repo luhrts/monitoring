@@ -8,7 +8,7 @@ from matplotlib import style
 
 #TODO CLASSE!
 class LiveFloatGraph: 
-  
+ 
     def __init__(self, msg, ymin, warnlevel, cirticallevel, ymax):
         self.msgvalue = msg
         self.floatbuffer = []
@@ -24,7 +24,7 @@ class LiveFloatGraph:
         self.fig = plt.figure()
         self.ax1 = self.fig.add_subplot(1,1,1)
         self.axes = plt.gca()
-   
+
     def update_plot(self):
         ani = animation.FuncAnimation(self.fig, self.animate, interval=1000)
         plt.show()
@@ -35,14 +35,14 @@ class LiveFloatGraph:
         #self.axes.set_ylim([self.min,self.max])
         #plt.axhspan(self.warning, self.critical, color='yellow', alpha=0.3)
         #plt.axhspan(self.critical, self.max, color='red', alpha=0.3)
-        
+   
     def callback(self, ma_):
 #         print self.floatbuffer
         for kv_ in ma_.info[0].values:
-            if(kv_.key == self.msgvalue):
+            if kv_.key == self.msgvalue :
                 self.floatbuffer.append(float(kv_.value))
-                self.timestamp.append(float(ma_.info[0].header.stamp.secs + 
-		(ma_.info[0].header.stamp.nsecs / 10**9)))
+                self.timestamp.append(float(ma_.info[0].header.stamp.secs 
+		+ (ma_.info[0].header.stamp.nsecs / 10**9)))
                 self.counterlist.append(self.counter)
                 
                 self.counter = self.counter+1
