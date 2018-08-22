@@ -64,11 +64,16 @@ def get_node_list():
     node_list = []
     j = 0
     for node_name in node_array_temp:
-        node_api = rosnode.get_api_uri(rospy.get_master(), node_name)
-        code, msg, pid = xmlrpclib.ServerProxy(node_api[2]).getPid(ID)
-        node_list.append(node(node_name, pid))
-        rospy.loginfo("Node_name: " + node_list[j].name + " Node_PID: " + str(node_list[j].pid))
-        j=j+1
+        try:
+            node_api = rosnode.get_api_uri(rospy.get_master(), node_name)
+            code, msg, pid = xmlrpclib.ServerProxy(node_api[2]).getPid(ID)
+            node_list.append(node(node_name, pid))
+            rospy.loginfo("Node_name: " + node_list[j].name + " Node_PID: " + str(node_list[j].pid))
+            j=j+1
+        except Exception as e:
+            rospy.logerr(traceback.format_exc())
+            rospy.logerr("----------NO_SUCH_PROCESS_ERROR---------------")
+            pass
     rospy.loginfo("=============================")
     return node_list
 
