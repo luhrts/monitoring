@@ -26,7 +26,7 @@ def nodemonitor():
         #    rospy.logwarn("missing nodes!")
 
         for node in nodes:
-            if(not rosnode_ping(node, 1)):
+            if not rosnode_ping(node, 1):
                 rospy.logwarn("Can not ping node: %s", node)
                 monitor.addValue(node, "node unavailable", "", 0.5)
 

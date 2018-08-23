@@ -1,8 +1,9 @@
 #!/usr/bin/env python
+import matplotlib.pyplot as plt
 import rospy
 import rosbag
 import sys
-import matplotlib.pyplot as plt
+
 
 
 
@@ -18,14 +19,15 @@ if __name__ == '__main__':
                     if kv.key == sys.argv[2]:
                         numbers.append(abs(float(kv.value)))
                         timestamps.append(float(t.secs) + float(t.nsecs)/10**9)
-            
+
         bag.close()
-        
+
         plt.plot(timestamps, numbers)
         plt.xlabel("Zeit in s")
         plt.ylabel("Strom in A")
-        plt.ylim([0,2])
+        plt.ylim([0, 2])
         plt.show()
             
     else:
         print "First argument is the topic, second is the monitoring key, third is the bag-file!"
+

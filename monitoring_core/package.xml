@@ -21,6 +21,9 @@
 
   <exec_depend>monitoring_msgs</exec_depend>
   <exec_depend>roscpp</exec_depend>
+
+  <test_depend>rosunit</test_depend>
+  <test_depend>rostest</test_depend>
   
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>monitoring_msgs</build_export_depend>

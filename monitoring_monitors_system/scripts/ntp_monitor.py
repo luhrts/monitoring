@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+from time import ctime
 import rospy
 from monitoring_core.monitor import Monitor
 
 import ntplib
-from time import ctime
+
 
 if __name__ == '__main__':
     rospy.init_node('ntp_monitor', anonymous=True)
