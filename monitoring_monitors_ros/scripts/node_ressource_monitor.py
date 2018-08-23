@@ -25,12 +25,12 @@ from monitoring_core.monitor import Monitor
 ID = "NODEINFO"
 MONITOR_ = Monitor("node_ressource_monitor")
 
-class NODE:
+class NODE(object):
     def __init__(self, name, pid):
         self.pid = pid
         self.name = name
 
-class FILTER_TYPE:
+class Filter_type(object):
     DEFAULT = 0
     WHITLELIST = 1
     BLACKLIST = 2
@@ -49,7 +49,7 @@ def init():
     if rospy.has_param('node_ressource_monitor/filter_type'):
         filter_type = rospy.get_param('node_ressource_monitor/filter_type')
     else:
-        filter_type = FILTER_TYPE.DEFAULT
+        filter_type = Filter_type.DEFAULT
     return frequency, filter_type
 
 def get_node_list():
@@ -109,17 +109,19 @@ def print_to_console_and_monitor(name, pid):
         node_process_info = {} #Need to initialize var in order to prevent error
 
     #check if there is a node with the same name in filter config
-    if FILTER_TYPE_ == FILTER_TYPE.WHITLELIST:
+    if FILTER_TYPE_ == Filter_type.WHITLELIST:
         if rospy.has_param('/node_ressource_monitor' + name):
             node_value_filter = rospy.get_param('/node_ressource_monitor' + name)
         else:
             rospy.logwarn(name + " has no filter entry")
             return
     #Define DEFAULT values to publish
-    if FILTER_TYPE_ == FILTER_TYPE.DEFAULT:
-        node_value_filter = {'values':['cpu_affinity', 'cpu_percent', 'cpu_times', 
-        'create_time', 'exe', 'io_counters', 'memory_info', 'memory_percent', 'name', 
-        'num_ctx_switches', 'status']}
+    if FILTER_TYPE_ == Filter_type.DEFAULT:
+        node_value_filter = {
+	'values':['cpu_affinity', 'cpu_percent', 'cpu_times',
+	'create_time', 'exe', 'io_counters', 'memory_info', 'memory_percent', 'name',
+	'num_ctx_switches', 'status'
+	]}
     #iterate over all keys given for node in node_filter
     for key in node_value_filter.get("values"):
         #if psutil delivers a value for a key, send this value to its dedicated function
@@ -516,7 +518,7 @@ VALUE_DICT = {
 
 if __name__ == '__main__':
     rospy.init_node('node_ressource_monitor', anonymous=True)
-    FREQUENCY, FILTER_TYPE_ = init()
+    FREQUENCY, FILTER_TYPE_= init()
     RATE = rospy.Rate(FREQUENCY)
 
     while not rospy.is_shutdown():
