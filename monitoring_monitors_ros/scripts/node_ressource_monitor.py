@@ -118,10 +118,10 @@ def print_to_console_and_monitor(name, pid):
     #Define DEFAULT values to publish
     if FILTER_TYPE_ == Filter_type.DEFAULT:
         node_value_filter = {
-	'values':['cpu_affinity', 'cpu_percent', 'cpu_times',
-	'create_time', 'exe', 'io_counters', 'memory_info', 'memory_percent', 'name',
-	'num_ctx_switches', 'status'
-	]}
+'values':['cpu_affinity', 'cpu_percent', 'cpu_times',
+'create_time', 'exe', 'io_counters', 'memory_info', 'memory_percent', 'name',
+'num_ctx_switches', 'status'
+]}
     #iterate over all keys given for node in node_filter
     for key in node_value_filter.get("values"):
         #if psutil delivers a value for a key, send this value to its dedicated function
@@ -517,8 +517,8 @@ VALUE_DICT = {
 
 
 if __name__ == '__main__':
-    rospy.init_node('node_ressource_monitor', anonymous=True)
-    FREQUENCY, FILTER_TYPE_= init()
+    rospy.init_node("node_ressource_monitor", anonymous=True)
+    FREQUENCY, FILTER_TYPE_ = init()
     RATE = rospy.Rate(FREQUENCY)
 
     while not rospy.is_shutdown():
