@@ -28,6 +28,7 @@ public:
   void static_callback(const ros::MessageEvent<tf::tfMessage const>& msg_evt);
 
   void process_callback(const tf::tfMessage& message, const std::string & authority, bool is_static);
+  
 
 private:
 
@@ -42,17 +43,22 @@ private:
 
   boost::mutex map_lock_;
 
+  int last_transform_size;
+  bool NeedToCheckSperationAndLoop;
+  int wait_times_offset=0;
+
+
   struct TransformData {
       std::string frame;
       std::string parent;
-
+      
       bool is_static;
 
       tf::StampedTransform last_transform;
 
       std::string authority;
   };
-
+  std::string base_parent_frame="";
   std::map<std::string, TransformData> transforms_;
 
 };

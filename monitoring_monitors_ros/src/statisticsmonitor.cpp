@@ -91,7 +91,7 @@ void StatisticMonitor::compareStatisticDataWithRequirements() {
 
 void StatisticMonitor::loadConfig(ros::NodeHandle &n) {
   freq = 1;
-  if (!n.getParam("frequency", freq))
+  if (!n.getParam("monitoring/frequency", freq))
   {
     ROS_WARN("No frequency supplied. Working with %f Hz.", freq);
   }
@@ -190,7 +190,7 @@ void StatisticMonitor::statisticsCallback(rosgraph_msgs::TopicStatistics stats) 
   if(stats.traffic == 0) {
     si.size = 0;
   } else {
-    si.size = stats.delivered_msgs/stats.traffic; //TODO
+    si.size = stats.traffic/stats.delivered_msgs; //TODO
   }
   si.time = ros::Time::now();
 

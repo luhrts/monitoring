@@ -1,17 +1,14 @@
 #!/usr/bin/env python
 import rospy
-from rosnode import *
+import rosnode 
 from monitoring_msgs.msg import *
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib import style
 
 #TODO CLASSE!
-class LiveFloatGraph:
-    
-             
-            
-    
+class LiveFloatGraph: 
+
     def __init__(self, msg, ymin, warnlevel, cirticallevel, ymax):
         self.msgvalue = msg
         self.floatbuffer = []
@@ -22,39 +19,33 @@ class LiveFloatGraph:
         self.max = ymax
         self.warning = warnlevel
         self.critical = cirticallevel
-        
-        
-     
-    def initPlot(self):
+
+    def init_plot(self):
         self.fig = plt.figure()
         self.ax1 = self.fig.add_subplot(1,1,1)
         self.axes = plt.gca()
-        
-    def updatePlot(self):
+
+    def update_plot(self):
         ani = animation.FuncAnimation(self.fig, self.animate, interval=1000)
-        
-        plt.show()  
-        
+        plt.show()
+
     def animate(self, i):
         self.ax1.clear()
         self.ax1.plot(self.timestamp, self.floatbuffer)
         #self.axes.set_ylim([self.min,self.max])
         #plt.axhspan(self.warning, self.critical, color='yellow', alpha=0.3)
         #plt.axhspan(self.critical, self.max, color='red', alpha=0.3)
-        
-    def callback(self, ma):
+
+    def callback(self, ma_):
 #         print self.floatbuffer
-        for kv in ma.info[0].values:
-            if(kv.key == self.msgvalue):
-                    
-                self.floatbuffer.append(float(kv.value))
-                self.timestamp.append(float(ma.info[0].header.stamp.secs + (ma.info[0].header.stamp.nsecs / 10**9)))
+        for kv_ in ma_.info[0].values:
+            if kv_.key == self.msgvalue :
+                self.floatbuffer.append(float(kv_.value))
+                self.timestamp.append(float(ma_.info[0].header.stamp.secs 
+		+ (ma_.info[0].header.stamp.nsecs / 10**9)))
                 self.counterlist.append(self.counter)
-                
+
                 self.counter = self.counter+1
-    
-    
-            
 
 if __name__ == '__main__':
     try:
@@ -63,12 +54,12 @@ if __name__ == '__main__':
         rospy.init_node("floatview")
         sub = rospy.Subscriber('/monitoring', MonitoringArray, fg.callback)
         rate = rospy.Rate(1)
-        
-        fg.initPlot()
+
+        fg.init_plot()
         while not rospy.is_shutdown():
             #print the value
-            fg.updatePlot()
+            fg.update_plot()
             rate.sleep()
-        
+
     except rospy.ROSInterruptException:
         pass

@@ -37,16 +37,14 @@ add_executable(performance_monitor_test_node test/src/performance_monitor_test_n
 target_link_libraries(performance_monitor_test_node ${catkin_LIBRARIES} monitoring_core)
 
 if(CATKIN_ENABLE_TESTING)
+
     find_package(rostest REQUIRED)
 
-    add_rostest_gtest(simple_monitor_test test/launch/simple_monitor_test.test test/src/simple_monitor_test.cpp)
+    catkin_add_gtest(simple_monitor_test test/src/simple_monitor_test.cpp)
     target_link_libraries(simple_monitor_test
         ${catkin_LIBRARIES}
         monitoring_core
     )
-
-
-
 
     add_rostest_gtest(performance_monitor_test test/launch/performance_monitor_test.test test/src/performance_monitor_test.cpp)
     target_link_libraries(performance_monitor_test

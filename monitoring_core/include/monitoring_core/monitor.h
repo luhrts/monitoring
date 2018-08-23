@@ -11,18 +11,31 @@
 #include "monitoring_msgs/MonitoringArray.h"
 #include "ros/ros.h"
 
+enum AggregationStrategies{
+    LAST,
+    FIRST,
+    MIN,
+    MAX
+};
+
 class Monitor {
 public:
+    Monitor();
+    Monitor(std::string monitorDescription, bool autoPublishing = true);
     Monitor(ros::NodeHandle &n, std::string monitorDescription, bool autoPublishing = true);
-    virtual ~Monitor();
+    ~Monitor();
 
-    void addValue(std::string key, std::string value, std::string unit, float errorlevel);
-    void addValue(std::string key, float value, std::string unit, float errorlevel);
+    void addValue(std::string key, std::string value, std::string unit, float errorlevel, AggregationStrategies aggregation = LAST);
+    void addValue(std::string key, float value, std::string unit, float errorlevel, AggregationStrategies aggregation = LAST);
     void publish();
 
     void resetMsg();
 
 private:
+
+    void init(std::string monitorDescription);
+    void initROS(ros::NodeHandle &n, bool autoPublishing);
+
     ros::Publisher pub;
     ros::Timer timer;   //takes the publishing frequency
     void timerCallback(const ros::TimerEvent& te);
@@ -30,7 +43,7 @@ private:
     monitoring_msgs::MonitoringArray ma;
     std::string node_name_;
     std::string monitor_description_;
-    int miIndex = 0;
+    int miIndex;
 
     std::string host_name_;
 
@@ -39,6 +52,11 @@ private:
     FRIEND_TEST(MonitoringCore, addValueFloatRand);
     FRIEND_TEST(MonitoringCore, addValueFloat);
     FRIEND_TEST(MonitoringCore, addValueErrorLevel);
+    FRIEND_TEST(MonitoringCore, aggregationLast);
+    FRIEND_TEST(MonitoringCore, aggregationFirst);
+    FRIEND_TEST(MonitoringCore, aggregationMin);
+    FRIEND_TEST(MonitoringCore, aggregationMax);
+
 
 
 };
