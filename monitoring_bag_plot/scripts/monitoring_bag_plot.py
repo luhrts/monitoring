@@ -42,6 +42,7 @@ lined = {}
 #bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_20180816_secondbatterydrive/fahrt1.bag'
 bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_20180726_erstefahrt/fahrt3.bag'
 #bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_20180809_firstbatterydrive/fahrt1.bag'
+#bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_gui_cpu_test/test_mit_arm_alt_concat.bag'
 
 def init():
     rospy.init_node("monitoring_bag_plot")
