@@ -169,6 +169,8 @@ include_directories(
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
 
+catkin_install_python(PROGRAMS scripts/simple_monitor.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 ## Mark cpp header files for installation
 # install(DIRECTORY include/${PROJECT_NAME}/
 #   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}

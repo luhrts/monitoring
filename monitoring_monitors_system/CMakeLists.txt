@@ -85,3 +85,6 @@ install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
   PATTERN ".svn" EXCLUDE
 )
+catkin_install_python(PROGRAMS scripts/ping_monitor.py scripts/ntp_monitor.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+

@@ -23,3 +23,11 @@ add_executable(speech_output src/speech_output.cpp)
 target_link_libraries(speech_output
    ${catkin_LIBRARIES}
  )
+
+install(TARGETS speech_output
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+
