@@ -1,8 +1,9 @@
 #!/usr/bin/env python
+import sys
 import matplotlib.pyplot as plt
 import rospy
 import rosbag
-import sys
+
 
 
 
@@ -27,7 +28,7 @@ if __name__ == '__main__':
         plt.ylabel("Strom in A")
         plt.ylim([0, 2])
         plt.show()
-            
+
     else:
         print "First argument is the topic, second is the monitoring key, third is the bag-file!"
 

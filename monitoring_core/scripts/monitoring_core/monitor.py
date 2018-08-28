@@ -1,10 +1,11 @@
 #!/usr/bin/env python
+import socket
 import rospy
 from monitoring_msgs.msg import *
 
-import socket
 
-class Monitor:
+
+class Monitor(object):
     def __init__(self, monitorDescription, autoPublishing = True):
         self.ma = MonitoringArray()
         self.description = monitorDescription
