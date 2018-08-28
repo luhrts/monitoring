@@ -21,7 +21,6 @@ endif()
 catkin_package(
   INCLUDE_DIRS include
   CATKIN_DEPENDS monitoring_core
-  DEPENDS PROCPS
 )
 
 

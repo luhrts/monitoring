@@ -7,9 +7,10 @@ project(monitoring_bridge)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
+
 find_package(catkin REQUIRED COMPONENTS
-  monitoring_msgs
   monitoring_core
+  monitoring_msgs
   roscpp
   rospy
 )
