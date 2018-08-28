@@ -109,7 +109,7 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
 
             double current_roll, current_pitch, current_yaw, last_roll, last_pitch, last_yaw;
             tf::Matrix3x3(current_transform.getRotation()).getRPY(current_roll, current_pitch, current_yaw);
-            tf::Matrix3x3(transforms_[frame].last_transform.getRotation()).getRPY(current_roll, current_pitch, current_yaw);
+            tf::Matrix3x3(transforms_[frame].last_transform.getRotation()).getRPY(last_roll, last_pitch, last_yaw);
 
             droll = current_roll - last_roll;
             dpitch = current_pitch - last_pitch;
