@@ -12,7 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES
-  CATKIN_DEPENDS roscpp 
+  CATKIN_DEPENDS roscpp monitoring_msgs
 )
 
 
@@ -38,4 +38,5 @@ install(DIRECTORY include/${PROJECT_NAME}/
   PATTERN ".svn" EXCLUDE
 )
 
-
+catkin_install_python(PROGRAMS scripts/liveViewFloat.py scripts/PlotFromBag.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
