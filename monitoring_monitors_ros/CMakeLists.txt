@@ -47,6 +47,12 @@ add_executable(topic_value_monitor src/topic_value_monitor.cpp)
 target_link_libraries(topic_value_monitor
   ${catkin_LIBRARIES}
 )
+ 
+install(TARGETS statistics_monitoring_node tf_monitoring_node topic_value_monitor
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)

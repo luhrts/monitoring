@@ -73,3 +73,10 @@ add_custom_command(
   OUTPUT message
   COMMAND sudo -n sh -c 'cd ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION}\; chown root.root ping_monitor.py\; chmod 4755 ping_monitor.py' || (echo "${ESCAPE}[34m#\ type\ following\ command\ before\ execute\ rosping...\ sudo\ chown\ root.root\ ./bin/rosping\;\ sudo\ chmod 4755\ ./bin/rosping${ESCAPE}[0m"))
 
+
+install(TARGETS cpu_monitoring_node cpu_frequency_monitor_node ram_monitoring_node network_monitoring_node wifi_signal_strength_monitoring_node clockdiff_monitor_node
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION} 
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+

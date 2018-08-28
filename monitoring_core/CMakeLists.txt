@@ -36,6 +36,12 @@ catkin_python_setup()
 add_executable(performance_monitor_test_node test/src/performance_monitor_test_node.cpp)
 target_link_libraries(performance_monitor_test_node ${catkin_LIBRARIES} ${PROJECT_NAME})
 
+install(TARGETS ${PROJECT_NAME}
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
 if(CATKIN_ENABLE_TESTING)
 
     find_package(rostest REQUIRED)

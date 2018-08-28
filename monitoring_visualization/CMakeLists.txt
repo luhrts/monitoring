@@ -26,3 +26,9 @@ target_link_libraries(gui_msg_concat_node
   ${catkin_LIBRARIES}
 )
 add_dependencies(gui_msg_concat_node ${catkin_EXPORTED_TARGETS})
+
+install(TARGETS gui_msg_concat_node
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)

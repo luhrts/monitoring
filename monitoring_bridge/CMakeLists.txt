@@ -10,7 +10,6 @@ project(monitoring_bridge)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  rospy
   monitoring_core
   monitoring_msgs
   
@@ -38,3 +37,9 @@ target_link_libraries(diagnostics_to_monitoring
   ${catkin_LIBRARIES}
 )
 add_dependencies(diagnostics_to_monitoring ${catkin_EXPORTED_TARGETS})
+
+install(TARGETS monitoring_to_diagnostics diagnostics_to_monitoring 
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
