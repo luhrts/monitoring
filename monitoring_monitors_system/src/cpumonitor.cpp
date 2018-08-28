@@ -171,7 +171,7 @@ double CpuMonitor::getCPUCoreLoad(int n)
 
   file = fopen("/proc/stat", "r");
 
-  int old_n = n;
+  //int old_n = n;
 
   char buffer[256];
   for (int i = 0; i <= n; i++)
