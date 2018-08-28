@@ -104,7 +104,7 @@ void CpuMonitor::init()
     sprintf(path, "/sys/class/hwmon/hwmon%d/name", i);
     fname = fopen(path, "r");
     char name[30];
-    fscanf(fname, "%64s", name);
+    fscanf(fname, "%30s", name);
     fclose(fname);
     if (strcmp(name, "coretemp") == 0)
     {	//check which is coretemp
