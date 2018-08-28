@@ -83,7 +83,7 @@ unsigned int NetworkMonitor::readNetworkInfo(char nwinterface[], const char info
 
     FILE* file;
     file = fopen(filepath, "r");
-    unsigned int ret;
+    int ret;
     fscanf(file, "%d", &ret);
     fclose(file);
 
