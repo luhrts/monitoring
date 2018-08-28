@@ -54,6 +54,11 @@ install(TARGETS statistics_monitoring_node tf_monitoring_node topic_value_monito
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  PATTERN ".svn" EXCLUDE
+)
+
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
 
