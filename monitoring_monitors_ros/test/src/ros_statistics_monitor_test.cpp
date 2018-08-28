@@ -51,7 +51,7 @@ public:
             else if (keyValue.key == "Test_topic_int16/TopicMissing"){
                   EXPECT_EQ(keyValue.errorlevel,1.0);
              }
-            else if ((keyValue.key == "Test_topic_int16/frequency") && (!keyValue.errorlevel == 0.5)){
+            else if ((keyValue.key == "Test_topic_int16/frequency") && (keyValue.errorlevel != 0.5)){
                     EXPECT_LE("10.2",keyValue.value);
                     EXPECT_GE("9.8",keyValue.value);
              }
@@ -62,7 +62,7 @@ public:
             else if ((keyValue.key == "Test_topic_int16/size") && (keyValue.errorlevel == 0.5)){
                   EXPECT_EQ("0.000000",keyValue.value);
              }
-            else if ((keyValue.key == "Test_topic_int16/size" && !keyValue.errorlevel == 0.5)){
+            else if ((keyValue.key == "Test_topic_int16/size") && (keyValue.errorlevel != 0.5)){
                  EXPECT_LE("3",keyValue.value);
                  EXPECT_GE("1",keyValue.value);
              }
