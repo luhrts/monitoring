@@ -1,3 +1,4 @@
-frequency: 1   #Publish and calculation frequency
+monitoring:
+  frequency: 1   #Publish and calculation frequency
 percent: true   #RAM load in %
 used: true      #RAM load in KB

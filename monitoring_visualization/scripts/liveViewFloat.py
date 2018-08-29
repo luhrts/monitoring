@@ -42,7 +42,7 @@ class LiveFloatGraph(object):
             if kv_.key == self.msgvalue:
                 self.floatbuffer.append(float(kv_.value))
                 self.timestamp.append(float(ma_.info[0].header.stamp.secs
-+ (ma_.info[0].header.stamp.nsecs / 10**9)))
+				      + (ma_.info[0].header.stamp.nsecs / 10**9)))
                 self.counterlist.append(self.counter)
 
                 self.counter = self.counter+1
@@ -50,7 +50,7 @@ class LiveFloatGraph(object):
 if __name__ == '__main__':
     try:
         FG = LiveFloatGraph("Joint 0", 20, 65, 80, 100)
-        
+
         rospy.init_node("floatview")
         sub = rospy.Subscriber('/monitoring', MonitoringArray, FG.callback)
         RATE = rospy.Rate(1)
