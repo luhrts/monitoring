@@ -46,7 +46,7 @@ void StatisticMonitor::compareStatisticDataWithRequirements() {
     bool siFound = false;
     for(StatisticsInfo stin:statisticData) { //searching for coresponding recorded statistic data
 //      ROS_INFO("COMPARE: %s, %s - %s, %s - %s, %s", stin.topic.c_str(), tr.topic.c_str(), stin.sub.c_str(), tr.destination.c_str(), stin.pub.c_str(), tr.source.c_str());
-      if(stin.topic==tr.topic && stin.sub==tr.destination && stin.pub==tr.source) {
+      if(!(strcmp(stin.topic.c_str(),tr.topic.c_str())) && (strcmp(stin.sub.c_str(),tr.destination.c_str())) && (strcmp(stin.pub.c_str(),tr.source.c_str()))) {
         siFound = true;
         si = stin;
         break;
@@ -162,13 +162,14 @@ void StatisticMonitor::statisticsCallback(rosgraph_msgs::TopicStatistics stats) 
   // ROS_INFO("Topic: %s, Pub: %s, Sub: %s",topic.c_str(), pub.c_str(),sub.c_str());
   // ROS_INFO("mean: %f", stats.period_mean.toSec());
   bool siFound = false;
-  //int siIndex;
+  int siIndex;
 //  ROS_INFO("check if already inserted");
+
   for(int i=0; i<statisticData.size(); i++) {
-    if(statisticData[i].topic == topic && statisticData[i].pub == pub && statisticData[i].sub == sub) {
+      if(statisticData[i].topic == topic && statisticData[i].pub == pub && statisticData[i].sub == sub) {
       si = statisticData[i];
       siFound = true;
-//      siIndex = i;
+     siIndex = i;
       break;
     }
   }
