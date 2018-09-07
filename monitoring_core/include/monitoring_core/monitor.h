@@ -15,7 +15,12 @@ enum AggregationStrategies{
     LAST,
     FIRST,
     MIN,
-    MAX
+    MAX,
+    AVG
+};
+struct Sum{
+  float sum;
+  int num;
 };
 
 class Monitor {
@@ -32,7 +37,7 @@ public:
     void resetMsg();
 
 private:
-
+    Sum sum_;
     void init(std::string monitorDescription);
     void initROS(ros::NodeHandle &n, bool autoPublishing);
 

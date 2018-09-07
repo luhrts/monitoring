@@ -103,7 +103,17 @@ void Monitor::addValue(std::string key, std::string value, std::string unit, flo
           ma.info[miIndex].values[i].unit = unit;
           ma.info[miIndex].values[i].errorlevel = errorlevel;
         }
-      }
+      } else if (aggregation == AggregationStrategies::AVG) { // Update if the value is larger
+
+            sum_.sum += atof(value.c_str());
+            sum_.num++;
+            char stringvalue[1000];
+            sprintf(stringvalue, "%f", (sum_.sum/sum_.num));
+            ma.info[miIndex].values[i].value = stringvalue;
+            ma.info[miIndex].values[i].unit = unit;
+            ma.info[miIndex].values[i].errorlevel = errorlevel;
+
+        }
 
       found = true;
       break;
