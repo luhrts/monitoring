@@ -112,7 +112,6 @@ void Monitor::addValue(std::string key, std::string value, std::string unit, flo
             ma.info[miIndex].values[i].value = stringvalue;
             ma.info[miIndex].values[i].unit = unit;
             ma.info[miIndex].values[i].errorlevel = errorlevel;
-
         }
 
       found = true;

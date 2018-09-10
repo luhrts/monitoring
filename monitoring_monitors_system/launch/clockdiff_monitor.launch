@@ -1,0 +1,6 @@
+<launch>
+        <node pkg="monitoring_monitors_system" type="clockdiff_monitor_node" name="clock_diff_monitor" launch-prefix="sudo">
+
+	
+	</node>
+</launch>
