@@ -7,12 +7,12 @@
 
 #include "monitoring_visualization/guiconcatenation.h"
 
-GuiConcatenation::GuiConcatenation(ros::NodeHandle& n,int mode) {
+GuiConcatenation::GuiConcatenation(ros::NodeHandle& n) {
 	monitor_sub = n.subscribe("/monitoring", 1000,
                         &GuiConcatenation::monitor_cb, this);
 	error_sub = n.subscribe("/monitoring/errors", 1000,
 			&GuiConcatenation::error_cb, this);
-        MODE=mode;
+
 
 }
 
@@ -46,7 +46,7 @@ void GuiConcatenation::monitor_cb(monitoring_msgs::MonitoringArray ma) {
                         monitoring_msgs::GuiInfo gi;
                         char name[1000];
 			sprintf(name, "%s/%s", mi.name.c_str(), mi.values[i].key.c_str());
-                        if(MODE == 1){
+
 			gi.name = name;
 			//gi.description = mi.values[i].;
 			gi.value = mi.values[i].value;
@@ -55,68 +55,7 @@ void GuiConcatenation::monitor_cb(monitoring_msgs::MonitoringArray ma) {
                         meanerror += mi.values[i].errorlevel;
 
 			msg.infos.push_back(gi);
-                        }
-                        else if(MODE == 2){
-                           if (IS.count(name)==0){
-                               IS[name]=info_Startegy();
-                               IS[name].name=name;
-                               IS[name].max= mi.values[i].value;
-                               IS[name].min= mi.values[i].value;
-                               IS[name].first= mi.values[i].value;
-                               IS[name].last= mi.values[i].value;
-                               }
-                           else{
-                               double value_new=atof(mi.values[i].value.c_str());
-                               double value_old=atof(IS[name].max.c_str());
 
-                               if(value_old < value_new)
-                               {
-                                IS[name].max= mi.values[i].value;
-
-                               }
-                               value_old=atof(IS[name].min.c_str());
-                               if(value_old > value_new)
-                               {
-                                IS[name].min= mi.values[i].value;
-
-                               }
-
-                               IS[name].last = mi.values[i].value;
-                               }
-                           char NAME[1000];
-
-                           strcpy(NAME,name);
-                           gi.name = strcat(NAME,"/max");
-                           gi.value = IS[name].max;
-                           gi.errorlevel = mi.values[i].errorlevel;
-                           gi.unit = mi.values[i].unit;
-                           msg.infos.push_back(gi);
-
-                           strcpy(NAME,name);
-                           gi.name = strcat(NAME,"/min");
-                           gi.value = IS[name].min;
-                           gi.errorlevel = mi.values[i].errorlevel;
-                           gi.unit = mi.values[i].unit;
-                           msg.infos.push_back(gi);
-
-                           strcpy(NAME,name);
-                           gi.name = strcat(NAME,"/first");
-                           gi.value = IS[name].first;
-                           gi.errorlevel = mi.values[i].errorlevel;
-                           gi.unit = mi.values[i].unit;
-                           msg.infos.push_back(gi);
-
-                           strcpy(NAME,name);
-                           gi.name = strcat(NAME,"/last");
-                           gi.value = IS[name].last;
-                           gi.errorlevel = mi.values[i].errorlevel;
-                           gi.unit = mi.values[i].unit;
-                           msg.infos.push_back(gi);
-
-                           meanerror += mi.values[i].errorlevel;
-
-
-                        }
 
 		}
 		if(mi.values.size()!=0) {
@@ -153,15 +92,13 @@ int main(int argc, char **argv) {
 			10);
 
         float freq = 1;
-        int mode= 1;
+
 	if (!n.getParam("frequency", freq)) {
 		ROS_WARN("No frequency supplied. Working with %f Hz.", freq);
 	}
-        if (!n.getParam("MODE", mode)) {
-                ROS_WARN("No Mode supplied. Working with default mode.");
-        }
+
 	ros::Rate loop_rate(freq);
-        GuiConcatenation gc(n, mode);
+        GuiConcatenation gc(n);
 
 	while (ros::ok()) {
 		gui_pub.publish(gc.getMsg());
