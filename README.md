@@ -107,4 +107,3 @@ When monitoring a Value, not all values are required to be transmitted. Therefor
 - FIRST
 - LAST
 
-Change the monitoring-mode in "guiconcatenationconfig.yaml"
