@@ -162,14 +162,14 @@ void StatisticMonitor::statisticsCallback(rosgraph_msgs::TopicStatistics stats) 
   // ROS_INFO("Topic: %s, Pub: %s, Sub: %s",topic.c_str(), pub.c_str(),sub.c_str());
   // ROS_INFO("mean: %f", stats.period_mean.toSec());
   bool siFound = false;
-  int siIndex;
+ // int siIndex;
 //  ROS_INFO("check if already inserted");
 
   for(int i=0; i<statisticData.size(); i++) {
       if(statisticData[i].topic == topic && statisticData[i].pub == pub && statisticData[i].sub == sub) {
       si = statisticData[i];
       siFound = true;
-     siIndex = i;
+   //  siIndex = i;
       break;
     }
   }
