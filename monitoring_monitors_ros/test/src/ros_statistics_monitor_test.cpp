@@ -16,7 +16,7 @@ public:
 
   virtual ~Data_Check_class(){}
 
-  void waitAndSpin(int iterations = 500){
+ static void waitAndSpin(int iterations = 500){
     int count = 0;
     ros::Rate loop_rate(10);
     while(ros::ok() && count++ < iterations){

@@ -169,7 +169,6 @@ void StatisticMonitor::statisticsCallback(rosgraph_msgs::TopicStatistics stats) 
       if(statisticData[i].topic == topic && statisticData[i].pub == pub && statisticData[i].sub == sub) {
       si = statisticData[i];
       siFound = true;
-     siIndex = i;
       break;
     }
   }
