@@ -1,15 +1,16 @@
 monitoring:
   frequency: 1
+monitor_mode : 1
 timeTilDelete: 3
-topics: [turtlesim]
+topics: [test]
 
-turtlesim:
+test:
   topic: /monitoring
   source: /monitor_gui
   destination: /statistics_monitoring
-  frequency: 2
-  size: 0
+  frequency: 1
+  size: 321
   dFrequency: 1
-  dSize: 1
+  dSize: 100
   type: geometry_msgs::Twist
   errorlevel: 0.5

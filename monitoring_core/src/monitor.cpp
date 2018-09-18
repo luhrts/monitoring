@@ -79,7 +79,6 @@ void Monitor::timerCallback(const ros::TimerEvent& te) {
 
 void Monitor::addValue(std::string key, std::string value, std::string unit, float errorlevel, AggregationStrategies aggregation)
 {
-
   //check if the value is already beeing monitored
   bool found = false;
   for (int i = 0; i < ma.info[miIndex].values.size(); ++i)
@@ -91,19 +90,22 @@ void Monitor::addValue(std::string key, std::string value, std::string unit, flo
         ma.info[miIndex].values[i].value = value;
         ma.info[miIndex].values[i].unit = unit;
         ma.info[miIndex].values[i].errorlevel = errorlevel;
+
       } else if (aggregation == AggregationStrategies::MIN) { // Update if the value is smaller
         if (ma.info[miIndex].values[i].value > value){
           ma.info[miIndex].values[i].value = value;
           ma.info[miIndex].values[i].unit = unit;
           ma.info[miIndex].values[i].errorlevel = errorlevel;
+
         }
       } else if (aggregation == AggregationStrategies::MAX) { // Update if the value is larger
         if (ma.info[miIndex].values[i].value < value){
           ma.info[miIndex].values[i].value = value;
           ma.info[miIndex].values[i].unit = unit;
           ma.info[miIndex].values[i].errorlevel = errorlevel;
+
         }
-      } else if (aggregation == AggregationStrategies::AVG) { // Update if the value is larger
+      } else if (aggregation == AggregationStrategies::AVG) { // Update AVG value
 
             sum_.sum += atof(value.c_str());
             sum_.num++;
@@ -112,6 +114,8 @@ void Monitor::addValue(std::string key, std::string value, std::string unit, flo
             ma.info[miIndex].values[i].value = stringvalue;
             ma.info[miIndex].values[i].unit = unit;
             ma.info[miIndex].values[i].errorlevel = errorlevel;
+            ROS_INFO("%s,%s",key.c_str(),ma.info[miIndex].values[i].value.c_str());
+
         }
 
       found = true;
@@ -126,6 +130,7 @@ void Monitor::addValue(std::string key, std::string value, std::string unit, flo
     kv.value = value;
     kv.unit = unit;
     kv.errorlevel = errorlevel;
+    ROS_INFO("new:%s",key.c_str());
 
     ma.info[miIndex].values.push_back(kv);
   }
@@ -145,8 +150,12 @@ void Monitor::publish()
 {
 	ma.header.stamp = ros::Time::now();
 	pub.publish(ma);
-
-	resetMsg();
+     for(int i = 0 ; i<= ma.info[miIndex].values.size(); i++){
+         if(ma.info[miIndex].values[i].errorlevel != 0){
+                  // resetMsg();
+                  ma.info[miIndex].values.erase(ma.info[miIndex].values.begin()+i);
+         }
+     }
 }
 
 void Monitor::resetMsg()

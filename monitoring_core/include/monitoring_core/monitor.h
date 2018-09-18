@@ -46,6 +46,7 @@ private:
     void timerCallback(const ros::TimerEvent& te);
 
     monitoring_msgs::MonitoringArray ma;
+    monitoring_msgs::MonitoringArray ma_for_agg;
     std::string node_name_;
     std::string monitor_description_;
     int miIndex;
