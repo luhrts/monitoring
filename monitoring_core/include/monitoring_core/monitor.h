@@ -37,7 +37,7 @@ public:
     void resetMsg();
 
 private:
-    Sum sum_;
+
     void init(std::string monitorDescription);
     void initROS(ros::NodeHandle &n, bool autoPublishing);
 
@@ -52,6 +52,7 @@ private:
     int miIndex;
 
     std::string host_name_;
+    std::map<std::string,Sum> avg_for_agg;
 
     ///////////////////Gtest/////////////////////
     FRIEND_TEST(MonitoringCore, addValueString);

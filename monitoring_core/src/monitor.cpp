@@ -106,15 +106,16 @@ void Monitor::addValue(std::string key, std::string value, std::string unit, flo
 
         }
       } else if (aggregation == AggregationStrategies::AVG) { // Update AVG value
-
-            sum_.sum += atof(value.c_str());
-            sum_.num++;
+            if(avg_for_agg.count(key) != 0){
+            avg_for_agg[key].sum += atof(value.c_str());
+            avg_for_agg[key].num++;
             char stringvalue[1000];
-            sprintf(stringvalue, "%f", (sum_.sum/sum_.num));
+            sprintf(stringvalue, "%f", (avg_for_agg[key].sum/avg_for_agg[key].num));
             ma.info[miIndex].values[i].value = stringvalue;
             ma.info[miIndex].values[i].unit = unit;
             ma.info[miIndex].values[i].errorlevel = errorlevel;
-            ROS_INFO("%s,%s",key.c_str(),ma.info[miIndex].values[i].value.c_str());
+
+            }
 
         }
 
@@ -130,8 +131,7 @@ void Monitor::addValue(std::string key, std::string value, std::string unit, flo
     kv.value = value;
     kv.unit = unit;
     kv.errorlevel = errorlevel;
-    ROS_INFO("new:%s",key.c_str());
-
+    avg_for_agg[key] = Sum();
     ma.info[miIndex].values.push_back(kv);
   }
 }
@@ -150,22 +150,25 @@ void Monitor::publish()
 {
 	ma.header.stamp = ros::Time::now();
 	pub.publish(ma);
-     for(int i = 0 ; i<= ma.info[miIndex].values.size(); i++){
-         if(ma.info[miIndex].values[i].errorlevel != 0){
-                  // resetMsg();
-                  ma.info[miIndex].values.erase(ma.info[miIndex].values.begin()+i);
-         }
-     }
+        resetMsg();
+
+
+
 }
 
 void Monitor::resetMsg()
 {
-  monitoring_msgs::MonitoringArray newMA;
+    for(int i = 0 ; i<= ma.info[miIndex].values.size(); i++){
+        if(ma.info[miIndex].values[i].errorlevel != 0){
+                 ma.info[miIndex].values.erase(ma.info[miIndex].values.begin()+i);
+        }
+    }
+ /* monitoring_msgs::MonitoringArray newMA;
 	ma = newMA;
   monitoring_msgs::MonitoringInfo mi;
   mi.name = host_name_+node_name_;
   mi.description = monitor_description_;
   ma.info.push_back(mi);
-  miIndex = 0;
+  miIndex = 0;*/
 
 }
