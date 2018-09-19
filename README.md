@@ -106,4 +106,6 @@ When monitoring a Value, not all values are required to be transmitted. Therefor
 - MAX 
 - FIRST
 - LAST
+- AVG
 
+You can change the mode in every config file.
