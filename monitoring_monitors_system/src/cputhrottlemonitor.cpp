@@ -75,11 +75,41 @@ int main(int argc, char **argv)
   }
 
   float freq = 1;
-  if (!n.getParam("frequency", freq))
+  int monitor_mode;
+  AggregationStrategies aggregation;
+
+  if (!n.getParam("monitoring/frequency", freq))
   {
     ROS_WARN("No frequency supplied. Working with %f Hz.", freq);
   }
+  if (n.getParam("monitor_mode", monitor_mode))
+  {
+      switch (monitor_mode){
+          case 1 :
+          aggregation = AggregationStrategies::LAST;
+          ROS_INFO("work in AggregationStrategies::LAST");
+           break;
+          case 2 :
+          aggregation = AggregationStrategies::FIRST;
+          ROS_INFO("work in AggregationStrategies::FIRST");
+           break;
+          case 3 :
+          aggregation = AggregationStrategies::MIN;
+          ROS_INFO("work in AggregationStrategies::MIN");
+           break;
 
+          case 4 :
+          aggregation = AggregationStrategies::MAX;
+          ROS_INFO("work in AggregationStrategies::MAX");
+           break;
+
+          case 5 :
+          aggregation = AggregationStrategies::AVG;
+          ROS_INFO("work in AggregationStrategies::AVG");
+           break;
+
+      }
+  }
 
 
   ros::Rate loop_rate(freq);
@@ -93,11 +123,11 @@ int main(int argc, char **argv)
       float freq = readCurCPUFrequency(i);
 
 
-      if(maxFrequencys[i]-freq>10) {
+      if(maxFrequencys[i]-freq>100) {
 
-        msg.addValue("cpu" + std::to_string(i) + "/frequency", freq, "Hz", 0.4);
+        msg.addValue("cpu" + std::to_string(i) + "/frequency", freq, "Hz", 0.4,aggregation);
       } else {
-        msg.addValue("cpu" + std::to_string(i) + "/frequency", freq, "Hz", 0.0);
+        msg.addValue("cpu" + std::to_string(i) + "/frequency", freq, "Hz", 0.0,aggregation);
       }
     }
 

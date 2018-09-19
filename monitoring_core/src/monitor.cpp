@@ -83,6 +83,7 @@ void Monitor::addValue(std::string key, std::string value, std::string unit, flo
   bool found = false;
   for (int i = 0; i < ma.info[miIndex].values.size(); ++i)
   {
+      ROS_INFO("%s and %s ",ma.info[miIndex].values[i].key.c_str(),key.c_str());
     if (ma.info[miIndex].values[i].key == key)
     {
       if (aggregation == AggregationStrategies::LAST) // Always update
@@ -133,6 +134,7 @@ void Monitor::addValue(std::string key, std::string value, std::string unit, flo
     kv.errorlevel = errorlevel;
     avg_for_agg[key] = Sum();
     ma.info[miIndex].values.push_back(kv);
+    ROS_INFO("new:%s",key.c_str());
   }
 }
 
@@ -159,7 +161,7 @@ void Monitor::publish()
 void Monitor::resetMsg()
 {
     for(int i = 0 ; i<= ma.info[miIndex].values.size(); i++){
-        if(ma.info[miIndex].values[i].errorlevel != 0){
+        if(ma.info[miIndex].values[i].errorlevel > 0.1){
                  ma.info[miIndex].values.erase(ma.info[miIndex].values.begin()+i);
         }
     }
