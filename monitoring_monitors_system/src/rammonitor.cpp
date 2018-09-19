@@ -54,6 +54,34 @@ int main(int argc, char **argv)
 
   bool bPercent;
   n.param<bool>("percent", bPercent, true);
+  int monitor_mode;
+  n.param<int>("monitor_mode", monitor_mode,1);
+  AggregationStrategies aggregation;
+  switch (monitor_mode){
+      case 1 :
+      aggregation = AggregationStrategies::LAST;
+      ROS_INFO("work in AggregationStrategies::LAST");
+       break;
+      case 2 :
+      aggregation = AggregationStrategies::FIRST;
+      ROS_INFO("work in AggregationStrategies::FIRST");
+       break;
+      case 3 :
+      aggregation = AggregationStrategies::MIN;
+      ROS_INFO("work in AggregationStrategies::MIN");
+       break;
+
+      case 4 :
+      aggregation = AggregationStrategies::MAX;
+      ROS_INFO("work in AggregationStrategies::MAX");
+       break;
+
+      case 5 :
+      aggregation = AggregationStrategies::AVG;
+      ROS_INFO("work in AggregationStrategies::AVG");
+       break;
+
+  }
 
   ros::Rate loop_rate(freq);
 
@@ -68,12 +96,12 @@ int main(int argc, char **argv)
    // char value[200];
     if (bUsed)
     {
-      msg.addValue("RAM used", kb_main_used, "kb", 0);
+      msg.addValue("RAM used", kb_main_used, "kb", 0, aggregation);
     }
     if (bPercent)
     {
       float perc = ((float)kb_main_used / (float)kb_main_total) * 100.0;
-      msg.addValue("RAM % used", perc, "%", 0);
+      msg.addValue("RAM % used", perc, "%", 0,aggregation);
     }
     ros::spinOnce();
 

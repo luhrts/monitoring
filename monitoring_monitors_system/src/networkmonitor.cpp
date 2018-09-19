@@ -263,6 +263,36 @@ int main(int argc, char **argv) {
     double nwThroughput;
     n.param<double>("networkthroughput", nwThroughput, 100);
 
+    int monitor_mode;
+    n.param<int>("monitor_mode", monitor_mode, 1);
+    AggregationStrategies aggregation;
+    switch (monitor_mode){
+        case 1 :
+        aggregation = AggregationStrategies::LAST;
+        ROS_INFO("work in AggregationStrategies::LAST");
+         break;
+        case 2 :
+        aggregation = AggregationStrategies::FIRST;
+        ROS_INFO("work in AggregationStrategies::FIRST");
+         break;
+        case 3 :
+        aggregation = AggregationStrategies::MIN;
+        ROS_INFO("work in AggregationStrategies::MIN");
+         break;
+
+        case 4 :
+        aggregation = AggregationStrategies::MAX;
+        ROS_INFO("work in AggregationStrategies::MAX");
+         break;
+
+        case 5 :
+        aggregation = AggregationStrategies::AVG;
+        ROS_INFO("work in AggregationStrategies::AVG");
+         break;
+
+    }
+
+
     std::string nwinterface = "lo";
 
     if (!n.getParam("networkinterface", nwinterface)) {
@@ -285,13 +315,13 @@ int main(int argc, char **argv) {
             float loadrx, loadtx, RXBpS, TXBpS;
             NWm.getNetworkLoad(loadrx, loadtx, RXBpS, TXBpS);
             if (bBytes) {
-                msg.addValue("RX", RXBpS, "Byte/s", 0);
-                msg.addValue("TX", TXBpS, "Byte/s", 0);
+                msg.addValue("RX", RXBpS, "Byte/s", 0,aggregation);
+                msg.addValue("TX", TXBpS, "Byte/s", 0,aggregation);
             }
 
             if (bload) {
-                msg.addValue("Load RX", loadrx, "%", 0);
-                msg.addValue("Load TX", loadtx, "%", 0);
+                msg.addValue("Load RX", loadrx, "%", 0, aggregation);
+                msg.addValue("Load TX", loadtx, "%", 0, aggregation);
             }
 
         }
@@ -299,8 +329,8 @@ int main(int argc, char **argv) {
             float RXPpS, TXPpS;
 
             NWm.getPackets(RXPpS, TXPpS);
-            msg.addValue("RX", RXPpS, "Packet/s", 0);
-            msg.addValue("TX", TXPpS, "Packet/s", 0);
+            msg.addValue("RX", RXPpS, "Packet/s", 0,aggregation);
+            msg.addValue("TX", TXPpS, "Packet/s", 0,aggregation);
 
 
         }
