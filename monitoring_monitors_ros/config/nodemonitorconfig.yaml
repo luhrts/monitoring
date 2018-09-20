@@ -3,3 +3,4 @@ nodes: [/cpu_monitor, /ram_monitor, /topic_monitor, /node_monitor, /network_moni
 
 monitoring:
     frequency: 2
+monitor_mode : 2

@@ -2,7 +2,16 @@
 import socket
 import rospy
 from monitoring_msgs.msg import *
+from enum import Enum
 
+class AggregationStrategies(Enum):
+	LAST = 1
+	FIRST = 2
+	MIN = 3
+	MAX = 4
+	AVG = 5
+	
+	
 
 
 class Monitor(object):
