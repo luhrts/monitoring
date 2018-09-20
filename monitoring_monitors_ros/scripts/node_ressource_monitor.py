@@ -115,6 +115,19 @@ def print_to_console_and_monitor(name, pid):
         else:
             rospy.logwarn(name + " has no filter entry")
             return
+    if FILTER_TYPE_ == Filter_type.BLACKLIST:
+        if rospy.has_param('/node_ressource_monitor' + name):
+            blacklist_value_= rospy.get_param('/node_ressource_monitor' + name)
+	    default_value = {'values':['cpu_affinity', 'cpu_percent', 'cpu_times', 'create_time',
+			     'exe','io_counters', 'memory_info', 'memory_percent', 'name', 'num_ctx_switches', 'status']}
+
+	    for i in blacklist_value_['values']:
+		if i == default_value['values']:
+		    del default_value['values'].i
+	    node_value_filter = default_value
+        else:
+            rospy.logwarn(name + " has no filter entry")
+            return
     #Define DEFAULT values to publish
     if FILTER_TYPE_ == Filter_type.DEFAULT:
         node_value_filter = {'values':['cpu_affinity', 'cpu_percent', 'cpu_times', 'create_time',
