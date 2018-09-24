@@ -42,6 +42,12 @@ def init():
     check for filter_type (0 = default (list all), 1 = whitelist, 2 = black list)
     Return: frequency and filter_type
     """
+    if rospy.has_param('monitor_mode'):
+	global monitor_mode
+        monitor_mode = rospy.get_param('monitor_mode')
+    else:
+	global monitor_mode
+        monitor_mode = 1
     if rospy.has_param('node_ressource_monitor/frequency'):
         frequency = rospy.get_param('node_ressource_monitor/frequency')
     else:
@@ -144,7 +150,7 @@ def children_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def cmdline_to_monitor(value, name):
     rospy.loginfo("cmdline: " + str(value))
@@ -153,7 +159,7 @@ def cmdline_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def connections_to_monitor(value, name):
     rospy.loginfo("connections: " + str(value))
@@ -162,7 +168,7 @@ def connections_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def cpu_affinity_to_monitor(value, name):
     rospy.loginfo("cpu_affinity: " + str(value))
@@ -171,7 +177,7 @@ def cpu_affinity_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def cpu_percent_to_monitor(value, name):
     rospy.loginfo("cpu_percent: " + str(value))
@@ -180,7 +186,7 @@ def cpu_percent_to_monitor(value, name):
     monitor_unit = "%"
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def cpu_times_to_monitor(value, name):
     rospy.loginfo("cpu_times: " + str(value))
@@ -189,7 +195,7 @@ def cpu_times_to_monitor(value, name):
     monitor_unit = "sec"
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def create_time_to_monitor(value, name):
     rospy.loginfo("create_time: " + str(value))
@@ -198,7 +204,7 @@ def create_time_to_monitor(value, name):
     monitor_unit = "ms"
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def cwd_to_monitor(value, name):
     rospy.loginfo("cwd: " + str(value))
@@ -207,7 +213,7 @@ def cwd_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def exe_to_monitor(value, name):
     rospy.loginfo("exe-path: " + str(value))
@@ -216,7 +222,7 @@ def exe_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def gids_to_monitor(value, name):
     rospy.loginfo("gids: " + str(value))
@@ -225,7 +231,7 @@ def gids_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def io_counters_to_monitor(value, name):
     rospy.loginfo("io_counters: " + str(value))
@@ -234,7 +240,7 @@ def io_counters_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def ionice_to_monitor(value, name):
     rospy.loginfo("ionice: " + str(value))
@@ -243,7 +249,7 @@ def ionice_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def is_running_to_monitor(value, name):
     rospy.loginfo("is_running: " + str(value))
@@ -252,7 +258,7 @@ def is_running_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def memory_info_to_monitor(value, name):
     """
@@ -265,7 +271,7 @@ def memory_info_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
     rospy.loginfo("memory_info_rss: " + str(value.rss))
     monitor_string = name + "/memory_info_rss"
@@ -273,7 +279,7 @@ def memory_info_to_monitor(value, name):
     monitor_unit = "byte"
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
     rospy.loginfo("memory_info_vms: " + str(value.vms))
     monitor_string = name + "/memory_info_vms"
@@ -281,7 +287,7 @@ def memory_info_to_monitor(value, name):
     monitor_unit = "byte"
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def memory_info_ex_to_monitor(value, name):
     rospy.loginfo("memory_info_ex: " + str(value))
@@ -290,7 +296,7 @@ def memory_info_ex_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def memory_maps_to_monitor(value, name):
     rospy.loginfo("memory_maps: " + str(value))
@@ -299,7 +305,7 @@ def memory_maps_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def memory_percent_to_monitor(value, name):
     rospy.loginfo("memory_percent: " + str(value))
@@ -308,7 +314,7 @@ def memory_percent_to_monitor(value, name):
     monitor_unit = "%"
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def name_to_monitor(value, name):
     rospy.loginfo("name: " + str(value))
@@ -317,7 +323,7 @@ def name_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def nice_to_monitor(value, name):
     rospy.loginfo("nice: " + str(value))
@@ -326,7 +332,7 @@ def nice_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def num_ctx_switches_to_monitor(value, name):
     """
@@ -339,14 +345,14 @@ def num_ctx_switches_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
     rospy.loginfo("voluntary_ctx_switches: " + str(value.voluntary))
     monitor_string = name + "/num_ctx_switches_voluntary"
     monitor_value = str(value.voluntary)
     monitor_unit = "ctx_switches"
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
     rospy.loginfo("involuntary_ctx_switches: " + str(value.involuntary))
     monitor_string = name + "/num_ctx_switches_involuntary"
@@ -354,7 +360,7 @@ def num_ctx_switches_to_monitor(value, name):
     monitor_unit = "ctx_switches"
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def num_fds_to_monitor(value, name):
     rospy.loginfo("num_fds: " + str(value))
@@ -363,7 +369,7 @@ def num_fds_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def num_handles_to_monitor(value, name):
     rospy.loginfo("num_handles: " + str(value))
@@ -372,7 +378,7 @@ def num_handles_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def num_threads_to_monitor(value, name):
     rospy.loginfo("num_threads: " + str(value))
@@ -381,7 +387,7 @@ def num_threads_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def open_files_to_monitor(value, name):
     rospy.loginfo("open_files: " + str(value))
@@ -390,7 +396,7 @@ def open_files_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def parent_to_monitor(value, name):
     rospy.loginfo("parent: " + str(value))
@@ -399,7 +405,7 @@ def parent_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def pid_to_monitor(value, name):
     rospy.loginfo("pid: " + str(value))
@@ -408,7 +414,7 @@ def pid_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def ppid_to_monitor(value, name):
     rospy.loginfo("ppid: " + str(value))
@@ -417,7 +423,7 @@ def ppid_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def rlimit_to_monitor(value, name):
     rospy.loginfo("rlimit: " + str(value))
@@ -426,7 +432,7 @@ def rlimit_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def status_to_monitor(value, name):
     rospy.loginfo("status: " + str(value))
@@ -435,7 +441,7 @@ def status_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def terminal_to_monitor(value, name):
     rospy.loginfo("terminal: " + str(value))
@@ -444,7 +450,7 @@ def terminal_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def threads_to_monitor(value, name):
     rospy.loginfo("threads: " + str(value))
@@ -453,7 +459,7 @@ def threads_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def uids_to_monitor(value, name):
     rospy.loginfo("uids: " + str(value))
@@ -462,7 +468,7 @@ def uids_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl,monitor_mode)
 
 def username_to_monitor(value, name):
     rospy.loginfo("username: " + str(value))
@@ -471,7 +477,7 @@ def username_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl,monitor_mode)
 
 """
 This dictionary maps the keys of node_value_filter to the corrseponding

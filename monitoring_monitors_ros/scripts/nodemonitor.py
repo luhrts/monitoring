@@ -10,6 +10,7 @@ def nodemonitor():
     try:
         frequency = rospy.get_param(rospy.get_name() + '/frequency')
         nodes = set(rospy.get_param(rospy.get_name() + '/nodes'))
+        monitor_mode = rospy.get_param(rospy.get_name() + '/monitor_mode')
     except KeyError:
         print "value not set"
         quit()
@@ -28,7 +29,7 @@ def nodemonitor():
         for node in nodes:
             if not rosnode_ping(node, 1):
                 rospy.logwarn("Can not ping node: %s", node)
-                monitor.addValue(node, "node unavailable", "", 0.5)
+                monitor.addValue(node, "node unavailable", "", 0.5 , monitor_mode)
 
 
         rate.sleep()

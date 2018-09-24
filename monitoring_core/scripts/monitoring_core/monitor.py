@@ -28,6 +28,13 @@ class Monitor(object):
         self.is_initialised = False
         self.autoPublishing = autoPublishing
 
+
+
+       ##aggregation##
+	self.pub_times = 0
+	self.aggregation_dict = {}
+	self.aggregation_dict[self.host_name + self.node_name] = {}
+
     def init_ros(self):
         self.pub = rospy.Publisher('/monitoring', MonitoringArray, queue_size=1)
 
@@ -49,20 +56,59 @@ class Monitor(object):
     def timercallback(self, event):
         self.publish()
 
-    def addValue(self, key, value, unit, errorlevel):
+    def addValue(self, key, value, unit, errorlevel, aggregation):
         if not self.is_initialised:
             self.init_ros()
 
         # Check if key contains whitespace
         if " " in key:
             rospy.logwarn("[%s] whitespaces are not allowed in monitoring keys!", self.node_name)
-
-        kv = KeyValue()
-        kv.key = str(key)
-        kv.value = str(value)
-        kv.unit = str(unit)
-        kv.errorlevel = errorlevel
-        self.ma.info[0].values.append(kv)
+	kv = KeyValue()
+	if (self.host_name + self.node_name) in self.aggregation_dict:
+	    if key in self.aggregation_dict[self.host_name + self.node_name]:
+	        if aggregation == 5:##AggregationStrategies.AVG
+	            self.aggregation_dict[self.host_name + self.node_name][key].num += 1
+	            self.aggregation_dict[self.host_name + self.node_name][key].Value = value
+	            self.aggregation_dict[self.host_name + self.node_name][key].sum += value
+	            kv.key = str(key)
+	            kv.value = str(aggregation_dict[self.host_name + self.node_name][key].Sum/aggregation_dict[self.host_name + self.node_name][key].num)
+	            kv.unit = str(unit)
+	            kv.errorlevel = errorlevel
+	        elif aggregation == 2 and self.pub_times == 0:#AggregationStrategies.FIRST
+	            kv.key = str(key)
+	            kv.value = str(value)
+	            kv.unit = str(unit)
+	            kv.errorlevel = errorleve
+	            self.pub_times = 1
+	        elif aggregation == 4:##AggregationStrategies.MIN
+	            if value > aggregation_dict[self.host_name + self.node_name][key].value:
+	                self.aggregation_dict[self.host_name + self.node_name][key].Value= value
+	            kv.key = str(key)
+	            kv.value = str(aggregation_dict[self.host_name + self.node_name][key].value)
+	            kv.unit = str(unit)
+	            kv.errorlevel = errorleve
+	        elif aggregation == 3:##AggregationStrategies.MIN
+		    rospy.loginfo("value: " + str(aggregation_dict[self.host_name + self.node_name][key].Value))
+	            if value < aggregation_dict[key].Value:
+	                self.aggregation_dict[key].Value= value
+	            kv.key = str(key)
+	            kv.value = str(aggregation_dict[self.host_name + self.node_name][key].value)
+	            kv.unit = str(unit)
+	            kv.errorlevel = errorleve
+	        elif aggregation == 1:##AggregationStrategies.LAST
+	            print 'in'
+	            kv.key = str(key)
+	            kv.value = str(value)
+	            kv.unit = str(unit)
+	            kv.errorlevel = errorlevel
+	        self.ma.info[0].values.append(kv)
+	    else:
+	        self.aggregation_dict[self.host_name + self.node_name][key] = {'num' : 0 , 'Value' : 0, 'Sum' : 0}
+	        kv.key = str(key)
+	        kv.value = str(value)
+	        kv.unit = str(unit)
+	        kv.errorlevel = errorlevel
+	        self.ma.info[0].values.append(kv)
 
     def publish(self):
         self.ma.header.stamp = rospy.Time.now()
