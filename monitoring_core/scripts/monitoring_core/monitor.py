@@ -59,7 +59,6 @@ class Monitor(object):
     def addValue(self, key, value, unit, errorlevel, aggregation):
         if not self.is_initialised:
             self.init_ros()
-
         # Check if key contains whitespace
         if " " in key:
             rospy.logwarn("[%s] whitespaces are not allowed in monitoring keys!", self.node_name)
@@ -96,7 +95,6 @@ class Monitor(object):
 	            kv.unit = str(unit)
 	            kv.errorlevel = errorleve
 	        elif aggregation == 1:##AggregationStrategies.LAST
-	            print 'in'
 	            kv.key = str(key)
 	            kv.value = str(value)
 	            kv.unit = str(unit)

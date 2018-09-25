@@ -44,7 +44,7 @@ def topicmonitor():
             if n_ == 0:  # no mis received, division by 0 catching
                 rospy.logwarn("no new miS for topic %s", entry['name'])
                 value = "Topic " + entry['name'] + " sends no data"
-                monitor.addValue("no topic", value, "", 0.3)
+                monitor.addValue("no topic", value, "", 0.3, 1)
                 continue
 # TODO this is mean overall time. Needs mean over since last seconds
             mean = sum(hz_monitors[entry['name']].times[-last_xvalues_for_calc:]) / last_xvalues_for_calc
@@ -52,7 +52,7 @@ def topicmonitor():
             if entry['frequency'] - 0.1*freq > freq:
                 rospy.logwarn("Frequency of %s is to low: Expected: %f Actual: %f", entry['name'], entry['frequency'], freq)
                 value = "Topic " + entry['name'] + " is on " + str(freq) + "Hz, Expected: " +  str(entry['frequency'])
-                monitor.addValue("slow topic", value, "", 0.3)
+                monitor.addValue("slow topic", value, "", 0.3, 1)
 
 
         rate.sleep()

@@ -2,4 +2,4 @@ frequency: 1
 # 0 = default(list all), 1 = whitelist, 2 = blacklist
 filter_type: 1
 
-monitor_mode: 5
+monitor_mode: 1
