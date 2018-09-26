@@ -21,6 +21,7 @@ enum AggregationStrategies{
 struct Sum{
   float sum;
   int num;
+  ros::Time begin_avg_time;
 };
 
 class Monitor {
@@ -46,7 +47,7 @@ private:
     void timerCallback(const ros::TimerEvent& te);
 
     monitoring_msgs::MonitoringArray ma;
-    monitoring_msgs::MonitoringArray ma_for_agg;
+    monitoring_msgs::MonitoringArray ma_for_pub;
     std::string node_name_;
     std::string monitor_description_;
     int miIndex;
