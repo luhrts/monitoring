@@ -20,6 +20,7 @@ import rosnode
 
 
 from monitoring_core.monitor import Monitor
+from monitoring_core.monitor import AggregationStrategies
 
 
 ID = "NODEINFO"

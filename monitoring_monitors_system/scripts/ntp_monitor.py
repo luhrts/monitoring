@@ -3,6 +3,7 @@
 from time import ctime
 import rospy
 from monitoring_core.monitor import Monitor
+from monitoring_core.monitor import AggregationStrategies
 
 import ntplib
 
@@ -20,11 +21,10 @@ if __name__ == '__main__':
                 response = ntp_client.request(server)
                 monitor.addValue(server+"/ntp_offset", response.offset, "s", 0.0, 1)
                 monitor.addValue(server+"/ntp_version", response.version, "", 0.0, 1)
-                monitor.addValue(server+"/ntp_time", ctime(response.tx_time), "", 0.0, 1)
-                monitor.addValue(server+"/ntp_time_unix", response.tx_time, "", 0.0, 1)
-                monitor.addValue(server+"/ntp_leap", ntplib.leap_to_text(response.leap), "", 0.0, 1)
-                monitor.addValue(server+"/ntp_root_delay", response.root_delay, "s", 0.0, 1)
+                monitor.addValue(server+"/ntp_time", ctime(response.tx_time), "", 0.0, 2)
+                monitor.addValue(server+"/ntp_time_unix", response.tx_time, "", 0.0, 3)
+                monitor.addValue(server+"/ntp_leap", ntplib.leap_to_text(response.leap), "", 0.0, 4)
+                monitor.addValue(server+"/ntp_root_delay", response.root_delay, "s", 0.0, 5)
             except (ntplib.NTPException, ntplib.socket.gaierror):
                 monitor.addValue(server+"/ntp_error", "Server not reachable", "", 1.0, 1)
-
         rate.sleep()
