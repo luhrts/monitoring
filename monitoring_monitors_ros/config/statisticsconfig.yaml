@@ -1,15 +1,15 @@
 monitoring:
   frequency: 1
 timeTilDelete: 3
-topics: [turtlesim]
+topics: [monitoring]
 
-turtlesim:
-  topic: /monitoring
-  source: /monitor_gui
+monitoring:
+  topic: /monitoring/gui
+  source: /gui_msg_concat_node
   destination: /statistics_monitoring
-  frequency: 2
+  frequency: 1
+  dFrequency: 0.5
   size: 0
-  dFrequency: 1
   dSize: 1
   type: geometry_msgs::Twist
   errorlevel: 0.5

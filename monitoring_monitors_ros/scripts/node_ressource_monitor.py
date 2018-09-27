@@ -90,9 +90,13 @@ def gather_info():
     """
     node_list = get_node_list()
     for i in node_list:
+        if rospy.is_shutdown():
+            break
         try:
             print_to_console_and_monitor(i.name, i.pid)
         except Exception:
+            if rospy.is_shutdown():
+                break
             rospy.logerr(traceback.format_exc())
             rospy.logerr("----------NO_SUCH_PROCESS_ERROR---------------")
 
