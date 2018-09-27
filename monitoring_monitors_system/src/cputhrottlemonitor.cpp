@@ -39,11 +39,23 @@
 #include "monitoring_core/monitor.h"
 
 
-int readMaxCPUFrequency(int cpuNumb) {
+int readScalingMaxCPUFrequency(int cpuNumb) {
   char path[80];
   FILE* file;
   sprintf(path, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_max_freq", cpuNumb);
-//  ROS_INFO("checking: %s", path);
+  //  ROS_INFO("checking: %s", path);
+  file = fopen(path, "r");
+  int input = 0;
+  fscanf(file, "%d", &input);
+  fclose(file);
+  return input;
+}
+
+int readMaxCPUFrequency(int cpuNumb) {
+  char path[80];
+  FILE* file;
+  sprintf(path, "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq", cpuNumb);
+  //  ROS_INFO("checking: %s", path);
   file = fopen(path, "r");
   int input = 0;
   fscanf(file, "%d", &input);
@@ -55,7 +67,7 @@ int readCurCPUFrequency(int cpuNumb) {
   char path[80];
   FILE* file;
   sprintf(path, "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_cur_freq", cpuNumb);
-//  ROS_INFO("checking: %s", path);
+  //  ROS_INFO("checking: %s", path);
   file = fopen(path, "r");
   int input = 0;
   fscanf(file, "%d", &input);
@@ -91,13 +103,15 @@ int main(int argc, char **argv)
   {
     for(int i=0; i<numCPU; i++) {
       float freq = readCurCPUFrequency(i);
+      float max_freq = readScalingMaxCPUFrequency(i);
 
+      msg.addValue("cpu" + std::to_string(i) + "/frequency", freq/1000/1000, "GHz", 0.0);
 
-      if(maxFrequencys[i]-freq>10) {
-
-        msg.addValue("cpu" + std::to_string(i) + "/frequency", freq, "Hz", 0.4);
+      if(fabs(maxFrequencys[i]-max_freq) > 1.0) { // evaluate to error since max_freq is not a
+        msg.addValue("cpu" + std::to_string(i) + "/max_freq",  max_freq/1000/1000, "GHz", 0.4);
       } else {
-        msg.addValue("cpu" + std::to_string(i) + "/frequency", freq, "Hz", 0.0);
+        msg.addValue("cpu" + std::to_string(i) + "/max_freq",  max_freq/1000/1000, "GHz", 0.0);
+
       }
     }
 

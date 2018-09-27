@@ -9,7 +9,5 @@ node_ressource_monitor:
     - exe
     - cpu_percent
     - memory_percent
-
-
 monitoring:
     frequency: 2
