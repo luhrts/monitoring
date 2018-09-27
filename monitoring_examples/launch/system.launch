@@ -23,5 +23,8 @@
     <node pkg="monitoring_monitors_system" type="cpu_frequency_monitor_node" name="cpu_frequency_monitor_node" 	output="screen">
     </node>
 
+    <node pkg="monitoring_monitors_system" type="ping_monitor" name="ping_monitor" 	output="screen">
+    </node>
+
 
 </launch>

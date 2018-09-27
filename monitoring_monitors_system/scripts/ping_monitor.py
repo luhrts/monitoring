@@ -71,6 +71,9 @@
 
 import os, sys, socket, struct, select, time, datetime
 
+import rosnode
+
+
 default_timer = time.time
 
 # From /usr/include/linux/icmp.h; your milage may vary.
@@ -324,5 +327,7 @@ def verbose_ping(dest_addr, timeout = 2, count = 4):
 if __name__ == '__main__':
     #verbose_ping("130.75.137.10")
     #verbose_ping("130.75.137.127")
+    machines = rosnode.get_machines_by_nodes()
 
-    verbose_ping("google.de")
+    for machine in machines:
+        verbose_ping(machine)
