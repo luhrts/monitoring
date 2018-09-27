@@ -132,8 +132,8 @@ float CpuMonitor::getCurrentCpuLoad()
   fscanf(file, "cpu %llu %llu %llu %llu", &totalUser, &totalUserLow, &totalSys, &totalIdle);
   fclose(file);
 
-//    ROS_INFO("cpu %llu %llu %llu %llu", totalUser, totalUserLow,
-//            totalSys, totalIdle);
+  //    ROS_INFO("cpu %llu %llu %llu %llu", totalUser, totalUserLow,
+  //            totalSys, totalIdle);
 
   if (totalUser < lastTotalUser[0] || totalUserLow < lastTotalUserLow[0] || totalSys < lastTotalSys[0]
       || totalIdle < lastTotalIdle[0])
@@ -266,17 +266,17 @@ int main(int argc, char **argv)
     if (bPercent)
     {
       float cpuload = cpum.getCurrentCpuLoad();
-      msg.addValue("overall cpu load", cpuload, "%", 0);
+      msg.addValue("load", cpuload, "%", 0);
     }
     if (bAvarage)
     {
       float cpuavg = cpum.getLoadAvg();
-      msg.addValue("cpu load avg", cpuavg, "", 0);
+      msg.addValue("load_avg", cpuavg, "", 0);
     }
     if (bTemp)
     {
       float temp = cpum.getCPUTemp();
-      msg.addValue("CPU Temperatur", temp, "C", 0);
+      msg.addValue("temp", temp, "C", 0);
     }
     if (bPercentPerCore)
     {
@@ -285,7 +285,7 @@ int main(int argc, char **argv)
         double pCore = cpum.getCPUCoreLoad(i);
 
         char key[40];
-        sprintf(key, "percentage load CoreNo: %d", i);
+        sprintf(key, "load_core_%d", i);
         msg.addValue(key, pCore, "%", 0);
       }
     }

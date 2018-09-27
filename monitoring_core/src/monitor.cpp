@@ -80,6 +80,11 @@ void Monitor::timerCallback(const ros::TimerEvent& te) {
 void Monitor::addValue(std::string key, std::string value, std::string unit, float errorlevel, AggregationStrategies aggregation)
 {
 
+  //check if key contains whitespace
+  if (key.find_first_of("\t\n ") != std::string::npos){
+    ROS_WARN("key: %s, contains a illegal char (whitespace, tab, new_line)", key.c_str());
+  }
+
   //check if the value is already beeing monitored
   bool found = false;
   for (int i = 0; i < ma.info[miIndex].values.size(); ++i)
