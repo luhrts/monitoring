@@ -64,7 +64,6 @@ def get_node_list():
     for node_name in node_array_temp:
         try:
             node_api = rosnode.get_api_uri(rospy.get_master(), node_name)
-            rospy.loginfo(node_name)
             code, msg, pid = xmlrpclib.ServerProxy(node_api[2]).getPid(ID)
             node_list.append(NODE(node_name, pid))
             rospy.logdebug("Node_name: " + node_list[j].name + " Node_PID: " + str(node_list[j].pid))
@@ -93,11 +92,9 @@ def gather_info():
     for i in node_list:
         try:
             print_to_console_and_monitor(i.name, i.pid)
-            rospy.loginfo("------------------------------")
         except Exception:
             rospy.logerr(traceback.format_exc())
             rospy.logerr("----------NO_SUCH_PROCESS_ERROR---------------")
-    rospy.loginfo("=============================")
 
 def print_to_console_and_monitor(name, pid):
     """
