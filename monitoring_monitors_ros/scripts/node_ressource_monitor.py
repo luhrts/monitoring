@@ -492,7 +492,8 @@ if __name__ == '__main__':
     rospy.init_node("node_ressource_monitor", anonymous=True)
     FREQUENCY, FILTER_TYPE_ = init()
     RATE = rospy.Rate(FREQUENCY)
-
+    # create MONITOR_ object the node had no name ....
+    MONITOR_ = Monitor("node_ressource_monitor")
     while not rospy.is_shutdown():
         try:
             gather_info()
