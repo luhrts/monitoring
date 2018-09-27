@@ -65,15 +65,15 @@ int main(int argc, char **argv)
     /* OUTPUT: kb_main_total, kb_main_used, kb_main_free,
      kb_main_shared, kb_main_buffers, kb_main_cached*/
 
-   // char value[200];
+    // char value[200];
     if (bUsed)
     {
-      msg.addValue("RAM used", kb_main_used, "kb", 0);
+      msg.addValue("total_used", kb_main_used, "kb", 0);
     }
     if (bPercent)
     {
       float perc = ((float)kb_main_used / (float)kb_main_total) * 100.0;
-      msg.addValue("RAM % used", perc, "%", 0);
+      msg.addValue("percentage_used", perc, "%", 0);
     }
     ros::spinOnce();
 
