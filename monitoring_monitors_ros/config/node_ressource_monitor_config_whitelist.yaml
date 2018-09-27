@@ -3,3 +3,4 @@ frequency: 1
 filter_type: 1
 
 monitor_mode: 5
+#AggregationStrategies mode: 1 LAST, 2 FIRST, 3 MIN, 4 MAX, 5 AVG#
