@@ -9,20 +9,21 @@ int main(int argc, char* argv[])
   try
   {
     ros::init(argc, argv, "ping_monitor");
+    ros::NodeHandle nh;
+    ros::NodeHandle private_nh("~");
 
     boost::asio::io_service io_service;
 
     std::vector<std::string> ros_machines;
-    ros_machines.push_back("google.de");
-    ros_machines.push_back("130.75.137.10");
+    private_nh.getParam("machines", ros_machines);
 
     std::vector<pinger*> pingers;
 
     for(std::string machine : ros_machines){
+      ROS_DEBUG("Pinging: %s", machine.c_str());
       pingers.push_back(new pinger(io_service, machine.c_str()));
     }
 
-    ros::NodeHandle nh;
     Monitor monitor(nh, "ping_monitor");
 
     while (ros::ok()) {

@@ -70,7 +70,7 @@ target_link_libraries(ping_monitor ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 string(ASCII 27 ESCAPE)
 add_custom_command(
   OUTPUT message
-  COMMAND sudo -n sh -c 'cd ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION}\; chown root.root ping_monitor\; chmod 4755 ping_monitor' || (echo "${ESCAPE}[34m#\ type\ following\ command\ before\ execute\ ping_monitor...\ sudo\ chown\ root.root\ ./bin/ping_monitor\;\ sudo\ chmod 4755\ ./bin/ping_monitor${ESCAPE}[0m")
+  COMMAND sudo -n sh -c 'cd ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION}\; chown root.root ping_monitor\; chmod 4755 ping_monitor' || (echo "${ESCAPE}[34m#\ type\ following\ command\ before\ execute\ ping_monitor...\ sudo\ chown\ root.root\ devel/lib/monitoring_monitors_system/ping_monitor\;\ sudo\ chmod 4755\ devel/lib/monitoring_monitors_system/ping_monitor${ESCAPE}[0m")
   DEPENDS bin/ping_monitor)
 add_custom_target(message_all ALL DEPENDS message)
 
