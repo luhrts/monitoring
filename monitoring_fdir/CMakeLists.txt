@@ -21,15 +21,13 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-
-
 add_library(fdiSDK
-  src/fdi/fdiSDK.cpp
-  src/fdi/configinterface.cpp
-  src/fdi/std_validator/max.cpp
-  src/fdi/std_validator/min.cpp
-  src/fdi/std_validator/between.cpp
-  src/fdi/std_validator/nodeavailable.cpp
+    src/fdi/configinterface.cpp
+    src/fdi/fdiSDK.cpp
+    src/fdi/std_validator/between.cpp
+    src/fdi/std_validator/max.cpp
+    src/fdi/std_validator/min.cpp
+    src/fdi/std_validator/nodeavailable.cpp
 )
 
 target_link_libraries(fdiSDK
@@ -39,12 +37,12 @@ add_dependencies(fdiSDK ${catkin_EXPORTED_TARGETS})
 
 
 add_library(recoverySDK
-  src/recovery/recoverysdk.cpp
-  src/recovery/errorhandlerinterface.cpp
-  src/recovery/std_handler/restartnodehandler.cpp
-  src/recovery/std_handler/stoplaunchfile.cpp
-  src/recovery/std_handler/outputerrormessage.cpp
-  src/recovery/std_handler/error_to_speech.cpp
+    src/recovery/errorhandlerinterface.cpp
+    src/recovery/recoverysdk.cpp
+    src/recovery/std_handler/error_to_speech.cpp
+    src/recovery/std_handler/outputerrormessage.cpp
+    src/recovery/std_handler/restartnodehandler.cpp
+    src/recovery/std_handler/stoplaunchfile.cpp
 )
 target_link_libraries(recoverySDK
     ${catkin_LIBRARIES}
@@ -68,7 +66,7 @@ target_link_libraries(recovery_example_node
   recoverySDK
 )
 
-install(TARGETS recoverySDK fdiSDK
+install(TARGETS fdiSDK recoverySDK
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

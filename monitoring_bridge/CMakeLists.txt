@@ -9,10 +9,9 @@ project(monitoring_bridge)
 ## is used, also find other catkin packages
 
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
   monitoring_core
   monitoring_msgs
-  
+  roscpp
 )
 
 catkin_package(
@@ -24,7 +23,6 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
 )
-
 
 add_executable(monitoring_to_diagnostics src/monitoringtodiagnostics.cpp)
 target_link_libraries(monitoring_to_diagnostics
@@ -38,7 +36,7 @@ target_link_libraries(diagnostics_to_monitoring
 )
 add_dependencies(diagnostics_to_monitoring ${catkin_EXPORTED_TARGETS})
 
-install(TARGETS monitoring_to_diagnostics diagnostics_to_monitoring 
+install(TARGETS diagnostics_to_monitoring monitoring_to_diagnostics
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
