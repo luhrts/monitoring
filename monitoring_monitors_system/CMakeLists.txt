@@ -74,11 +74,6 @@ add_custom_command(
   DEPENDS bin/ping_monitor)
 add_custom_target(message_all ALL DEPENDS message)
 
-install(
-  PROGRAMS ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION}/ping_monitor
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-  PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE SETUID
-)
 install(CODE
   "execute_process(COMMAND sudo -n sh -c \"cd \$ENV{DESTDIR}/${CMAKE_INSTALL_PREFIX}/${CATKIN_PACKAGE_BIN_DESTINATION} && chown root.root ping_monitor && ls -al ping_monitor && chmod 4755 ping_monitor && ls -al ping_monitor\")
 ")
