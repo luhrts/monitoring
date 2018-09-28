@@ -97,8 +97,8 @@ def gather_info():
         except Exception:
             if rospy.is_shutdown():
                 break
-            rospy.logerr(traceback.format_exc())
-            rospy.logerr("----------NO_SUCH_PROCESS_ERROR---------------")
+            rospy.logerr("Node: %s (pid: %d), not found - no such process", i.name, i.pid)
+
 
 def print_to_console_and_monitor(name, pid):
     """
