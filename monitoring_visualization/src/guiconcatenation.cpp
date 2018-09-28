@@ -49,11 +49,14 @@ void GuiConcatenation::monitor_cb(monitoring_msgs::MonitoringArray ma) {
 
 			gi.name = name;
 			//gi.description = mi.values[i].;
+
 			gi.value = mi.values[i].value;
 			gi.errorlevel = mi.values[i].errorlevel;
 			gi.unit = mi.values[i].unit;
                         meanerror += mi.values[i].errorlevel;
-
+                        if((gi.unit == "Hz") || (gi.unit == "byte")){
+                            suit_unit(gi.value, gi.value);
+                        }
 			msg.infos.push_back(gi);
 
 
@@ -65,6 +68,83 @@ void GuiConcatenation::monitor_cb(monitoring_msgs::MonitoringArray ma) {
     gi1.unit = "";
     msg.infos.push_back(gi1);
 	}
+
+}
+void GuiConcatenation::suit_unit(std::string& value, std::string& unit){
+    double double_value = atof(unit.c_str());
+    int i;
+    if(unit == "Hz"){
+        for(i = 1;double_value > 1000;i++){
+        double_value = double_value/1000;
+        };
+        switch (i) {
+        case 1:
+            break;
+        case 2:{
+            unit = "kHz";
+            value = double_to_string(double_value);
+            break;
+        }
+        case 3:{
+            unit = "MHz";
+            value = double_to_string(double_value);
+            break;
+        }
+        case 4:{
+            unit = "GHz";
+            value = double_to_string(double_value);
+            break;
+        }
+        default:{
+            std::string poly_num = int_to_string(i);
+            unit = "E + " + poly_num + " Hz";
+            break;
+        }
+        }
+    }
+    else if(unit == "byte"){
+        for(i = 1;double_value > 1024;i++){
+        double_value = double_value/1024;
+        };
+        switch (i) {
+        case 1:
+            break;
+        case 2:{
+            value = double_to_string(double_value);
+            unit = "KB";
+            break;
+        }
+        case 3:{
+            value = double_to_string(double_value);
+            unit = "MB";
+            break;
+        }
+        case 4:{
+            value = double_to_string(double_value);
+            unit = "GB";
+            break;
+        }
+        default:
+            std::string poly_num = int_to_string(i);
+            unit = "E + " + poly_num + " byte";
+            break;
+        }
+     }
+
+
+}
+std::string GuiConcatenation::int_to_string(int int_value){
+    char char_value[1000];
+    sprintf(char_value, "%d", int_value);
+    std::string str = char_value;
+    return str;
+
+}
+std::string GuiConcatenation::double_to_string(double double_value){
+    char char_value[1000];
+    sprintf(char_value, "%4.4f", double_value);
+    std::string str = char_value;
+    return str;
 
 }
 

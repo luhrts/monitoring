@@ -13,6 +13,8 @@
 #include "monitoring_msgs/Error.h"
 #include "monitoring_msgs/Gui.h"
 
+
+
 class GuiConcatenation {
 public:
 	GuiConcatenation(ros::NodeHandle& n);
@@ -29,8 +31,10 @@ private:
    * @param ma
    */
 
-
+  void suit_unit(std::string& value, std::string& unit);
   void monitor_cb(monitoring_msgs::MonitoringArray ma);
+  std::string int_to_string(int int_num);
+  std::string double_to_string(double double_num);
   /**
    * @brief error_cb callback for error msgs
    * @param er
