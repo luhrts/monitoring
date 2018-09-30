@@ -1,15 +1,11 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>monitoring_visualization</name>
-  <version>0.0.0</version>
+  <version>1.0.0</version>
   <description>The monitoring_visualization package</description>
-
-  <maintainer email="schotte93@gmail.com">Matthias Jakob</maintainer>
-
+  <maintainer email="carstensen@rts.uni-hannover.de">Jan Carstensen</maintainer>
 
   <license>TODO</license>
-
-
 
   <author email="schotte93@gmail.com">Matthias Jakob</author>
 
@@ -24,10 +20,6 @@
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
 
-
-  <!-- The export tag contains other, unspecified, tags -->
   <export>
-    <!-- Other tools can request additional information be placed here -->
-
   </export>
 </package>

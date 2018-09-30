@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>monitoring_bridge</name>
-  <version>0.0.0</version>
-  <description>The monitoring_bridge package</description>
+  <version>1.0.0</version>
+  <description>The monitoring_bridge package, contains a bridges to related packages e.g. ROS diagnostics</description>
 
-  <maintainer email="schotte93@gmail.com">Matthias Jakob</maintainer>
+  <maintainer email="carstensen@rts.uni-hannover.de">Jan Carstensen</maintainer>
   <license>TODO</license>
-  <author email="schotte93@gmail.com">Matthias Jakob</author> -->
+  <author email="schotte93@gmail.com">Matthias Jakob</author>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>monitoring_msgs</build_depend>
@@ -22,9 +22,6 @@
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
 
-
-
   <export>
-
   </export>
 </package>

@@ -1,25 +1,15 @@
 monitoring:
   frequency: 1
 timeTilDelete: 3
-topics: [scan_1, turtlesim]
+topics: [monitoring]
 
-scan_1:
-  topic: /scan
-  source: velodyne
-  destination: pc_to_pc2
-  frequency: 10
+monitoring:
+  topic: /monitoring/gui
+  source: /gui_msg_concat_node
+  destination: /statistics_monitoring
+  frequency: 1
+  dFrequency: 0.5
   size: 0
-  dFrequency: 1
-  dSize: 1
-  type: sensor_msgs::Pointcloud
-  errorlevel: 0.7
-turtlesim:
-  topic: /turtle1/cmd_vel
-  source: /teleop_turtle
-  destination: /turtlesim
-  frequency: 2
-  size: 0
-  dFrequency: 1
   dSize: 1
   type: geometry_msgs::Twist
   errorlevel: 0.5

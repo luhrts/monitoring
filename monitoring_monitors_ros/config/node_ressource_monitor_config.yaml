@@ -1,4 +1,4 @@
 frequency: 1
 # 0 = default(list all), 1 = whitelist, 2 = blacklist
-filter_type: 2
+filter_type: 0
 

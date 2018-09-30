@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+from time import ctime
 import rospy
 from monitoring_core.monitor import Monitor
 
 import ntplib
-from time import ctime
+
+import rosnode
 
 if __name__ == '__main__':
     rospy.init_node('ntp_monitor', anonymous=True)
     rate = rospy.Rate(1) # 10hz
     monitor = Monitor("ntp_monitor")
 
-    ntp_servers = rospy.get_param('ntp_servers', ['pool.ntp.org', '130.0.0.0'])
+    ntp_servers = rospy.get_param('ntp_servers', rosnode.get_machines_by_nodes())
     ntp_client = ntplib.NTPClient()
     while not rospy.is_shutdown():
         for server in ntp_servers:

@@ -2,8 +2,8 @@
 <package format="2">
   <name>monitoring</name>
   <version>1.0.0</version>
-  <description>This package allows to monitor a robot system. It supplys different monitors for the computer system and ros</description>
-  <maintainer email="schotte93@gmail.com"></maintainer>
+  <description>This system allows to monitor a robot system. It supplys different monitors for the computer system and ros</description>
+  <maintainer email="carstensen@rts.uni-hannover.de">Jan Carstensen</maintainer>
   <license>TODO</license>
   
   <buildtool_depend>catkin</buildtool_depend>

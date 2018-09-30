@@ -2,7 +2,7 @@
 <package format="2">
   <name>monitoring_core</name>
   <version>0.0.0</version>
-  <description>The monitoring_core package</description>
+  <description>The monitoring_core package contains the libraries for C++ and python. Which help to extend the monitoring functionality</description>
 
   <maintainer email="carstensen@rts.uni-hannover.de">Jan Carstensen</maintainer>
 
@@ -21,6 +21,9 @@
 
   <exec_depend>monitoring_msgs</exec_depend>
   <exec_depend>roscpp</exec_depend>
+
+  <test_depend>rosunit</test_depend>
+  <test_depend>rostest</test_depend>
   
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>monitoring_msgs</build_export_depend>

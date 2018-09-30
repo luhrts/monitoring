@@ -1,14 +1,17 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>monitoring_monitors_ros</name>
-  <version>0.0.0</version>
-  <description>The monitoring_monitors_ros package</description>
+  <version>1.0.0</version>
+  <description>The monitoring_monitors_ros package cotains monitors to observe ros specific parts of the systems e.g.: nodes, topics, tf</description>
 
+  <maintainer email="carstensen@rts.uni-hannover.de">Jan Carstensen</maintainer>
   <maintainer email="schotte93@gmail.com">Matthias Jakob</maintainer>
 
   <license>TODO</license>
 
   <author email="schotte93@gmail.com">Matthias Jakob</author>
+  <author email="carstensen@rts.uni-hannover.de">Jan Carstensen</author>
+  <author email="michael.lange@stud.uni-hannover.de">Michael Lange</author>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>monitoring_core</build_depend>
@@ -20,10 +23,9 @@
   <exec_depend>monitoring_core</exec_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
-
-  <!-- The export tag contains other, unspecified, tags -->
+  <test_depend>rosunit</test_depend>
+  <test_depend>rostest</test_depend>
+  
   <export>
-    <!-- Other tools can request additional information be placed here -->
-
   </export>
 </package>

@@ -1,0 +1,6 @@
+<launch>
+        <node pkg="monitoring_monitors_system" type="ping_monitor" name="ping_monitor" output="screen" respawn="true">
+                <rosparam command="load" file="$(find monitoring_monitors_system)/config/ping_monitor_config.yaml" />
+
+        </node>
+</launch>

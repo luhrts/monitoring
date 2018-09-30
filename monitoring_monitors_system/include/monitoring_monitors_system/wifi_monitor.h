@@ -14,13 +14,6 @@ public:
   ~WifiStrengthMonitor();
 
 private:
-  /**
-   * @brief readWifiStrength uses the tool iwconfig to grep the signal strength
-   * @param wifiInterfaceName name of the interface to control
-   * @return returns the value in dBm
-   */
-  float readWifiStrength(std::string wifiInterfaceName);
-
   Monitor *monitor;
   std::string wifi_interface_name;
 };

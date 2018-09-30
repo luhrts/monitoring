@@ -7,11 +7,11 @@ project(monitoring_bridge)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
+
 find_package(catkin REQUIRED COMPONENTS
-  monitoring_msgs
   monitoring_core
+  monitoring_msgs
   roscpp
-  rospy
 )
 
 catkin_package(
@@ -24,7 +24,6 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-
 add_executable(monitoring_to_diagnostics src/monitoringtodiagnostics.cpp)
 target_link_libraries(monitoring_to_diagnostics
   ${catkin_LIBRARIES}
@@ -36,3 +35,14 @@ target_link_libraries(diagnostics_to_monitoring
   ${catkin_LIBRARIES}
 )
 add_dependencies(diagnostics_to_monitoring ${catkin_EXPORTED_TARGETS})
+
+install(TARGETS diagnostics_to_monitoring monitoring_to_diagnostics
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  PATTERN ".svn" EXCLUDE
+)

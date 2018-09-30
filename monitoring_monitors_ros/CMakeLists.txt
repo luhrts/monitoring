@@ -47,6 +47,20 @@ add_executable(topic_value_monitor src/topic_value_monitor.cpp)
 target_link_libraries(topic_value_monitor
   ${catkin_LIBRARIES}
 )
+ 
+install(TARGETS statistics_monitoring_node tf_monitoring_node topic_value_monitor
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+catkin_install_python(PROGRAMS scripts/node_ressource_monitor.py scripts/nodemonitor.py scripts/topicmonitor.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  PATTERN ".svn" EXCLUDE
+)
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)

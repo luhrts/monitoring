@@ -6,13 +6,13 @@ project(monitoring_core)
 add_compile_options(-std=c++11)
 
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
   monitoring_msgs
+  roscpp
 )
 
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES monitoring_core
+  LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS monitoring_msgs
   DEPENDS
 )
@@ -22,19 +22,30 @@ include_directories(
  ${catkin_INCLUDE_DIRS}
 )
 
-add_library(monitoring_core
+add_library(${PROJECT_NAME}
   src/monitor.cpp
 )
-target_link_libraries(monitoring_core
+target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
 )
-add_dependencies(monitoring_core monitoring_msgs_generate_messages_cpp)
+add_dependencies(${PROJECT_NAME} monitoring_msgs_generate_messages_cpp)
 
 
 catkin_python_setup()
 
 add_executable(performance_monitor_test_node test/src/performance_monitor_test_node.cpp)
-target_link_libraries(performance_monitor_test_node ${catkin_LIBRARIES} monitoring_core)
+target_link_libraries(performance_monitor_test_node ${catkin_LIBRARIES} ${PROJECT_NAME})
+
+install(TARGETS ${PROJECT_NAME}
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}	
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  PATTERN ".svn" EXCLUDE
+)
 
 if(CATKIN_ENABLE_TESTING)
 
@@ -43,13 +54,13 @@ if(CATKIN_ENABLE_TESTING)
     catkin_add_gtest(simple_monitor_test test/src/simple_monitor_test.cpp)
     target_link_libraries(simple_monitor_test
         ${catkin_LIBRARIES}
-        monitoring_core
+        ${PROJECT_NAME}
     )
 
     add_rostest_gtest(performance_monitor_test test/launch/performance_monitor_test.test test/src/performance_monitor_test.cpp)
     target_link_libraries(performance_monitor_test
         ${catkin_LIBRARIES}
-        monitoring_core
+        ${PROJECT_NAME}
     )
 
 endif()

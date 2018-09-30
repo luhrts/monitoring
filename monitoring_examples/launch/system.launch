@@ -1,16 +1,29 @@
 <launch>
 
-<node pkg="monitoring_monitors_system" type="cpu_monitoring_node" name="cpu_monitor" output="screen" respawn="true">
-</node>
+    <node pkg="monitoring_visualization" type="gui_msg_concat_node" name="gui_msg_concat_node" output="screen" respawn="true">
+    </node>
 
-<node pkg="monitoring_monitors_system" type="network_monitoring_node" name="network_monitor" output="screen"  respawn="true">
-</node>
 
-<node pkg="monitoring_monitors_system" type="ram_monitoring_node" name="ram_monitor" output="screen" respawn="true">
-</node>
 
-<node pkg="monitoring_visualization" type="gui_msg_concat_node" name="gui_msg_concat_node" output="screen" respawn="true">
-</node>
+    <include file="$(find monitoring_monitors_system)/launch/cpu_monitor.launch" />
+    <include file="$(find monitoring_monitors_system)/launch/nw_monitor.launch" />
+    <include file="$(find monitoring_monitors_system)/launch/ram_monitor.launch" />
+    <include file="$(find monitoring_monitors_system)/launch/wifi_monitor.launch" />
+    <include file="$(find monitoring_monitors_system)/launch/ping_monitor.launch" />
+
+    <node pkg="monitoring_monitors_system" type="ntp_monitor.py" name="ntp_monitor" 	output="screen">
+    </node>
+
+    <include file="$(find monitoring_monitors_ros)/launch/node_monitor.launch" />
+    <include file="$(find monitoring_monitors_ros)/launch/node_ressource_monitor.launch" />
+    <include file="$(find monitoring_monitors_ros)/launch/statistic_monitor.launch" />
+    <include file="$(find monitoring_monitors_ros)/launch/tf_monitor.launch" />
+    <include file="$(find monitoring_monitors_ros)/launch/topic_monitor.launch" />
+
+
+    <node pkg="monitoring_monitors_system" type="cpu_frequency_monitor_node" name="cpu_frequency_monitor_node" 	output="screen">
+    </node>
+
 
 
 </launch>

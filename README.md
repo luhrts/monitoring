@@ -106,5 +106,6 @@ When monitoring a Value, not all values are required to be transmitted. Therefor
 - MAX 
 - FIRST
 - LAST
+- AVG
 
-Change the monitoring-mode in "guiconcatenationconfig.yaml"
+You can change the mode in every config file.

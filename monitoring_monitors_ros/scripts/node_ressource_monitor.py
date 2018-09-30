@@ -17,7 +17,7 @@ import rospy
 import psutil
 import rosnode
 
-
+from socket import error as socket_error
 
 from monitoring_core.monitor import Monitor
 
@@ -25,12 +25,12 @@ from monitoring_core.monitor import Monitor
 ID = "NODEINFO"
 MONITOR_ = Monitor("node_ressource_monitor")
 
-class NODE:
+class NODE(object):
     def __init__(self, name, pid):
         self.pid = pid
         self.name = name
 
-class FILTER_TYPE:
+class Filter_type(object):
     DEFAULT = 0
     WHITLELIST = 1
     BLACKLIST = 2
@@ -49,7 +49,7 @@ def init():
     if rospy.has_param('node_ressource_monitor/filter_type'):
         filter_type = rospy.get_param('node_ressource_monitor/filter_type')
     else:
-        filter_type = FILTER_TYPE.DEFAULT
+        filter_type = Filter_type.DEFAULT
     return frequency, filter_type
 
 def get_node_list():
@@ -57,17 +57,21 @@ def get_node_list():
     List all ROS Nodes
     Return: List containing ROS Nodes(name, pid)
     """
-    rospy.loginfo("GET_NODE_LIST:")
+    rospy.logdebug("GET_NODE_LIST:")
     node_array_temp = rosnode.get_node_names()
     node_list = []
     j = 0
     for node_name in node_array_temp:
-        node_api = rosnode.get_api_uri(rospy.get_master(), node_name)
-        code, msg, pid = xmlrpclib.ServerProxy(node_api[2]).getPid(ID)
-        node_list.append(NODE(node_name, pid))
-        rospy.loginfo("Node_name: " + node_list[j].name + " Node_PID: " + str(node_list[j].pid))
-        j += 1
-    rospy.loginfo("=============================")
+        try:
+            node_api = rosnode.get_api_uri(rospy.get_master(), node_name)
+            code, msg, pid = xmlrpclib.ServerProxy(node_api[2]).getPid(ID)
+            node_list.append(NODE(node_name, pid))
+            rospy.logdebug("Node_name: " + node_list[j].name + " Node_PID: " + str(node_list[j].pid))
+            j += 1
+        except socket_error as serr:
+             pass
+
+    rospy.logdebug("=============================")
     return node_list
 
 def get_process_info(pid):
@@ -86,13 +90,15 @@ def gather_info():
     """
     node_list = get_node_list()
     for i in node_list:
+        if rospy.is_shutdown():
+            break
         try:
             print_to_console_and_monitor(i.name, i.pid)
-            rospy.loginfo("------------------------------")
         except Exception:
-            rospy.logerr(traceback.format_exc())
-            rospy.logerr("----------NO_SUCH_PROCESS_ERROR---------------")
-    rospy.loginfo("=============================")
+            if rospy.is_shutdown():
+                break
+            rospy.logerr("Node: %s (pid: %d), not found - no such process", i.name, i.pid)
+
 
 def print_to_console_and_monitor(name, pid):
     """
@@ -109,17 +115,29 @@ def print_to_console_and_monitor(name, pid):
         node_process_info = {} #Need to initialize var in order to prevent error
 
     #check if there is a node with the same name in filter config
-    if FILTER_TYPE_ == FILTER_TYPE.WHITLELIST:
+    if FILTER_TYPE_ == Filter_type.WHITLELIST:
         if rospy.has_param('/node_ressource_monitor' + name):
             node_value_filter = rospy.get_param('/node_ressource_monitor' + name)
         else:
             rospy.logwarn(name + " has no filter entry")
             return
+    if FILTER_TYPE_ == Filter_type.BLACKLIST:
+        if rospy.has_param('/node_ressource_monitor' + name):
+            blacklist_value_= rospy.get_param('/node_ressource_monitor' + name)
+	    default_value = {'values':['cpu_affinity', 'cpu_percent', 'cpu_times', 'create_time',
+			     'exe','io_counters', 'memory_info', 'memory_percent', 'name', 'num_ctx_switches', 'status']}
+
+	    for i in blacklist_value_['values']:
+		if i == default_value['values']:
+		    del default_value['values'].i
+	    node_value_filter = default_value
+        else:
+            rospy.logwarn(name + " has no filter entry")
+            return
     #Define DEFAULT values to publish
-    if FILTER_TYPE_ == FILTER_TYPE.DEFAULT:
-        node_value_filter = {'values':['cpu_affinity', 'cpu_percent', 'cpu_times', 
-        'create_time', 'exe', 'io_counters', 'memory_info', 'memory_percent', 'name', 
-        'num_ctx_switches', 'status']}
+    if FILTER_TYPE_ == Filter_type.DEFAULT:
+        node_value_filter = {'values':['cpu_affinity', 'cpu_percent', 'cpu_times', 'create_time',
+			     'exe','io_counters', 'memory_info', 'memory_percent', 'name', 'num_ctx_switches', 'status']}
     #iterate over all keys given for node in node_filter
     for key in node_value_filter.get("values"):
         #if psutil delivers a value for a key, send this value to its dedicated function
@@ -139,7 +157,6 @@ psutil values to monitor functions
 """
 
 def children_to_monitor(value, name):
-    rospy.loginfo("children: " + str(value))
     monitor_string = name + "/children"
     monitor_value = str(value)
     monitor_unit = " "
@@ -148,7 +165,6 @@ def children_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def cmdline_to_monitor(value, name):
-    rospy.loginfo("cmdline: " + str(value))
     monitor_string = name + "/cmdline"
     monitor_value = str(value)
     monitor_unit = " "
@@ -157,7 +173,6 @@ def cmdline_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def connections_to_monitor(value, name):
-    rospy.loginfo("connections: " + str(value))
     monitor_string = name + "/connections"
     monitor_value = str(value)
     monitor_unit = " "
@@ -166,7 +181,6 @@ def connections_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def cpu_affinity_to_monitor(value, name):
-    rospy.loginfo("cpu_affinity: " + str(value))
     monitor_string = name + "/cpu_affinity"
     monitor_value = str(value)
     monitor_unit = " "
@@ -175,7 +189,6 @@ def cpu_affinity_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def cpu_percent_to_monitor(value, name):
-    rospy.loginfo("cpu_percent: " + str(value))
     monitor_string = name + "/cpu_percent"
     monitor_value = str(value)
     monitor_unit = "%"
@@ -184,7 +197,6 @@ def cpu_percent_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def cpu_times_to_monitor(value, name):
-    rospy.loginfo("cpu_times: " + str(value))
     monitor_string = name + "/cpu_times"
     monitor_value = str(value)
     monitor_unit = "sec"
@@ -193,7 +205,6 @@ def cpu_times_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def create_time_to_monitor(value, name):
-    rospy.loginfo("create_time: " + str(value))
     monitor_string = name + "/create_time"
     monitor_value = str(value)
     monitor_unit = "ms"
@@ -202,7 +213,6 @@ def create_time_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def cwd_to_monitor(value, name):
-    rospy.loginfo("cwd: " + str(value))
     monitor_string = name + "/cwd"
     monitor_value = str(value)
     monitor_unit = " "
@@ -211,7 +221,6 @@ def cwd_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def exe_to_monitor(value, name):
-    rospy.loginfo("exe-path: " + str(value))
     monitor_string = name + "/exe"
     monitor_value = str(value)
     monitor_unit = " "
@@ -220,7 +229,6 @@ def exe_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def gids_to_monitor(value, name):
-    rospy.loginfo("gids: " + str(value))
     monitor_string = name + "/gids"
     monitor_value = str(value)
     monitor_unit = " "
@@ -229,7 +237,6 @@ def gids_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def io_counters_to_monitor(value, name):
-    rospy.loginfo("io_counters: " + str(value))
     monitor_string = name + "/io_counters"
     monitor_value = str(value)
     monitor_unit = " "
@@ -238,7 +245,6 @@ def io_counters_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def ionice_to_monitor(value, name):
-    rospy.loginfo("ionice: " + str(value))
     monitor_string = name + "/ionice"
     monitor_value = str(value)
     monitor_unit = " "
@@ -247,7 +253,6 @@ def ionice_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def is_running_to_monitor(value, name):
-    rospy.loginfo("is_running: " + str(value))
     monitor_string = name + "/is_running"
     monitor_value = str(value)
     monitor_unit = " "
@@ -260,7 +265,6 @@ def memory_info_to_monitor(value, name):
     added two additional blocks that divide the value string into one field for
     rss and vms.
     """
-    rospy.loginfo("memory_info: " + str(value))
     monitor_string = name + "/memory_info"
     monitor_value = str(value)
     monitor_unit = " "
@@ -268,15 +272,12 @@ def memory_info_to_monitor(value, name):
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
-    rospy.loginfo("memory_info_rss: " + str(value.rss))
-    monitor_string = name + "/memory_info_rss"
     monitor_value = str(value.rss)
     monitor_unit = "byte"
     monitor_errorlvl = 0
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
-    rospy.loginfo("memory_info_vms: " + str(value.vms))
     monitor_string = name + "/memory_info_vms"
     monitor_value = str(value.vms)
     monitor_unit = "byte"
@@ -285,7 +286,6 @@ def memory_info_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def memory_info_ex_to_monitor(value, name):
-    rospy.loginfo("memory_info_ex: " + str(value))
     monitor_string = name + "/memory_info_ex"
     monitor_value = str(value)
     monitor_unit = " "
@@ -294,7 +294,6 @@ def memory_info_ex_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def memory_maps_to_monitor(value, name):
-    rospy.loginfo("memory_maps: " + str(value))
     monitor_string = name + "/memory_maps"
     monitor_value = str(value)
     monitor_unit = " "
@@ -303,7 +302,6 @@ def memory_maps_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def memory_percent_to_monitor(value, name):
-    rospy.loginfo("memory_percent: " + str(value))
     monitor_string = name + "/memory_percent"
     monitor_value = str(value)
     monitor_unit = "%"
@@ -312,7 +310,6 @@ def memory_percent_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def name_to_monitor(value, name):
-    rospy.loginfo("name: " + str(value))
     monitor_string = name + "/name"
     monitor_value = str(value)
     monitor_unit = " "
@@ -321,7 +318,6 @@ def name_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def nice_to_monitor(value, name):
-    rospy.loginfo("nice: " + str(value))
     monitor_string = name + "/nice"
     monitor_value = str(value)
     monitor_unit = " "
@@ -334,14 +330,6 @@ def num_ctx_switches_to_monitor(value, name):
     added two additional blocks that divide the value string into one field for
     voluntary and involuntary context switches.
     """
-    rospy.loginfo("num_ctx_switches: " + str(value))
-    monitor_string = name + "/num_ctx_switches"
-    monitor_value = str(value)
-    monitor_unit = " "
-    monitor_errorlvl = 0
-
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
-    rospy.loginfo("voluntary_ctx_switches: " + str(value.voluntary))
     monitor_string = name + "/num_ctx_switches_voluntary"
     monitor_value = str(value.voluntary)
     monitor_unit = "ctx_switches"
@@ -349,7 +337,6 @@ def num_ctx_switches_to_monitor(value, name):
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
-    rospy.loginfo("involuntary_ctx_switches: " + str(value.involuntary))
     monitor_string = name + "/num_ctx_switches_involuntary"
     monitor_value = str(value.involuntary)
     monitor_unit = "ctx_switches"
@@ -358,7 +345,6 @@ def num_ctx_switches_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def num_fds_to_monitor(value, name):
-    rospy.loginfo("num_fds: " + str(value))
     monitor_string = name + "/num_fds"
     monitor_value = str(value)
     monitor_unit = " "
@@ -367,7 +353,6 @@ def num_fds_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def num_handles_to_monitor(value, name):
-    rospy.loginfo("num_handles: " + str(value))
     monitor_string = name + "/num_handles"
     monitor_value = str(value)
     monitor_unit = " "
@@ -376,7 +361,6 @@ def num_handles_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def num_threads_to_monitor(value, name):
-    rospy.loginfo("num_threads: " + str(value))
     monitor_string = name + "/num_threads"
     monitor_value = str(value)
     monitor_unit = " "
@@ -385,7 +369,6 @@ def num_threads_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def open_files_to_monitor(value, name):
-    rospy.loginfo("open_files: " + str(value))
     monitor_string = name + "/open_files"
     monitor_value = str(value)
     monitor_unit = " "
@@ -394,7 +377,6 @@ def open_files_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def parent_to_monitor(value, name):
-    rospy.loginfo("parent: " + str(value))
     monitor_string = name + "/parent"
     monitor_value = str(value)
     monitor_unit = " "
@@ -403,7 +385,6 @@ def parent_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def pid_to_monitor(value, name):
-    rospy.loginfo("pid: " + str(value))
     monitor_string = name + "/pid"
     monitor_value = str(value)
     monitor_unit = " "
@@ -412,7 +393,6 @@ def pid_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def ppid_to_monitor(value, name):
-    rospy.loginfo("ppid: " + str(value))
     monitor_string = name + "/ppid"
     monitor_value = str(value)
     monitor_unit = " "
@@ -421,7 +401,6 @@ def ppid_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def rlimit_to_monitor(value, name):
-    rospy.loginfo("rlimit: " + str(value))
     monitor_string = name + "/rlimit"
     monitor_value = str(value)
     monitor_unit = " "
@@ -430,7 +409,6 @@ def rlimit_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def status_to_monitor(value, name):
-    rospy.loginfo("status: " + str(value))
     monitor_string = name + "/status"
     monitor_value = str(value)
     monitor_unit = " "
@@ -439,7 +417,6 @@ def status_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def terminal_to_monitor(value, name):
-    rospy.loginfo("terminal: " + str(value))
     monitor_string = name + "/terminal"
     monitor_value = str(value)
     monitor_unit = " "
@@ -448,7 +425,6 @@ def terminal_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def threads_to_monitor(value, name):
-    rospy.loginfo("threads: " + str(value))
     monitor_string = name + "/threads"
     monitor_value = str(value)
     monitor_unit = " "
@@ -457,7 +433,6 @@ def threads_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def uids_to_monitor(value, name):
-    rospy.loginfo("uids: " + str(value))
     monitor_string = name + "/uids"
     monitor_value = str(value)
     monitor_unit = " "
@@ -466,7 +441,6 @@ def uids_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 def username_to_monitor(value, name):
-    rospy.loginfo("username: " + str(value))
     monitor_string = name + "/username"
     monitor_value = str(value)
     monitor_unit = " "
@@ -515,10 +489,11 @@ VALUE_DICT = {
 
 
 if __name__ == '__main__':
-    rospy.init_node('node_ressource_monitor', anonymous=True)
+    rospy.init_node("node_ressource_monitor", anonymous=True)
     FREQUENCY, FILTER_TYPE_ = init()
     RATE = rospy.Rate(FREQUENCY)
-
+    # create MONITOR_ object the node had no name ....
+    MONITOR_ = Monitor("node_ressource_monitor")
     while not rospy.is_shutdown():
         try:
             gather_info()

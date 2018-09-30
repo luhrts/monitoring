@@ -12,7 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES
-  CATKIN_DEPENDS roscpp
+  CATKIN_DEPENDS monitoring_msgs roscpp
 )
 
 
@@ -26,3 +26,17 @@ target_link_libraries(gui_msg_concat_node
   ${catkin_LIBRARIES}
 )
 add_dependencies(gui_msg_concat_node ${catkin_EXPORTED_TARGETS})
+
+install(TARGETS gui_msg_concat_node
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  PATTERN ".svn" EXCLUDE
+)
+
+catkin_install_python(PROGRAMS scripts/liveViewFloat.py scripts/PlotFromBag.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
