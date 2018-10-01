@@ -124,10 +124,11 @@ void GuiConcatenation::suit_unit(std::string& value, std::string& unit){
             unit = "GB";
             break;
         }
-        default:
+        default:{
             std::string poly_num = int_to_string(i);
             unit = "E + " + poly_num + " byte";
             break;
+        }
         }
      }
 
