@@ -269,12 +269,10 @@ int main(int argc, char **argv)
       aggregation = AggregationStrategies::MIN;
       ROS_INFO("work in AggregationStrategies::MIN");
        break;
-
       case 4 :
       aggregation = AggregationStrategies::MAX;
       ROS_INFO("work in AggregationStrategies::MAX");
        break;
-
       case 5 :
       aggregation = AggregationStrategies::AVG;
       ROS_INFO("work in AggregationStrategies::AVG");
