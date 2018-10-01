@@ -92,7 +92,7 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
         {
             offset = (ros::Time::now() - message.transforms[i].header.stamp).toSec();
         }
-        monitor_->addValue(parent+"/"+frame+"/timestamp_delay", offset, "s", 0.0);
+        monitor_->addValue(parent+"/"+frame+"/timestamp_delay", offset, "s", 0.0,aggregation);
 
         // If has parent get Transform data
         //Stamped Transform compare
@@ -118,15 +118,15 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
             dTime = current_transform.stamp_ - transforms_[frame].last_transform.stamp_;
 
 
-            monitor_->addValue(parent+"/"+frame+"/dx", dx, "m", 0.0);
-            monitor_->addValue(parent+"/"+frame+"/dy", dy, "m", 0.0);
-            monitor_->addValue(parent+"/"+frame+"/dz", dz, "m", 0.0);
+            monitor_->addValue(parent+"/"+frame+"/dx", dx, "m", 0.0,aggregation);
+            monitor_->addValue(parent+"/"+frame+"/dy", dy, "m", 0.0,aggregation);
+            monitor_->addValue(parent+"/"+frame+"/dz", dz, "m", 0.0,aggregation);
 
-            monitor_->addValue(parent+"/"+frame+"/droll", droll, "degree", 0.0);
-            monitor_->addValue(parent+"/"+frame+"/dpitch", dpitch, "degree", 0.0);
-            monitor_->addValue(parent+"/"+frame+"/dyaw", dyaw, "degree", 0.0);
+            monitor_->addValue(parent+"/"+frame+"/droll", droll, "degree", 0.0,aggregation);
+            monitor_->addValue(parent+"/"+frame+"/dpitch", dpitch, "degree", 0.0,aggregation);
+            monitor_->addValue(parent+"/"+frame+"/dyaw", dyaw, "degree", 0.0,aggregation);
 
-            monitor_->addValue(parent+"/"+frame+"/tdoa", dTime.toSec(), "s", 0.0);
+            monitor_->addValue(parent+"/"+frame+"/tdoa", dTime.toSec(), "s", 0.0,aggregation);
 
             ROS_DEBUG("%s -> %s:  \t xyz [%f, %f, %f] rpy [%f, %f, %f] dtime: %f s", parent.c_str(), frame.c_str(), dx, dy, dz, droll, dpitch, dyaw, dTime.toSec());
 
@@ -205,6 +205,36 @@ int main(int argc, char ** argv)
     ros::NodeHandle local_nh("~");
     local_nh.searchParam("tf_prefix", searched_param);
     local_nh.getParam(searched_param, tf_prefix);
+    local_nh.searchParam("monitor_mode", searched_param);
+    local_nh.getParam(searched_param, monitor_mode);
+
+
+
+    switch (monitor_mode){
+        case 1 :
+        aggregation = AggregationStrategies::LAST;
+        ROS_INFO("work in AggregationStrategies::LAST");
+         break;
+        case 2 :
+        aggregation = AggregationStrategies::FIRST;
+        ROS_INFO("work in AggregationStrategies::FIRST");
+         break;
+        case 3 :
+        aggregation = AggregationStrategies::MIN;
+        ROS_INFO("work in AggregationStrategies::MIN");
+         break;
+
+        case 4 :
+        aggregation = AggregationStrategies::MAX;
+        ROS_INFO("work in AggregationStrategies::MAX");
+         break;
+
+        case 5 :
+        aggregation = AggregationStrategies::AVG;
+        ROS_INFO("work in AggregationStrategies::AVG");
+         break;
+
+    }
 
     //Make sure we don't start before recieving time when in simtime
     int iterations = 0;

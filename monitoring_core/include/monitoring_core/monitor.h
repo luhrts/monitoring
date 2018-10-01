@@ -15,7 +15,13 @@ enum AggregationStrategies{
     LAST,
     FIRST,
     MIN,
-    MAX
+    MAX,
+    AVG
+};
+struct Sum{
+  float sum;
+  int num;
+  ros::Time begin_avg_time;
 };
 
 class Monitor {
@@ -41,11 +47,13 @@ private:
     void timerCallback(const ros::TimerEvent& te);
 
     monitoring_msgs::MonitoringArray ma;
+    monitoring_msgs::MonitoringArray ma_for_pub;
     std::string node_name_;
     std::string monitor_description_;
     int miIndex;
 
     std::string host_name_;
+    std::map<std::string,Sum> avg_for_agg;
 
     ///////////////////Gtest/////////////////////
     FRIEND_TEST(MonitoringCore, addValueString);

@@ -1,3 +1,9 @@
 frequency: 1   #calculation frequency
+<<<<<<< HEAD:monitoring_monitors_system/config/wifi_monitor_config.yaml
+=======
+wifiInterface: wlp8s0
+>>>>>>> origin/add_avg_:monitoring_monitors_system/config/wifistrengthconfig.yaml
 monitoring:
     frequency: 2
+monitor_mode : 1
+#AggregationStrategies mode: 1 LAST, 2 FIRST, 3 MIN, 4 MAX, 5 AVG#

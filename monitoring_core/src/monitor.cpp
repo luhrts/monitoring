@@ -51,6 +51,7 @@ void Monitor::init(std::string monitorDescription)
   mi.name = host_name_+node_name_;
   mi.description = monitorDescription;
   ma.info.push_back(mi);
+  ma_for_pub.info.push_back(mi);
   miIndex = 0;
 }
 
@@ -96,19 +97,38 @@ void Monitor::addValue(std::string key, std::string value, std::string unit, flo
         ma.info[miIndex].values[i].value = value;
         ma.info[miIndex].values[i].unit = unit;
         ma.info[miIndex].values[i].errorlevel = errorlevel;
+
       } else if (aggregation == AggregationStrategies::MIN) { // Update if the value is smaller
         if (ma.info[miIndex].values[i].value > value){
           ma.info[miIndex].values[i].value = value;
           ma.info[miIndex].values[i].unit = unit;
           ma.info[miIndex].values[i].errorlevel = errorlevel;
+
         }
       } else if (aggregation == AggregationStrategies::MAX) { // Update if the value is larger
         if (ma.info[miIndex].values[i].value < value){
           ma.info[miIndex].values[i].value = value;
           ma.info[miIndex].values[i].unit = unit;
           ma.info[miIndex].values[i].errorlevel = errorlevel;
+
         }
-      }
+      } else if (aggregation == AggregationStrategies::AVG) { // Update AVG value
+            if(ros::Time::now() - avg_for_agg[key].begin_avg_time < ros::Duration(5.0)){
+                avg_for_agg[key].sum += atof(value.c_str());
+                avg_for_agg[key].num++;
+            }
+            else{
+                char stringvalue[1000];
+                sprintf(stringvalue, "%f", (avg_for_agg[key].sum/avg_for_agg[key].num));
+                ma.info[miIndex].values[i].value = stringvalue;
+                ma.info[miIndex].values[i].unit = unit;
+                ma.info[miIndex].values[i].errorlevel = errorlevel;
+                avg_for_agg[key] = Sum();
+                avg_for_agg[key].begin_avg_time = ros::Time::now();
+
+            }
+
+        }
 
       found = true;
       break;
@@ -122,7 +142,8 @@ void Monitor::addValue(std::string key, std::string value, std::string unit, flo
     kv.value = value;
     kv.unit = unit;
     kv.errorlevel = errorlevel;
-
+    avg_for_agg[key] = Sum();
+    avg_for_agg[key].begin_avg_time = ros::Time::now();
     ma.info[miIndex].values.push_back(kv);
   }
 }
@@ -138,21 +159,27 @@ void Monitor::addValue(std::string key, float value, std::string unit, float err
 }
 
 void Monitor::publish()
-{
-	ma.header.stamp = ros::Time::now();
-	pub.publish(ma);
+{       ma_for_pub.info[miIndex].values = ma.info[miIndex].values;
+        ma_for_pub.header.stamp = ros::Time::now();
+        pub.publish(ma_for_pub);
+        resetMsg();
 
-	resetMsg();
+
+
 }
 
 void Monitor::resetMsg()
 {
+    for(int i = 0 ; i<= ma.info[miIndex].values.size(); i++){
+        if(ma.info[miIndex].values[i].errorlevel > 0.1){
+                 ma.info[miIndex].values.erase(ma.info[miIndex].values.begin()+i);
+        }
+    }
   monitoring_msgs::MonitoringArray newMA;
-	ma = newMA;
+  ma_for_pub = newMA;
   monitoring_msgs::MonitoringInfo mi;
   mi.name = host_name_+node_name_;
   mi.description = monitor_description_;
-  ma.info.push_back(mi);
+  ma_for_pub.info.push_back(mi);
   miIndex = 0;
-
 }

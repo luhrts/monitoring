@@ -1,6 +1,9 @@
 monitoring:
   frequency: 1
+monitor_mode : 5
+#AggregationStrategies mode: 1 LAST, 2 FIRST, 3 MIN, 4 MAX, 5 AVG#
 timeTilDelete: 3
+<<<<<<< HEAD
 topics: [monitoring]
 
 monitoring:
@@ -11,5 +14,17 @@ monitoring:
   dFrequency: 0.5
   size: 0
   dSize: 1
+=======
+topics: [test]
+
+test:
+  topic: /monitoring
+  source: /monitor_gui
+  destination: /statistics_monitoring
+  frequency: 1
+  size: 321
+  dFrequency: 1
+  dSize: 100
+>>>>>>> origin/add_avg_
   type: geometry_msgs::Twist
   errorlevel: 0.5

@@ -2,7 +2,16 @@
 import socket
 import rospy
 from monitoring_msgs.msg import *
+from enum import Enum
 
+class AggregationStrategies(Enum):
+	LAST = 1
+	FIRST = 2
+	MIN = 3
+	MAX = 4
+	AVG = 5
+	
+	
 
 
 class Monitor(object):
@@ -18,6 +27,13 @@ class Monitor(object):
 
         self.is_initialised = False
         self.autoPublishing = autoPublishing
+
+
+
+       ##aggregation##
+	self.pub_times = 0
+	self.aggregation_dict = {}
+	self.aggregation_dict[self.host_name + self.node_name] = {}
 
     def init_ros(self):
         self.pub = rospy.Publisher('/monitoring', MonitoringArray, queue_size=1)
@@ -40,20 +56,67 @@ class Monitor(object):
     def timercallback(self, event):
         self.publish()
 
-    def addValue(self, key, value, unit, errorlevel):
+    def addValue(self, key, value, unit, errorlevel, monitor_mode):
+	def aggregation(mode):
+    	    switcher = {
+        	1: AggregationStrategies.LAST,
+        	2: AggregationStrategies.FIRST,
+        	3: AggregationStrategies.MIN,
+        	4: AggregationStrategies.MAX,
+        	5: AggregationStrategies.AVG,
+    	    }
+	    return switcher.get(mode, None)
         if not self.is_initialised:
             self.init_ros()
-
         # Check if key contains whitespace
         if " " in key:
             rospy.logwarn("[%s] whitespaces are not allowed in monitoring keys!", self.node_name)
-
-        kv = KeyValue()
-        kv.key = str(key)
-        kv.value = str(value)
-        kv.unit = str(unit)
-        kv.errorlevel = errorlevel
-        self.ma.info[0].values.append(kv)
+	kv = KeyValue()
+	if (self.host_name + self.node_name) in self.aggregation_dict:
+	    if key in self.aggregation_dict[self.host_name + self.node_name]:
+	        if aggregation(monitor_mode) == AggregationStrategies.AVG:
+		    if rospy.get_rostime() - self.aggregation_dict[self.host_name + self.node_name][key]['Duration'] < rospy.Duration(5):
+	                self.aggregatin_dict[self.host_name + self.node_name][key]['num'] += 1
+	                self.aggregation_dict[self.host_name + self.node_name][key]['Sum'] += value
+		    else:
+	                kv.key = str(key)
+	                kv.value = str(self.aggregation_dict[self.host_name + self.node_name][key]['Sum']/(self.aggregation_dict[self.host_name + self.node_name][key]['num'] + 0.001))
+	                kv.unit = str(unit)
+	                kv.errorlevel = errorlevel
+			self.aggregation_dict[self.host_name + self.node_name][key] = {'num' : 0 , 'Value' : 0, 'Sum' : 0, 'Duration' : rospy.get_rostime()}
+	        elif aggregation(monitor_mode) == AggregationStrategies.FIRST and self.pub_times == 0:
+	            kv.key = str(key)
+	            kv.value = str(value)
+	            kv.unit = str(unit)
+	            kv.errorlevel = errorlevel
+	            self.pub_times = 1
+	        elif aggregation(monitor_mode) == AggregationStrategies.MAX:
+	            if value > self.aggregation_dict[self.host_name + self.node_name][key]['Value']:
+	                self.aggregation_dict[self.host_name + self.node_name][key]['Value']= value
+	            kv.key = str(key)
+	            kv.value = str(self.aggregation_dict[self.host_name + self.node_name][key]['Value'])
+	            kv.unit = str(unit)
+	            kv.errorlevel = errorlevel
+	        elif aggregation(monitor_mode) == AggregationStrategies.MIN:
+	            if value < self.aggregation_dict[self.host_name + self.node_name][key]['Value']:
+	                self.aggregation_dict[self.host_name + self.node_name][key]['Value']= value
+	            kv.key = str(key)
+	            kv.value = str(self.aggregation_dict[self.host_name + self.node_name][key]['Value'])
+	            kv.unit = str(unit)
+	            kv.errorlevel = errorlevel
+	        elif aggregation(monitor_mode) == AggregationStrategies.LAST:
+	            kv.key = str(key)
+	            kv.value = str(value)
+	            kv.unit = str(unit)
+	            kv.errorlevel = errorlevel
+	        self.ma.info[0].values.append(kv)
+	    else:
+	        self.aggregation_dict[self.host_name + self.node_name][key] = {'num' : 0 , 'Value' : 0, 'Sum' : 0, 'Duration' : rospy.get_rostime()}
+	        kv.key = str(key)
+	        kv.value = str(value)
+	        kv.unit = str(unit)
+	        kv.errorlevel = errorlevel
+	        self.ma.info[0].values.append(kv)
 
     def publish(self):
         self.ma.header.stamp = rospy.Time.now()
