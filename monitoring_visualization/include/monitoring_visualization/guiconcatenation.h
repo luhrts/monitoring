@@ -35,10 +35,14 @@ private:
   void monitor_cb(monitoring_msgs::MonitoringArray ma);
   std::string int_to_string(int int_num);
   std::string double_to_string(double double_num);
+  std::vector<std::string> Freq_unit;
+  std::vector<std::string> Size_unit;
+
   /**
    * @brief error_cb callback for error msgs
    * @param er
    */
+  void Init_Unit_Vector();
   void error_cb(monitoring_msgs::Error er);
   ros::Subscriber monitor_sub, error_sub; ///< subscribers for data collection
   monitoring_msgs::Gui msg;

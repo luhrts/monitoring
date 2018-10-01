@@ -12,6 +12,7 @@ GuiConcatenation::GuiConcatenation(ros::NodeHandle& n) {
                         &GuiConcatenation::monitor_cb, this);
 	error_sub = n.subscribe("/monitoring/errors", 1000,
 			&GuiConcatenation::error_cb, this);
+        GuiConcatenation::Init_Unit_Vector();
 
 
 }
@@ -54,9 +55,7 @@ void GuiConcatenation::monitor_cb(monitoring_msgs::MonitoringArray ma) {
 			gi.errorlevel = mi.values[i].errorlevel;
 			gi.unit = mi.values[i].unit;
                         meanerror += mi.values[i].errorlevel;
-                        if((gi.unit == "Hz") || (gi.unit == "byte")){
-                            suit_unit(gi.value, gi.value);
-                        }
+                        suit_unit(gi.value, gi.unit);
 			msg.infos.push_back(gi);
 
 
@@ -71,66 +70,39 @@ void GuiConcatenation::monitor_cb(monitoring_msgs::MonitoringArray ma) {
 
 }
 void GuiConcatenation::suit_unit(std::string& value, std::string& unit){
-    double double_value = atof(unit.c_str());
-    int i;
-    if(unit == "Hz"){
-        for(i = 1;double_value > 1000;i++){
-        double_value = double_value/1000;
-        };
-        switch (i) {
-        case 1:
-            break;
-        case 2:{
-            unit = "kHz";
-            value = double_to_string(double_value);
-            break;
+    double double_value = atof(value.c_str());
+    if(std::count(Freq_unit.begin(),Freq_unit.end(),unit) != 0){
+      while(double_value >1000){
+        std::vector<std::string>::iterator iter=find(Freq_unit.begin(),Freq_unit.end(),unit);
+        try
+        {
+            iter +=1;
+            unit = *iter;
+            double_value = double_value/1000;
         }
-        case 3:{
-            unit = "MHz";
-            value = double_to_string(double_value);
-            break;
+        catch (std::exception& e)
+        {
+        ROS_WARN("Too large Frequency ,cannot transfer unit ");
         }
-        case 4:{
-            unit = "GHz";
-            value = double_to_string(double_value);
-            break;
-        }
-        default:{
-            std::string poly_num = int_to_string(i);
-            unit = "E + " + poly_num + " Hz";
-            break;
-        }
-        }
+      }
+      value = double_to_string(double_value);
     }
-    else if(unit == "byte"){
-        for(i = 1;double_value > 1024;i++){
-        double_value = double_value/1024;
-        };
-        switch (i) {
-        case 1:
-            break;
-        case 2:{
-            value = double_to_string(double_value);
-            unit = "KB";
-            break;
+    if(std::count(Size_unit.begin(),Size_unit.end(),unit) != 0){
+      while(double_value >1024){
+        std::vector<std::string>::iterator iter=find(Freq_unit.begin(),Freq_unit.end(),unit);
+        try
+        {
+            iter +=1;
+            unit = *iter;
+            double_value = double_value/1024;
         }
-        case 3:{
-            value = double_to_string(double_value);
-            unit = "MB";
-            break;
+        catch (std::exception& e)
+        {
+        ROS_WARN("Too large Size ,cannot transfer unit ");
         }
-        case 4:{
-            value = double_to_string(double_value);
-            unit = "GB";
-            break;
-        }
-        default:{
-            std::string poly_num = int_to_string(i);
-            unit = "E + " + poly_num + " byte";
-            break;
-        }
-        }
-     }
+       value = double_to_string(double_value);
+      }
+    }
 
 
 }
@@ -148,7 +120,14 @@ std::string GuiConcatenation::double_to_string(double double_value){
     return str;
 
 }
+void GuiConcatenation::Init_Unit_Vector(){
+    std::string freq_unit[] = {"Hz","KHz","MHz","GHz"};
+    std::string size_unit[] = {"byte","KB","MB","GB"};
 
+    Freq_unit.insert(Freq_unit.begin(),freq_unit,freq_unit+4);
+    Size_unit.insert(Size_unit.begin(),size_unit,size_unit+4);
+
+}
 monitoring_msgs::Gui GuiConcatenation::getMsg() {
 
   monitoring_msgs::Gui ret = msg;
