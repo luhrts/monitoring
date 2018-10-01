@@ -12,8 +12,7 @@
 #include "monitoring_msgs/MonitoringArray.h"
 #include "monitoring_msgs/Error.h"
 #include "monitoring_msgs/Gui.h"
-
-
+#include <time.h>
 
 class GuiConcatenation {
 public:
@@ -37,7 +36,7 @@ private:
   std::string double_to_string(double double_num);
   std::vector<std::string> Freq_unit;
   std::vector<std::string> Size_unit;
-
+  std::vector<std::string> Time_unit;
   /**
    * @brief error_cb callback for error msgs
    * @param er
