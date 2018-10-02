@@ -61,6 +61,7 @@ private:
   std::vector<TopicRequirement> topicRequirements;    ///< contains user defined topic requirements
 
   double timeTilDeletingOldMessages;
-
+  AggregationStrategies aggregation;
+  int monitor_mode;
 };
 #endif /* SRC_STATISTICSMONITOR_H_ */

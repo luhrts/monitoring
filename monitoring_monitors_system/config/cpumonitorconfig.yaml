@@ -5,3 +5,6 @@ temperature: true   #temperature of the CPU
 
 monitoring:
   frequency: 1   #Publish and calculation frequency
+
+monitor_mode : 1
+#AggregationStrategies mode: 1 LAST, 2 FIRST, 3 MIN, 4 MAX, 5 AVG#

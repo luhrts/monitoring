@@ -20,6 +20,7 @@ import rosnode
 from socket import error as socket_error
 
 from monitoring_core.monitor import Monitor
+from monitoring_core.monitor import AggregationStrategies
 
 
 ID = "NODEINFO"
@@ -42,6 +43,12 @@ def init():
     check for filter_type (0 = default (list all), 1 = whitelist, 2 = black list)
     Return: frequency and filter_type
     """
+    if rospy.has_param('monitor_mode'):
+	global monitor_mode
+        monitor_mode = rospy.get_param('monitor_mode')
+    else:
+	global monitor_mode
+        monitor_mode = 1
     if rospy.has_param('node_ressource_monitor/frequency'):
         frequency = rospy.get_param('node_ressource_monitor/frequency')
     else:
@@ -138,7 +145,6 @@ def print_to_console_and_monitor(name, pid):
     if FILTER_TYPE_ == Filter_type.DEFAULT:
         node_value_filter = {'values':['cpu_affinity', 'cpu_percent', 'cpu_times', 'create_time',
 			     'exe','io_counters', 'memory_info', 'memory_percent', 'name', 'num_ctx_switches', 'status']}
-        #node_value_filter = {'values':['io_counters']}
     #iterate over all keys given for node in node_filter
     for key in node_value_filter.get("values"):
         #if psutil delivers a value for a key, send this value to its dedicated function
@@ -163,7 +169,7 @@ def children_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def cmdline_to_monitor(value, name):
     monitor_string = name + "/cmdline"
@@ -171,7 +177,7 @@ def cmdline_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def connections_to_monitor(value, name):
     monitor_string = name + "/connections"
@@ -179,7 +185,7 @@ def connections_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def cpu_affinity_to_monitor(value, name):
     monitor_string = name + "/cpu_affinity"
@@ -187,7 +193,7 @@ def cpu_affinity_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def cpu_percent_to_monitor(value, name):
     monitor_string = name + "/cpu_percent"
@@ -195,7 +201,7 @@ def cpu_percent_to_monitor(value, name):
     monitor_unit = "%"
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def cpu_times_to_monitor(value, name):
     monitor_string = name + "/cpu_times"
@@ -203,7 +209,7 @@ def cpu_times_to_monitor(value, name):
     monitor_unit = "sec"
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def create_time_to_monitor(value, name):
     monitor_string = name + "/create_time"
@@ -211,7 +217,7 @@ def create_time_to_monitor(value, name):
     monitor_unit = "ms"
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def cwd_to_monitor(value, name):
     monitor_string = name + "/cwd"
@@ -219,7 +225,7 @@ def cwd_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def exe_to_monitor(value, name):
     monitor_string = name + "/exe"
@@ -227,7 +233,7 @@ def exe_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def gids_to_monitor(value, name):
     monitor_string = name + "/gids"
@@ -235,7 +241,7 @@ def gids_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def io_counters_to_monitor(value, name):
     monitor_string = name + "/io_counters"
@@ -243,10 +249,7 @@ def io_counters_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    for element in value:
-        print value.element
-
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def ionice_to_monitor(value, name):
     monitor_string = name + "/ionice"
@@ -254,7 +257,7 @@ def ionice_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def is_running_to_monitor(value, name):
     monitor_string = name + "/is_running"
@@ -262,7 +265,7 @@ def is_running_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def memory_info_to_monitor(value, name):
     """
@@ -274,20 +277,20 @@ def memory_info_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
     monitor_value = str(value.rss)
     monitor_unit = "byte"
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
     monitor_string = name + "/memory_info_vms"
     monitor_value = str(value.vms)
     monitor_unit = "byte"
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def memory_info_ex_to_monitor(value, name):
     monitor_string = name + "/memory_info_ex"
@@ -295,7 +298,7 @@ def memory_info_ex_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def memory_maps_to_monitor(value, name):
     monitor_string = name + "/memory_maps"
@@ -303,7 +306,7 @@ def memory_maps_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def memory_percent_to_monitor(value, name):
     monitor_string = name + "/memory_percent"
@@ -311,7 +314,7 @@ def memory_percent_to_monitor(value, name):
     monitor_unit = "%"
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def name_to_monitor(value, name):
     monitor_string = name + "/name"
@@ -319,7 +322,7 @@ def name_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def nice_to_monitor(value, name):
     monitor_string = name + "/nice"
@@ -327,7 +330,7 @@ def nice_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def num_ctx_switches_to_monitor(value, name):
     """
@@ -339,14 +342,14 @@ def num_ctx_switches_to_monitor(value, name):
     monitor_unit = "ctx_switches"
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
     monitor_string = name + "/num_ctx_switches_involuntary"
     monitor_value = str(value.involuntary)
     monitor_unit = "ctx_switches"
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def num_fds_to_monitor(value, name):
     monitor_string = name + "/num_fds"
@@ -354,7 +357,7 @@ def num_fds_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def num_handles_to_monitor(value, name):
     monitor_string = name + "/num_handles"
@@ -362,7 +365,7 @@ def num_handles_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def num_threads_to_monitor(value, name):
     monitor_string = name + "/num_threads"
@@ -370,7 +373,7 @@ def num_threads_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def open_files_to_monitor(value, name):
     monitor_string = name + "/open_files"
@@ -378,7 +381,7 @@ def open_files_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def parent_to_monitor(value, name):
     monitor_string = name + "/parent"
@@ -386,7 +389,7 @@ def parent_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def pid_to_monitor(value, name):
     monitor_string = name + "/pid"
@@ -394,7 +397,7 @@ def pid_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def ppid_to_monitor(value, name):
     monitor_string = name + "/ppid"
@@ -402,7 +405,7 @@ def ppid_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def rlimit_to_monitor(value, name):
     monitor_string = name + "/rlimit"
@@ -410,7 +413,7 @@ def rlimit_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def status_to_monitor(value, name):
     monitor_string = name + "/status"
@@ -418,7 +421,7 @@ def status_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def terminal_to_monitor(value, name):
     monitor_string = name + "/terminal"
@@ -426,7 +429,7 @@ def terminal_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def threads_to_monitor(value, name):
     monitor_string = name + "/threads"
@@ -434,7 +437,7 @@ def threads_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def uids_to_monitor(value, name):
     monitor_string = name + "/uids"
@@ -442,7 +445,7 @@ def uids_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl,monitor_mode)
 
 def username_to_monitor(value, name):
     monitor_string = name + "/username"
@@ -450,10 +453,10 @@ def username_to_monitor(value, name):
     monitor_unit = " "
     monitor_errorlvl = 0
 
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
+    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl,monitor_mode)
 
 """
-This dictionary maps the keys of node_value_filter to the corresponding
+This dictionary maps the keys of node_value_filter to the corrseponding
 value return functions
 """
 VALUE_DICT = {

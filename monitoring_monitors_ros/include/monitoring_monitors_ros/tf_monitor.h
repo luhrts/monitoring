@@ -48,6 +48,7 @@ private:
   int wait_times_offset=0;
 
 
+
   struct TransformData {
       std::string frame;
       std::string parent;
@@ -60,7 +61,11 @@ private:
   };
   std::string base_parent_frame="";
   std::map<std::string, TransformData> transforms_;
+  
 
 };
+
+  AggregationStrategies aggregation;
+  int monitor_mode;
 
 #endif // TF_MONITOR_H

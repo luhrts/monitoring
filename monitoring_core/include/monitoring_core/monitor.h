@@ -15,7 +15,12 @@ enum AggregationStrategies{
     LAST,
     FIRST,
     MIN,
-    MAX
+    MAX,
+    AVG
+};
+struct Sum{
+  float sum;
+  int num;
 };
 
 class Monitor {
@@ -46,6 +51,7 @@ private:
     int miIndex;
 
     std::string host_name_;
+    std::map<std::string,Sum> values_for_avg_;
 
     ///////////////////Gtest/////////////////////
     FRIEND_TEST(MonitoringCore, addValueString);

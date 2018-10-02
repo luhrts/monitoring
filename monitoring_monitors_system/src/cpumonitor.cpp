@@ -253,6 +253,32 @@ int main(int argc, char **argv)
 
   bool bTemp;
   n.param<bool>("temperature", bTemp, true);
+  int monitor_mode;
+  n.param<int>("monitor_mode", monitor_mode,1);
+  AggregationStrategies aggregation;
+  switch (monitor_mode){
+      case 1 :
+      aggregation = AggregationStrategies::LAST;
+      ROS_INFO("work in AggregationStrategies::LAST");
+       break;
+      case 2 :
+      aggregation = AggregationStrategies::FIRST;
+      ROS_INFO("work in AggregationStrategies::FIRST");
+       break;
+      case 3 :
+      aggregation = AggregationStrategies::MIN;
+      ROS_INFO("work in AggregationStrategies::MIN");
+       break;
+      case 4 :
+      aggregation = AggregationStrategies::MAX;
+      ROS_INFO("work in AggregationStrategies::MAX");
+       break;
+      case 5 :
+      aggregation = AggregationStrategies::AVG;
+      ROS_INFO("work in AggregationStrategies::AVG");
+       break;
+
+  }
 
   ros::Rate loop_rate(freq);
   CpuMonitor cpum;
@@ -266,17 +292,17 @@ int main(int argc, char **argv)
     if (bPercent)
     {
       float cpuload = cpum.getCurrentCpuLoad();
-      msg.addValue("load", cpuload, "%", 0);
+      msg.addValue("load", cpuload, "%", 0,aggregation);
     }
     if (bAvarage)
     {
       float cpuavg = cpum.getLoadAvg();
-      msg.addValue("load_avg", cpuavg, "", 0);
+      msg.addValue("load_avg", cpuavg, "", 0,aggregation);
     }
     if (bTemp)
     {
       float temp = cpum.getCPUTemp();
-      msg.addValue("temp", temp, "C", 0);
+      msg.addValue("temp", temp, "C", 0,aggregation);
     }
     if (bPercentPerCore)
     {
@@ -286,7 +312,7 @@ int main(int argc, char **argv)
 
         char key[40];
         sprintf(key, "load_core_%d", i);
-        msg.addValue(key, pCore, "%", 0);
+        msg.addValue(key, pCore, "%", 0,aggregation);
       }
     }
     ros::spinOnce();

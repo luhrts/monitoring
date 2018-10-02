@@ -62,7 +62,7 @@ void StatisticMonitor::compareStatisticDataWithRequirements() {
     //    ROS_ERROR("Topic richtig");
     //checking frequency
     if(tr.frequency-tr.dFrequency <si.frequency && si.frequency < tr.frequency+tr.dFrequency){
-      msg->addValue(tr.topic+ "/frequency", si.frequency, "Hz", 0);
+      msg->addValue(tr.topic+ "/frequency", si.frequency, "Hz", 0, aggregation);
     } else {
       ROS_WARN("%s wrong freuqency: %f",tr.topic.c_str(), si.frequency);
       if(tr.frequency != -1) { //if frequency is -1, it should not be checked
@@ -72,7 +72,7 @@ void StatisticMonitor::compareStatisticDataWithRequirements() {
     //    ROS_INFO("Frequency checked");
 
     if(tr.size-tr.dSize <si.size && si.size < tr.size+tr.dSize){
-      msg->addValue(tr.topic+ "/size", si.size, "Byte", 0);
+      msg->addValue(tr.topic+ "/size", si.size, "Byte", 0, aggregation);
     } else {
       if(tr.size != -1) { //if size is -1, it should not be checked
         msg->addValue(tr.topic+ "/size", si.size, "Byte", tr.errorlevel);
@@ -95,7 +95,34 @@ void StatisticMonitor::loadConfig(ros::NodeHandle &n) {
   {
     ROS_WARN("No frequency supplied. Working with %f Hz.", freq);
   }
+  if(n.getParam("monitor_mode", monitor_mode)) {
 
+     switch (monitor_mode){
+         case 1 :
+         aggregation = AggregationStrategies::LAST;
+         ROS_INFO("work in AggregationStrategies::LAST");
+          break;
+         case 2 :
+         aggregation = AggregationStrategies::FIRST;
+         ROS_INFO("work in AggregationStrategies::FIRST");
+          break;
+         case 3 :
+         aggregation = AggregationStrategies::MIN;
+         ROS_INFO("work in AggregationStrategies::MIN");
+          break;
+
+         case 4 :
+         aggregation = AggregationStrategies::MAX;
+         ROS_INFO("work in AggregationStrategies::MAX");
+          break;
+
+         case 5 :
+         aggregation = AggregationStrategies::AVG;
+         ROS_INFO("work in AggregationStrategies::AVG");
+          break;
+
+     }
+  }
   timeTilDeletingOldMessages= 3.0;
   if (!n.getParam("timeTilDelete", timeTilDeletingOldMessages))
   {
@@ -169,7 +196,6 @@ void StatisticMonitor::statisticsCallback(rosgraph_msgs::TopicStatistics stats) 
     if(statisticData[i].topic == topic && statisticData[i].pub == pub && statisticData[i].sub == sub) {
       si = statisticData[i];
       siFound = true;
-      //  siIndex = i;
       break;
     }
   }

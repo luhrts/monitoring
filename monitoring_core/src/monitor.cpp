@@ -28,7 +28,7 @@ Monitor::Monitor(std::string monitorDescription, bool autoPublishing) : miIndex(
 
 Monitor::~Monitor()
 {
-	// TODO Auto-generated destructor stub
+  // TODO Auto-generated destructor stub
 
 }
 
@@ -73,12 +73,7 @@ void Monitor::initROS(ros::NodeHandle &n, bool autoPublishing)
 
 
 void Monitor::timerCallback(const ros::TimerEvent& te) {
-    //try{
-        publish();
-    //}
-    //catch(ros::serialization::StreamOverrunException e){
-     //printf("BUFFER OVERFLOW IN PUBLISHER");
-    //}
+  publish();
 }
 
 
@@ -101,18 +96,29 @@ void Monitor::addValue(std::string key, std::string value, std::string unit, flo
         ma.info[miIndex].values[i].value = value;
         ma.info[miIndex].values[i].unit = unit;
         ma.info[miIndex].values[i].errorlevel = errorlevel;
+
       } else if (aggregation == AggregationStrategies::MIN) { // Update if the value is smaller
         if (ma.info[miIndex].values[i].value > value){
           ma.info[miIndex].values[i].value = value;
           ma.info[miIndex].values[i].unit = unit;
           ma.info[miIndex].values[i].errorlevel = errorlevel;
+
         }
       } else if (aggregation == AggregationStrategies::MAX) { // Update if the value is larger
         if (ma.info[miIndex].values[i].value < value){
           ma.info[miIndex].values[i].value = value;
           ma.info[miIndex].values[i].unit = unit;
           ma.info[miIndex].values[i].errorlevel = errorlevel;
+
         }
+      } else if (aggregation == AggregationStrategies::AVG) { // Update AVG value
+          values_for_avg_[key].sum += atof(value.c_str());
+          values_for_avg_[key].num++;
+          char stringvalue[1000];
+          sprintf(stringvalue, "%f", (values_for_avg_[key].sum/values_for_avg_[key].num));
+          ma.info[miIndex].values[i].value = stringvalue;
+          ma.info[miIndex].values[i].unit = unit;
+          ma.info[miIndex].values[i].errorlevel = errorlevel;
       }
 
       found = true;
@@ -127,7 +133,7 @@ void Monitor::addValue(std::string key, std::string value, std::string unit, flo
     kv.value = value;
     kv.unit = unit;
     kv.errorlevel = errorlevel;
-
+    values_for_avg_[key] = Sum();
     ma.info[miIndex].values.push_back(kv);
   }
 }
@@ -137,33 +143,23 @@ void Monitor::addValue(std::string key, float value, std::string unit, float err
 {
   char stringvalue[1000];    //TODO check if 1000 is a good number!
 
-    sprintf(stringvalue, "%f", value);
+  sprintf(stringvalue, "%f", value);
 
   addValue(key, stringvalue, unit, errorlevel, aggregation);
 }
 
 void Monitor::publish()
 {
-	ma.header.stamp = ros::Time::now();
-  try{
-	   pub.publish(ma);
-   }
-   catch(ros::serialization::StreamOverrunException e){
-     ROS_WARN("BUFFER OVERFLOW IN PUBLISHER");
-     ROS_WARN("size of values: %d", ma.info[0].values.size());
-   }
-
-	resetMsg();
+  ma.header.stamp = ros::Time::now();
+  pub.publish(ma);
+  resetMsg();
 }
 
 void Monitor::resetMsg()
 {
-  monitoring_msgs::MonitoringArray newMA;
-	ma = newMA;
   monitoring_msgs::MonitoringInfo mi;
   mi.name = host_name_+node_name_;
   mi.description = monitor_description_;
   ma.info.push_back(mi);
   miIndex = 0;
-
 }
