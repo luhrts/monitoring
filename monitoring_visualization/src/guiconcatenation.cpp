@@ -71,6 +71,7 @@ void GuiConcatenation::monitor_cb(monitoring_msgs::MonitoringArray ma) {
 }
 void GuiConcatenation::suit_unit(std::string& value, std::string& unit){
     double double_value = atof(value.c_str());
+
     if(std::count(Freq_unit.begin(),Freq_unit.end(),unit) != 0){
       while(double_value >1000){
         std::vector<std::string>::iterator iter=find(Freq_unit.begin(),Freq_unit.end(),unit);
@@ -88,31 +89,39 @@ void GuiConcatenation::suit_unit(std::string& value, std::string& unit){
       value = double_to_string(double_value);
     }
     if(std::count(Size_unit.begin(),Size_unit.end(),unit) != 0){
+
       while(double_value >1024){
-        std::vector<std::string>::iterator iter=find(Freq_unit.begin(),Freq_unit.end(),unit);
+        std::vector<std::string>::iterator iter=std::find(Size_unit.begin(),Size_unit.end(),unit);
+
         try
         {
             iter +=1;
             unit = *iter;
+
             double_value = double_value/1024;
         }
         catch (std::exception& e)
         {
         ROS_WARN("Too large Size ,cannot transfer unit ");
+
         }
-       value = double_to_string(double_value);
       }
+      value = double_to_string(double_value);
+
     }
     if(std::count(Time_unit.begin(),Time_unit.end(),unit) != 0){
         std::string form_time = "";
-       if((unit == "ms" && double_value > 31536000000) ||(unit == "sec" && double_value > 31536000))//more than one year -> linux time
+       if(double_value > 31536000)//more than one year -> linux time
           {
           time_t unix_time;
           unix_time = double_value;
           form_time = asctime(gmtime(&unix_time));
+          value = form_time;
+          unit = " ";
        }
-       else
+       else{
            while(double_value >60){
+               ROS_INFO("unit:%s",unit.c_str());
              std::vector<std::string>::iterator iter=find(Time_unit.begin(),Time_unit.end(),unit);
              try
              {
@@ -126,13 +135,13 @@ void GuiConcatenation::suit_unit(std::string& value, std::string& unit){
              {
              ROS_WARN("Too long time ,cannot transfer unit ");
              }
-
+           value = form_time;
+           unit = " ";
            }
-       value = form_time;
-       unit = "";
-    }
 
+       }
 
+   }
 }
 std::string GuiConcatenation::int_to_string(int int_value){
     char char_value[1000];
@@ -150,12 +159,12 @@ std::string GuiConcatenation::double_to_string(double double_value){
 }
 void GuiConcatenation::Init_Unit_Vector(){
     std::string freq_unit[] = {"Hz","KHz","MHz","GHz"};
-    std::string size_unit[] = {"byte","KB","MB","GB"};
-    std::string time_unit[] = {"ms","sec","min","h","day"};
+    std::string size_unit[] = {"byte","KB","MB","GB","TB"};
+    std::string time_unit[] = {"ms","sec","min","h"};
 
     Freq_unit.insert(Freq_unit.begin(),freq_unit,freq_unit+4);
-    Size_unit.insert(Size_unit.begin(),size_unit,size_unit+4);
-    Time_unit.insert(Time_unit.begin(),time_unit,time_unit+5);
+    Size_unit.insert(Size_unit.begin(),size_unit,size_unit+5);
+    Time_unit.insert(Time_unit.begin(),time_unit,time_unit+4);
 
 
 }
