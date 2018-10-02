@@ -39,10 +39,9 @@ fig = None
 ax = None
 key_list = None
 lined = {}
-#bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_20180816_secondbatterydrive/fahrt1.bag'
-bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_20180726_erstefahrt/fahrt3.bag'
-#bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_20180809_firstbatterydrive/fahrt1.bag'
-#bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_gui_cpu_test/test_mit_arm_alt_concat.bag'
+#bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_20180828_szenario1/fahrt3.bag'
+#bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_20180828_szenario2/fahrt1.bag'
+bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_20180830_szenario3/fahrt1.bag'
 
 def init():
     rospy.init_node("monitoring_bag_plot")
@@ -82,7 +81,7 @@ def plot():
     global fig, ax
     global lined
 
-    plt.style.use('ggplot')
+    #plt.style.use('ggplot')
 
     fig, ax = plt.subplots()
     plt.tick_params(colors = 'black')

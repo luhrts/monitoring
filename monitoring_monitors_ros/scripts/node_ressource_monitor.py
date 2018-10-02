@@ -138,6 +138,7 @@ def print_to_console_and_monitor(name, pid):
     if FILTER_TYPE_ == Filter_type.DEFAULT:
         node_value_filter = {'values':['cpu_affinity', 'cpu_percent', 'cpu_times', 'create_time',
 			     'exe','io_counters', 'memory_info', 'memory_percent', 'name', 'num_ctx_switches', 'status']}
+        #node_value_filter = {'values':['io_counters']}
     #iterate over all keys given for node in node_filter
     for key in node_value_filter.get("values"):
         #if psutil delivers a value for a key, send this value to its dedicated function
@@ -241,6 +242,9 @@ def io_counters_to_monitor(value, name):
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
+
+    for element in value:
+        print value.element
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
@@ -449,7 +453,7 @@ def username_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl)
 
 """
-This dictionary maps the keys of node_value_filter to the corrseponding
+This dictionary maps the keys of node_value_filter to the corresponding
 value return functions
 """
 VALUE_DICT = {

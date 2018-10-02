@@ -20,7 +20,9 @@ from std_msgs.msg import Float64
 start_time = None
 value_dict = {}
 combine = False
-bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_20180809_firstbatterydrive/fahrt1.bag'
+#bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_20180828_szenario1/fahrt3.bag'
+#bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_20180828_szenario2/fahrt1.bag'
+bag_dir = '/home/michael/youbot_local_dev/youbot_rosbag_20180830_szenario3/fahrt1.bag'
 
 def init():
     rospy.init_node("monitoring_bag_topic_extract")
