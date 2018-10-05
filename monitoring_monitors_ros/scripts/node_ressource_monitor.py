@@ -211,11 +211,20 @@ def cpu_times_to_monitor(value, name):
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
+    for field, value in value._asdict().iteritems():
+        monitor_string = name + "/cpu_times_" + str(field)
+        monitor_value = str(value)
+        monitor_unit = "sec"
+        monitor_errorlvl = 0
+
+        MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
+
 def create_time_to_monitor(value, name):
     monitor_string = name + "/create_time"
     monitor_value = str(value)
     monitor_unit = "ms"
     monitor_errorlvl = 0
+
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
@@ -244,12 +253,28 @@ def gids_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def io_counters_to_monitor(value, name):
+    """
+    The for-loop iterates over all fields contained within the named tuple and adds
+    the values to the monitoring system
+    """
+
     monitor_string = name + "/io_counters"
     monitor_value = str(value)
     monitor_unit = " "
     monitor_errorlvl = 0
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
+
+    for field, value in value._asdict().iteritems():
+        monitor_string = name + "/io_counters_" + str(field)
+        monitor_value = str(value)
+        if "byte" in field:
+            monitor_unit = "bytes"
+        else:
+            monitor_unit = " "
+        monitor_errorlvl = 0
+
+        MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def ionice_to_monitor(value, name):
     monitor_string = name + "/ionice"
@@ -279,6 +304,7 @@ def memory_info_to_monitor(value, name):
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
+    monitor_string = name + "/memory_info_rss"
     monitor_value = str(value.rss)
     monitor_unit = "byte"
     monitor_errorlvl = 0
