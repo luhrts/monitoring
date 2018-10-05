@@ -216,7 +216,7 @@ class PlotWidget(QWidget):
                 self.data_plot.redraw()
 
     def _subscribed_topics_changed(self):
-        #self._update_remove_topic_menu()
+        self._update_remove_topic_menu()
         rospy.logout("_subscribed_topics_changed")
         if not self.pause_button.isChecked():
             rospy.logout("enable timer")
@@ -257,7 +257,9 @@ class PlotWidget(QWidget):
         self._rosdata[topic_name].close()
         del self._rosdata[topic_name]
         self.data_plot.remove_curve(topic_name)
-        self.list_of_elements_in_plot.remove(topic_name)
+        rospy.logout("remove " + str(topic_name))
+        #rospy.logout(list_of_elements_in_plot)
+        #self.list_of_elements_in_plot.remove(topic_name)
         self._subscribed_topics_changed()
 
     def clear_plot(self):
