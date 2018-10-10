@@ -205,13 +205,6 @@ def cpu_percent_to_monitor(value, name):
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
 def cpu_times_to_monitor(value, name):
-    monitor_string = name + "/cpu_times"
-    monitor_value = str(value)
-    monitor_unit = "sec"
-    monitor_errorlvl = 0
-
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
-
     for field, value in value._asdict().iteritems():
         monitor_string = name + "/cpu_times_" + str(field)
         monitor_value = str(value)
@@ -259,13 +252,6 @@ def io_counters_to_monitor(value, name):
     the values to the monitoring system
     """
 
-    monitor_string = name + "/io_counters"
-    monitor_value = str(value)
-    monitor_unit = " "
-    monitor_errorlvl = 0
-
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
-
     for field, value in value._asdict().iteritems():
         monitor_string = name + "/io_counters_" + str(field)
         monitor_value = str(value)
@@ -298,13 +284,6 @@ def memory_info_to_monitor(value, name):
     added two additional blocks that divide the value string into one field for
     rss and vms.
     """
-    monitor_string = name + "/memory_info"
-    monitor_value = str(value)
-    monitor_unit = " "
-    monitor_errorlvl = 0
-
-    MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
-
     monitor_string = name + "/memory_info_rss"
     monitor_value = str(value.rss)
     monitor_unit = "byte"
