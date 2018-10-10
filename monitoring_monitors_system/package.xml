@@ -4,11 +4,11 @@
   <version>0.0.0</version>
   <description>The monitoring_monitors_system package</description>
 
-  <maintainer email="schotte93@gmail.com">Matthias Jakob</maintainer>
+  <maintainer email="carstensen@rts.uni-hannover.de">Jan Carstensen</maintainer>
 
 
 
-  <license>TODO</license>
+  <license>BSD</license>
 
 
 

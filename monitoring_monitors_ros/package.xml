@@ -5,9 +5,8 @@
   <description>The monitoring_monitors_ros package cotains monitors to observe ros specific parts of the systems e.g.: nodes, topics, tf</description>
 
   <maintainer email="carstensen@rts.uni-hannover.de">Jan Carstensen</maintainer>
-  <maintainer email="schotte93@gmail.com">Matthias Jakob</maintainer>
 
-  <license>TODO</license>
+  <license>BSD</license>
 
   <author email="schotte93@gmail.com">Matthias Jakob</author>
   <author email="carstensen@rts.uni-hannover.de">Jan Carstensen</author>
