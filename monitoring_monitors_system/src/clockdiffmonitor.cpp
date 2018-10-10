@@ -660,28 +660,25 @@ int main(int argc, char *argv[])
     ros::init(argc, argv, "clockdiffmonitor");
     ros::NodeHandle nh;
 
-
-
-    init("130.75.137.52");
+    init("130.75.137.10");
 
     if ((measure_status = (ip_opt_len ? measure_opt : measure)(&server)) < 0) {
         if (errno)
             perror("measure");
         else
             fprintf(stderr, "measure: unknown failure\n");
-        exit(1);
     }
 
     switch (measure_status) {
     case HOSTDOWN:
         fprintf(stderr, "%s is down\n", hisname);
-        exit(1);
+      break;
     case NONSTDTIME:
         fprintf(stderr, "%s time transmitted in a non-standard format\n", hisname);
-        exit(1);
+      break;
     case UNREACHABLE:
         fprintf(stderr, "%s is unreachable\n", hisname);
-        exit(1);
+      break;
     default:
         break;
     }
@@ -700,26 +697,3 @@ int main(int argc, char *argv[])
     }
     exit(0);
 }
-
-//int main(int argc, char **argv)
-//{
-//    ros::init(argc, argv, "clockdiffmonitor");
-//    ros::NodeHandle nh;
-
-//    ros::Publisher chatter_pub = nh.advertise<std_msgs::String>("chatter", 1000);
-
-//    ros::Rate loop_rate(10);
-//    while (ros::ok())
-//    {
-//        std_msgs::String msg;
-//        msg.data = "hello world";
-
-//        chatter_pub.publish(msg);
-
-//        ros::spinOnce();
-
-//        loop_rate.sleep();
-//    }
-
-//    return 0;
-//}
