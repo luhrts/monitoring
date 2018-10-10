@@ -116,6 +116,7 @@ void GuiConcatenation::suit_unit(std::string& value, std::string& unit){
           time_t unix_time;
           unix_time = double_value;
           form_time = asctime(localtime(&unix_time));
+          form_time.erase(form_time.size()-1, form_time.size());    // removes last element since asctime adds "\n" ad new line
           value = form_time;
           unit = "";
        }
