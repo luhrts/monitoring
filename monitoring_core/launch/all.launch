@@ -1,6 +1,0 @@
-<launch>
-  
-  	<include file="$(find monitoring_core)/launch/monitors.launch" />
-  	<include file="$(find monitoring_fdir)/launch/fdir_example.launch" />
- 
-</launch>
