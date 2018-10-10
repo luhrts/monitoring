@@ -113,6 +113,7 @@ void CpuMonitor::init()
       break;
     }
   }
+
   temp_index = i;
 
 }
@@ -219,6 +220,7 @@ float CpuMonitor::getCPUTemp()
 
   char path[80];
   FILE* file;
+
   sprintf(path, "/sys/class/hwmon/hwmon%d/temp1_input", temp_index);
   file = fopen(path, "r");
   int input = 0;
@@ -299,7 +301,7 @@ int main(int argc, char **argv)
       float cpuavg = cpum.getLoadAvg();
       msg.addValue("load_avg", cpuavg, "", 0,aggregation);
     }
-    if (bTemp)
+    if (bTemp && cpum.temp_index != -1)
     {
       float temp = cpum.getCPUTemp();
       msg.addValue("temp", temp, "C", 0,aggregation);

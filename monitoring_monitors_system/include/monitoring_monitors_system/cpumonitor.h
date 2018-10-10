@@ -72,9 +72,11 @@ public:
    */
   double getCPUCoreLoad(int n);
 
+  int temp_index;   ///< index which temperature sensor is listed as the cpu temperature sensor
+
+
 private:
   std::vector<unsigned long long> lastTotalUser, lastTotalUserLow, lastTotalSys, lastTotalIdle; ///< vector to save the previous jiffie states of each cpu core and for overall
-  int temp_index;   ///< index which temperature sensor is listed as the cpu temperature sensor
   void init();      ///< inits the jiffie state vectors aswell as the temp_index
 
 };
