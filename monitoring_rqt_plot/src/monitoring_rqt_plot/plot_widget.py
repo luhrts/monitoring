@@ -52,76 +52,12 @@ import rospy
 
 from . rosplot import ROSData, RosPlotException
 
-from std_msgs.msg import String
 from monitoring_msgs.msg import *
-
-monitoring_topic_overview_list = []
-testlist = []
-
-def monitoring_listener():
-    """
-    retrieve just one message from the monitoring topic,
-    containing the MonitoringArray
-    """
-    msg = rospy.wait_for_message("monitoring", MonitoringArray)
-    return msg
-
-def monitoring_topic_overview_list_manager(msg):
-    global monitoring_topic_msg
-    monitoring_topic_msg = msg
-    for element in msg.infos:
-        if not element.name in monitoring_topic_overview_list:
-            monitoring_topic_overview_list.append(element.name)
-            rospy.loginfo(element.name)
-            #testp, testn = get_topic_name(element.name)
-            #rospy.loginfo("testp: %s", testp)
-            testlist.append({'name':element.name,'path': element.name})
-
-def get_topic_name(node_value_name):
-    """
-    retrieve the absolut path to a topic within the MonitoringArray,
-    by searching for the node_value_name and retrieving its position within the Array
-    """
-    msg = monitoring_topic_msg
-    i = 0
-    for element in msg.infos:
-        if node_value_name == str(element.name):
-            topic_absolute_path = "/monitoring/gui/infos[%d]/value" % i
-            return topic_absolute_path, node_value_name
-        i = i + 1
-
-def get_node_value_name(topic_name):
-    """
-    Oposing function to get_topic_name
-    get absolute path in MonitoringArray to topic,
-    convert the string to access the msg element at the correct spot
-    and retrieve the node_value_name
-    """
-    msg = monitoring_listener()
-    temp = str(topic_name)
-    temp = temp.replace("value","key")
-    temp = temp.replace("keys", "values")
-    temp = temp.replace("/monitoring/","msg.")
-    temp = temp.replace("/",".")
-    temp_eval = eval(temp)
-    node_value_name = temp_eval
-    return(node_value_name)
-
-def check_value_existence(topic_absolute_path, node_value_name):
- #   rospy.loginfo("check existence - topic: %s node: %s", topic_absolute_path, node_value_name)
-#    temp_str = topic_absolute_path
-#    temp_str = temp_str.replace("value","name")
-#    temp_str = temp_str.replace("/monitoring/gui/","monitoring_topic_msg.")
-#    temp_str = temp_str.replace("/",".")
-#    temp_name = eval(temp_str)
-    if topic_absolute_path == node_value_name:
-        return True
-    else:
-        return False
 
 class PlotWidget(QWidget):
     _redraw_interval = 40
     list_of_elements_in_plot = []
+    monitoring_topic_overview_list = []
 
     def __init__(self, initial_topics=None, start_paused=False):
         super(PlotWidget, self).__init__()
@@ -148,7 +84,13 @@ class PlotWidget(QWidget):
         self._update_plot_timer = QTimer(self)
         self._update_plot_timer.timeout.connect(self.update_plot)
 
-        rospy.Subscriber("/monitoring/gui", Gui, monitoring_topic_overview_list_manager)
+        rospy.Subscriber("/monitoring/gui", Gui, self.monitoring_topic_overview_list_manager)
+        
+    def monitoring_topic_overview_list_manager(self, msg):
+        
+        for element in msg.infos:
+            if not element.name in self.monitoring_topic_overview_list:
+                self.monitoring_topic_overview_list.append(element.name)
 
     def switch_data_plot_widget(self, data_plot):
 
@@ -165,21 +107,14 @@ class PlotWidget(QWidget):
     @Slot()
     def on_refresh_list_button_clicked(self):
         self.listWidget.clear()
-        """
-        msg = monitoring_listener()
-        for element in msg.info[0].values:
-            self.listWidget.addItem(element.key)
-        """
-        for element in monitoring_topic_overview_list:
+        for element in self.monitoring_topic_overview_list:
             self.listWidget.addItem(element)
 
     @Slot()
     def on_subscribe_topic_button_clicked(self):
-        topic_absolute_path, node_value_name = get_topic_name(self.listWidget.currentItem().text())
-        #topic_name = self.listWidget.currentItem().text()
-        if topic_absolute_path not in self.list_of_elements_in_plot:
-            self.list_of_elements_in_plot.append(topic_absolute_path)
-            self.add_topic(topic_absolute_path, node_value_name)
+        node_value_name = self.listWidget.currentItem().text()
+        if node_value_name not in self.list_of_elements_in_plot:
+            self.add_topic(node_value_name)
 
     @Slot(bool)
     def on_pause_button_clicked(self, checked):
@@ -199,24 +134,21 @@ class PlotWidget(QWidget):
 
         if self.data_plot is not None:
             needs_redraw = False
-            for topic_absolute_path, rosdata in self._rosdata.items():
-                for element in testlist:
-                    if element['path'] == topic_absolute_path:
-                        if check_value_existence(topic_absolute_path, element['name']):
-                            try:
-                                data_x, data_y = rosdata.next()
-                                if data_x or data_y:
-                                    rospy.logout(data_x)
-                                    rospy.logout(data_y)
-                                    self.data_plot.update_values(topic_absolute_path, data_x, data_y)
-                                    needs_redraw = True
-                            except RosPlotException as e:
-                                qWarning('PlotWidget.update_plot(): error in rosplot: %s' % e)
+            for topic_name, rosdata in self._rosdata.items():
+                try:
+                    data_x, data_y = rosdata.next()
+                    if data_x or data_y:
+                        rospy.logout(data_x)
+                        rospy.logout(data_y)
+                        self.data_plot.update_values(topic_name, data_x, data_y)
+                        needs_redraw = True
+                except RosPlotException as e:
+                    qWarning('PlotWidget.update_plot(): error in rosplot: %s' % e)
             if needs_redraw:
                 self.data_plot.redraw()
 
     def _subscribed_topics_changed(self):
-        #self._update_remove_topic_menu()
+        self._update_remove_topic_menu()
         rospy.logout("_subscribed_topics_changed")
         if not self.pause_button.isChecked():
             rospy.logout("enable timer")
@@ -233,6 +165,7 @@ class PlotWidget(QWidget):
             node_value_name = topic_name
             action = QAction(node_value_name, self._remove_topic_menu)
             action.triggered.connect(make_remove_topic_function(topic_name))
+            
             self._remove_topic_menu.addAction(action)
 
         if len(self._rosdata) > 1:
@@ -242,9 +175,10 @@ class PlotWidget(QWidget):
 
         self.remove_topic_button.setMenu(self._remove_topic_menu)
 
-    def add_topic(self, topic_absolute_path, node_value_name):
+    def add_topic(self, node_value_name):
         topics_changed = False
-        rospy.logwarn("new value with path: %s and name: %s", topic_absolute_path, node_value_name)
+        rospy.logwarn("new value with name: %s", node_value_name)
+        self.list_of_elements_in_plot.append(node_value_name)
         self._rosdata[node_value_name] = ROSData(node_value_name, self._start_time)
         data_x, data_y = self._rosdata[node_value_name].next()
         self.data_plot.add_curve(node_value_name, node_value_name, data_x, data_y)
@@ -257,7 +191,9 @@ class PlotWidget(QWidget):
         self._rosdata[topic_name].close()
         del self._rosdata[topic_name]
         self.data_plot.remove_curve(topic_name)
-        self.list_of_elements_in_plot.remove(topic_name)
+        rospy.logout("remove " + str(topic_name))
+        if topic_name in self.list_of_elements_in_plot:
+                self.list_of_elements_in_plot.remove(topic_name)
         self._subscribed_topics_changed()
 
     def clear_plot(self):
@@ -271,6 +207,9 @@ class PlotWidget(QWidget):
         for topic_name, rosdata in self._rosdata.items():
             rosdata.close()
             self.data_plot.remove_curve(topic_name)
+            if topic_name in self.list_of_elements_in_plot:
+                print topic_name
+                self.list_of_elements_in_plot.remove(topic_name)
         self._rosdata = {}
 
         self._subscribed_topics_changed()

@@ -1,0 +1,8 @@
+ 
+ 
+<launch>
+	
+        <node pkg="monitoring_visualization" type="gui_msg_concat_node" name="gui_msg_concat" output="screen" respawn="true">
+	</node>
+	
+</launch>
