@@ -94,7 +94,7 @@ int main(int argc, char **argv)
     // char value[200];
     if (bUsed)
     {
-      msg.addValue("total_used", kb_main_used, "kb", 0, aggregation);
+      msg.addValue("total_used", kb_main_used, "kB", 0, aggregation);
     }
     if (bPercent)
     {

@@ -121,7 +121,6 @@ void GuiConcatenation::suit_unit(std::string& value, std::string& unit){
        }
        else{
            while(double_value >60){
-               ROS_INFO("unit:%s",unit.c_str());
              std::vector<std::string>::iterator iter=find(Time_unit.begin(),Time_unit.end(),unit);
              try
              {
@@ -158,8 +157,8 @@ std::string GuiConcatenation::double_to_string(double double_value){
 
 }
 void GuiConcatenation::Init_Unit_Vector(){
-    std::string freq_unit[] = {"Hz","KHz","MHz","GHz"};
-    std::string size_unit[] = {"byte","KB","MB","GB","TB"};
+    std::string freq_unit[] = {"Hz","kHz","MHz","GHz"};
+    std::string size_unit[] = {"byte","kB","MB","GB","TB"};
     std::string time_unit[] = {"ms","sec","min","h"};
 
     Freq_unit.insert(Freq_unit.begin(),freq_unit,freq_unit+4);

@@ -3,8 +3,6 @@
     <node pkg="monitoring_visualization" type="gui_msg_concat_node" name="gui_msg_concat_node" output="screen" respawn="true">
     </node>
 
-
-
     <include file="$(find monitoring_monitors_system)/launch/cpu_monitor.launch" />
     <include file="$(find monitoring_monitors_system)/launch/nw_monitor.launch" />
     <include file="$(find monitoring_monitors_system)/launch/ram_monitor.launch" />

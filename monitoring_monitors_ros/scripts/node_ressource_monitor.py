@@ -101,10 +101,11 @@ def gather_info():
             break
         try:
             print_to_console_and_monitor(i.name, i.pid)
-        except Exception:
+        except Exception as e:
             if rospy.is_shutdown():
                 break
-            rospy.logerr("Node: %s (pid: %d), not found - no such process", i.name, i.pid)
+            rospy.logerr("[NodeResourceMonitor ]Node: %s (pid: %d)", i.name, i.pid)
+            rospy.logerr("[NodeResourceMonitor ]%s", str(e))
 
 
 def print_to_console_and_monitor(name, pid):
