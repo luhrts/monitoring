@@ -36,9 +36,22 @@
 
 #include "monitoring_monitors_system/cpumonitor.h"
 
+
+inline bool file_exists_test (const std::string& name) {
+    if (FILE *file = fopen(name.c_str(), "r")) {
+        fclose(file);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
 CpuMonitor::CpuMonitor()
 {
   init();
+  temp_index_ = 1;
+
 }
 
 CpuMonitor::~CpuMonitor()
@@ -109,12 +122,24 @@ void CpuMonitor::init()
     if (strcmp(name, "coretemp") == 0)
     {	//check which is coretemp
 
+      sprintf(path, "/sys/class/hwmon/hwmon%d/temp10_input", i);
+      if (file_exists_test(path))
+      {
+        temp_index_ = 10;
+      }
+
+      sprintf(path, "/sys/class/hwmon/hwmon%d/temp1_input", i);
+      if (file_exists_test(path))
+      {
+        temp_index_ = 1;
+      }
+
       corefound = true;
       break;
     }
   }
 
-  temp_index = i;
+  hwmon_index_ = i;
 
 }
 
@@ -221,7 +246,7 @@ float CpuMonitor::getCPUTemp()
   char path[80];
   FILE* file;
 
-  sprintf(path, "/sys/class/hwmon/hwmon%d/temp1_input", temp_index);
+  sprintf(path, "/sys/class/hwmon/hwmon%d/temp%d_input", hwmon_index_, temp_index_);
   file = fopen(path, "r");
   int input = 0;
   fscanf(file, "%d", &input);
@@ -301,7 +326,7 @@ int main(int argc, char **argv)
       float cpuavg = cpum.getLoadAvg();
       msg.addValue("load_avg", cpuavg, "", 0,aggregation);
     }
-    if (bTemp && cpum.temp_index != -1)
+    if (bTemp && cpum.hwmon_index_ != -1)
     {
       float temp = cpum.getCPUTemp();
       msg.addValue("temp", temp, "C", 0,aggregation);
