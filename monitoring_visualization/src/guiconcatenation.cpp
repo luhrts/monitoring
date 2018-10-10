@@ -12,6 +12,7 @@ GuiConcatenation::GuiConcatenation(ros::NodeHandle& n) {
                         &GuiConcatenation::monitor_cb, this);
 	error_sub = n.subscribe("/monitoring/errors", 1000,
 			&GuiConcatenation::error_cb, this);
+        GuiConcatenation::Init_Unit_Vector();
 
 
 }
@@ -49,11 +50,12 @@ void GuiConcatenation::monitor_cb(monitoring_msgs::MonitoringArray ma) {
 
 			gi.name = name;
 			//gi.description = mi.values[i].;
+
 			gi.value = mi.values[i].value;
 			gi.errorlevel = mi.values[i].errorlevel;
 			gi.unit = mi.values[i].unit;
                         meanerror += mi.values[i].errorlevel;
-
+                        suit_unit(gi.value, gi.unit);
 			msg.infos.push_back(gi);
 
 
@@ -67,7 +69,105 @@ void GuiConcatenation::monitor_cb(monitoring_msgs::MonitoringArray ma) {
 	}
 
 }
+void GuiConcatenation::suit_unit(std::string& value, std::string& unit){
+    double double_value = atof(value.c_str());
 
+    if(std::count(Freq_unit.begin(),Freq_unit.end(),unit) != 0){
+      while(double_value >1000){
+        std::vector<std::string>::iterator iter=find(Freq_unit.begin(),Freq_unit.end(),unit);
+        try
+        {
+            iter +=1;
+            unit = *iter;
+            double_value = double_value/1000;
+        }
+        catch (std::exception& e)
+        {
+        ROS_WARN("Too large Frequency ,cannot transfer unit ");
+        }
+      }
+      value = double_to_string(double_value);
+    }
+    if(std::count(Size_unit.begin(),Size_unit.end(),unit) != 0){
+
+      while(double_value >1024){
+        std::vector<std::string>::iterator iter=std::find(Size_unit.begin(),Size_unit.end(),unit);
+
+        try
+        {
+            iter +=1;
+            unit = *iter;
+
+            double_value = double_value/1024;
+        }
+        catch (std::exception& e)
+        {
+        ROS_WARN("Too large Size ,cannot transfer unit ");
+
+        }
+      }
+      value = double_to_string(double_value);
+
+    }
+    if(std::count(Time_unit.begin(),Time_unit.end(),unit) != 0){
+        std::string form_time = "";
+       if(double_value > 31536000)//more than one year -> linux time
+          {
+          time_t unix_time;
+          unix_time = double_value;
+          form_time = asctime(gmtime(&unix_time));
+          value = form_time;
+          unit = " ";
+       }
+       else{
+           while(double_value >60){
+               ROS_INFO("unit:%s",unit.c_str());
+             std::vector<std::string>::iterator iter=find(Time_unit.begin(),Time_unit.end(),unit);
+             try
+             {
+                 iter +=1;
+                 unit = *iter;
+                 double_value = floor(double_value/60);
+                 double remainder = fmod(double_value , 60);
+                 form_time = double_to_string(remainder)+unit+form_time;
+             }
+             catch (std::exception& e)
+             {
+             ROS_WARN("Too long time ,cannot transfer unit ");
+             }
+           value = form_time;
+           unit = " ";
+           }
+
+       }
+
+   }
+}
+std::string GuiConcatenation::int_to_string(int int_value){
+    char char_value[1000];
+    sprintf(char_value, "%d", int_value);
+    std::string str = char_value;
+    return str;
+
+}
+std::string GuiConcatenation::double_to_string(double double_value){
+    char char_value[1000];
+    sprintf(char_value, "%4.4f", double_value);
+    std::string str = char_value;
+    return str;
+
+}
+void GuiConcatenation::Init_Unit_Vector(){
+    std::string freq_unit[] = {"Hz","KHz","MHz","GHz"};
+    std::string size_unit[] = {"byte","KB","MB","GB","TB"};
+    std::string time_unit[] = {"ms","sec","min","h"};
+
+    Freq_unit.insert(Freq_unit.begin(),freq_unit,freq_unit+4);
+    Size_unit.insert(Size_unit.begin(),size_unit,size_unit+5);
+    Time_unit.insert(Time_unit.begin(),time_unit,time_unit+4);
+
+
+}
 monitoring_msgs::Gui GuiConcatenation::getMsg() {
 
   monitoring_msgs::Gui ret = msg;
