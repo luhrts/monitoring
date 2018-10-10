@@ -122,17 +122,7 @@ void CpuMonitor::init()
     if (strcmp(name, "coretemp") == 0)
     {	//check which is coretemp
 
-      sprintf(path, "/sys/class/hwmon/hwmon%d/temp10_input", i);
-      if (file_exists_test(path))
-      {
-        temp_index_ = 10;
-      }
 
-      sprintf(path, "/sys/class/hwmon/hwmon%d/temp1_input", i);
-      if (file_exists_test(path))
-      {
-        temp_index_ = 1;
-      }
 
       corefound = true;
       break;
@@ -141,6 +131,19 @@ void CpuMonitor::init()
 
   hwmon_index_ = i;
 
+  sprintf(path, "/sys/class/hwmon/hwmon%d/temp%d_input", hwmon_index_, 10);
+  if (file_exists_test(path))
+  {
+    ROS_INFO("%s exists", path);
+    temp_index_ = 10;
+  }
+
+  sprintf(path, "/sys/class/hwmon/hwmon%d/temp%d_input", hwmon_index_, 1);
+  if (file_exists_test(path))
+  {
+    ROS_INFO("%s exists", path);
+    temp_index_ = 1;
+  }
 }
 
 
