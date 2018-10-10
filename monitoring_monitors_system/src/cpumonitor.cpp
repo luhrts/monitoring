@@ -110,7 +110,7 @@ void CpuMonitor::init()
   bool corefound = false;
   int i = -1;
   char path[80];
-  while (!corefound && i < 2)
+  while (!corefound && i < 4)
   { //TODO: was wenn kein coretemp gefunden || Probleme mit i! TODO: in den construcktor verschieben.
     i++;
     FILE* fname;
@@ -121,9 +121,6 @@ void CpuMonitor::init()
     fclose(fname);
     if (strcmp(name, "coretemp") == 0)
     {	//check which is coretemp
-
-
-
       corefound = true;
       break;
     }
