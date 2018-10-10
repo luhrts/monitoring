@@ -1,4 +1,4 @@
-# System monitorui
+# System monitoring
 
 # Overview
 There are the monitor for System
@@ -6,7 +6,7 @@ There are the monitor for System
 **Description**
 * **clock_diference-monitor**: Checksum routine for Internet Protocol family headers.This routine is very heavily used in the network,code should be modified for each CPU to be as fast as possible.This implementation is TAHOE version.
 
-* **cpu-monitor**:watch the CPU frequence ,last and temperatur
+* **cpu-monitor**:watch the CPU frequency ,last and temperatur
 
 * **network-monitor**:watch the network,speed and the number of the package will be watched and network error will be checked
 

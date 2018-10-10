@@ -10,7 +10,7 @@ This is the monitor for ROS
 
 * **TF-monitor**:this is a monitor for TF-tree ,check the TF-tree if it is in right configuation.User can see the transform for each frame.Parent Change ,Autohrity Change ,Speration tree,loop tree  for tf_tree will be checked and warned.
 
-* **Statistics-monitor**: this is a monitor for topic:Statistics. the publisher und subscriber for all the topic will be checked if it work in right frequence and size.
+* **Statistics-monitor**: this is a monitor for topic:Statistics. the publisher und subscriber for all the topic will be checked if it work in right frequency and size.
 
 * **node-monitor**: this is a monitor for ros-node,check the node if it works or not 
 
