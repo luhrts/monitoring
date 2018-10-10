@@ -115,9 +115,9 @@ void GuiConcatenation::suit_unit(std::string& value, std::string& unit){
           {
           time_t unix_time;
           unix_time = double_value;
-          form_time = asctime(gmtime(&unix_time));
+          form_time = asctime(localtime(&unix_time));
           value = form_time;
-          unit = " ";
+          unit = "";
        }
        else{
            while(double_value >60){
@@ -135,7 +135,7 @@ void GuiConcatenation::suit_unit(std::string& value, std::string& unit){
              ROS_WARN("Too long time ,cannot transfer unit ");
              }
            value = form_time;
-           unit = " ";
+           unit = "";
            }
 
        }
