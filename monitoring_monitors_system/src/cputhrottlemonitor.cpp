@@ -99,25 +99,18 @@ int main(int argc, char **argv)
     switch (monitor_mode){
     case 1 :
       aggregation = AggregationStrategies::LAST;
-      ROS_INFO("work in AggregationStrategies::LAST");
       break;
     case 2 :
       aggregation = AggregationStrategies::FIRST;
-      ROS_INFO("work in AggregationStrategies::FIRST");
       break;
     case 3 :
       aggregation = AggregationStrategies::MIN;
-      ROS_INFO("work in AggregationStrategies::MIN");
       break;
-
     case 4 :
       aggregation = AggregationStrategies::MAX;
-      ROS_INFO("work in AggregationStrategies::MAX");
       break;
-
     case 5 :
       aggregation = AggregationStrategies::AVG;
-      ROS_INFO("work in AggregationStrategies::AVG");
       break;
 
     }
@@ -128,7 +121,6 @@ int main(int argc, char **argv)
 
   Monitor msg(n, "CPU-Frequency-Monitor" );
 
-  ROS_INFO("Init done");
   while (ros::ok())
   {
     for(int i=0; i<numCPU; i++) {

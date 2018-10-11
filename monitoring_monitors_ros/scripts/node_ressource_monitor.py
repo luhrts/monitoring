@@ -45,6 +45,7 @@ from monitoring_core.monitor import AggregationStrategies
 
 ID = "NODEINFO"
 MONITOR_ = Monitor("node_ressource_monitor")
+monitor_mode = 1
 
 class NODE(object):
     def __init__(self, name, pid):
@@ -64,10 +65,8 @@ def init():
     Return: frequency and filter_type
     """
     if rospy.has_param('monitor_mode'):
-	global monitor_mode
         monitor_mode = rospy.get_param('monitor_mode')
     else:
-	global monitor_mode
         monitor_mode = 1
     if rospy.has_param('node_ressource_monitor/frequency'):
         frequency = rospy.get_param('node_ressource_monitor/frequency')
@@ -121,7 +120,7 @@ def gather_info():
             break
         try:
             print_to_console_and_monitor(i.name, i.pid)
-        except Exception as e:
+        except TestException as e:
             if rospy.is_shutdown():
                 break
             rospy.logerr("[NodeResourceMonitor ]Node: %s (pid: %d)", i.name, i.pid)
@@ -173,6 +172,7 @@ def print_to_console_and_monitor(name, pid):
             if key == "cpu_percent":
                 temp = psutil.Process(pid)
                 value = temp.cpu_percent(0.1)
+
             else:
                 value = node_process_info.get(key)
             if VALUE_DICT.has_key(key):
@@ -271,6 +271,8 @@ def io_counters_to_monitor(value, name):
     The for-loop iterates over all fields contained within the named tuple and adds
     the values to the monitoring system
     """
+    if value is None:       # Important to filter processes with no io counters (ping_monitor)
+        return
 
     for field, value in value._asdict().iteritems():
         monitor_string = name + "/io_counters_" + str(field)

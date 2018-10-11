@@ -1,1 +1,4 @@
 machines: ["130.75.137.10", "google.de"]
+
+monitoring:
+  frequency: 1   #Publish and calculation frequency
