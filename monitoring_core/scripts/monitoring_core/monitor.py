@@ -43,9 +43,6 @@ class AggregationStrategies(Enum):
 	MAX = 4
 	AVG = 5
 	
-	
-
-
 class Monitor(object):
     def __init__(self, monitorDescription, autoPublishing=True):
         self.ma = MonitoringArray()

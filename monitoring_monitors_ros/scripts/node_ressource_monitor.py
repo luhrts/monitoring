@@ -36,6 +36,7 @@ import traceback
 import rospy
 import psutil
 import rosnode
+import socket
 
 from socket import error as socket_error
 
@@ -90,7 +91,12 @@ def get_node_list():
     for node_name in node_array_temp:
         try:
             node_api = rosnode.get_api_uri(rospy.get_master(), node_name)
+
+            if socket.gethostname() not in node_api[2]:         # Only Get Info for Local Nodes
+                continue
+
             code, msg, pid = xmlrpclib.ServerProxy(node_api[2]).getPid(ID)
+
             node_list.append(NODE(node_name, pid))
             rospy.logdebug("Node_name: " + node_list[j].name + " Node_PID: " + str(node_list[j].pid))
             j += 1
@@ -120,7 +126,7 @@ def gather_info():
             break
         try:
             print_to_console_and_monitor(i.name, i.pid)
-        except TestException as e:
+        except Exception as e:
             if rospy.is_shutdown():
                 break
             rospy.logerr("[NodeResourceMonitor ]Node: %s (pid: %d)", i.name, i.pid)
