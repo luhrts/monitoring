@@ -1,7 +1,7 @@
 # Monitoring Core
 
 # Overview
-There are the monitor for System
+Base Classes for other Monitors
 
 **Description**
 * **monitor.cpp/Class_Monitor**:Class Monitor - A class from which other monitors inherit.
