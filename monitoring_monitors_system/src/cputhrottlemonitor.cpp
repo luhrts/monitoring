@@ -86,7 +86,7 @@ int main(int argc, char **argv)
     maxFrequencys.push_back(readMaxCPUFrequency(i));
   }
 
-  float freq = 1;
+  double freq = 1;
   int monitor_mode;
   AggregationStrategies aggregation;
 
@@ -124,7 +124,7 @@ int main(int argc, char **argv)
   while (ros::ok())
   {
     for(int i=0; i<numCPU; i++) {
-      float freq = readCurCPUFrequency(i);
+      double freq = readCurCPUFrequency(i);
       float max_freq = readScalingMaxCPUFrequency(i);
 
       msg.addValue("cpu" + std::to_string(i) + "/frequency", freq/1000/1000, "GHz", 0.0);

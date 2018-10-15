@@ -4,7 +4,7 @@ WifiStrengthMonitor::WifiStrengthMonitor(ros::NodeHandle &n)
 {
 
 
-  float freq = 1;
+  double freq = 1;
   if (!n.getParam("frequency", freq))
   {
     ROS_WARN("No frequency supplied. Working with %f Hz.", freq);

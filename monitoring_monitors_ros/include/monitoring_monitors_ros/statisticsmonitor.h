@@ -41,7 +41,7 @@
 
 struct StatisticsInfo{
   std::string topic;
-  float frequency;
+  double frequency;
   std::string sub;
   std::string pub;
   int size;
@@ -53,12 +53,12 @@ struct TopicRequirement{
   std::string topic;
   std::string source;
   std::string destination;
-  float frequency;
+  double frequency;
   int size;
-  float dFrequency;
+  double dFrequency;
   int dSize;
   std::string type;
-  float errorlevel;
+  double errorlevel;
 };
 
 /**
@@ -88,7 +88,7 @@ private:
   void deleteOldMessages();
   ros::Subscriber stats_sub;  ///< subscirber for topic statistics
   Monitor *msg;   ///< msg that saves information that will be published
-  float freq;   ///< working frequency
+  double freq;   ///< working frequency
   std::vector<StatisticsInfo> statisticData;    ///< contains data from ros_statistics
   std::vector<TopicRequirement> topicRequirements;    ///< contains user defined topic requirements
 

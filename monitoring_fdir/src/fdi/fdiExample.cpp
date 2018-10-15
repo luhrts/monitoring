@@ -11,7 +11,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "user_fdi");
   ros::NodeHandle n("~");
   ros::Publisher pub = n.advertise<monitoring_msgs::Error>("/monitoring/errors", 1000);
-  float freq = 1;
+  double freq = 1;
   if (!n.getParam("frequency", freq))
   {
     freq = 1;

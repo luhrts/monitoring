@@ -1,7 +1,7 @@
 # Monitoring System
 
 # Overview
-This is a python and C++ library with ROS interface and designed to watch the System  during robot runing.
+This is a python and C++ library with ROS interface and designed to monitor the ROS-System during robot operation.
 
 The computer system and the ROS communication will be watched .All message will be published in a ROS topic and show with a rqt-plugin.
 User can write the fault detection and recovery itself by SDK.
