@@ -141,11 +141,10 @@ def print_to_console_and_monitor(name, pid):
     """
     #get all values belonging to pid
     try:
-        node_process_info = get_process_info(pid)
+        node_process_info = psutil.Process(pid)
     except psutil._exceptions.NoSuchProcess:
         #rospy.logerr("No process with pid: " + pid) #THROWS ERROR PLS FIX
-        node_process_info = {} #Need to initialize var in order to prevent error
-
+        return
     #check if there is a node with the same name in filter config
     if FILTER_TYPE_ == Filter_type.WHITLELIST:
         if rospy.has_param('/node_ressource_monitor' + name):
@@ -157,33 +156,29 @@ def print_to_console_and_monitor(name, pid):
         if rospy.has_param('/node_ressource_monitor' + name):
             blacklist_value_= rospy.get_param('/node_ressource_monitor' + name)
             default_value = {'values':['cpu_affinity', 'cpu_percent', 'cpu_times', 'create_time',
-			     'exe','io_counters', 'memory_info', 'memory_percent', 'name', 'num_ctx_switches', 'status']}
+                             'exe','io_counters', 'memory_info', 'memory_percent', 'name', 'num_ctx_switches', 'status']}
 
-	    for i in blacklist_value_['values']:
-		if i == default_value['values']:
-		    del default_value['values'].i
-	    node_value_filter = default_value
+            for i in blacklist_value_['values']:
+                if i == default_value['values']:
+                    del default_value['values'].i
+            node_value_filter = default_value
         else:
             rospy.logwarn(name + " has no filter entry")
             return
     #Define DEFAULT values to publish
     if FILTER_TYPE_ == Filter_type.DEFAULT:
         node_value_filter = {'values':['cpu_affinity', 'cpu_times', 'create_time',
-			     'exe','io_counters', 'memory_info', 'memory_percent', 'name', 'num_ctx_switches', 'status']}
+                             'exe','io_counters', 'memory_info', 'memory_percent', 'name', 'num_ctx_switches', 'status']}
     #iterate over all keys given for node in node_filter
     for key in node_value_filter.get("values"):
-        #if psutil delivers a value for a key, send this value to its dedicated function
-        if key in node_process_info.keys():
-            if key == "cpu_percent":
-                temp = psutil.Process(pid)
-                value = temp.cpu_percent(0.1)
 
-            else:
-                value = node_process_info.get(key)
-            if VALUE_DICT.has_key(key):
-                #call dedicated function for key which adds relevant monitoring parameters to
-                #/monitoring topic
-                VALUE_DICT[key](value, name)
+        method_to_call = getattr(node_process_info, key)
+        value = method_to_call()
+
+        if VALUE_DICT.has_key(key):
+            #call dedicated function for key which adds relevant monitoring parameters to
+            #/monitoring topic
+            VALUE_DICT[key](value, name)
 
 """
 psutil values to monitor functions
@@ -531,6 +526,7 @@ VALUE_DICT = {
 if __name__ == '__main__':
     rospy.init_node("node_ressource_monitor", anonymous=True)
     FREQUENCY, FILTER_TYPE_ = init()
+    rospy.loginfo(FREQUENCY)
     RATE = rospy.Rate(FREQUENCY)
     # create MONITOR_ object the node had no name ....
     MONITOR_ = Monitor("node_ressource_monitor")
