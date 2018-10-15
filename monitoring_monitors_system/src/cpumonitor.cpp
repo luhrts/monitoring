@@ -279,7 +279,7 @@ int main(int argc, char **argv)
   n.param<bool>("percentPerCore", bPercentPerCore, true);
 
   bool bTemp;
-  n.param<bool>("temperature", bTemp, true);
+  n.param<bool>("temperature", bTemp, false);
   int monitor_mode;
   n.param<int>("monitor_mode", monitor_mode,1);
   AggregationStrategies aggregation;

@@ -31,7 +31,11 @@ int main(int argc, char* argv[])
 
       for(int i = 0; i < ros_machines.size(); ++i)
       {
-        monitor.addValue(ros_machines[i]+"/delay", pingers[i]->delay, "ms", 0.0);
+        if (pinger[i]->delay == -1){
+          monitor.addValue(ros_machines[i]+"/delay", "Destination Host Unreachable", "", 1.0);
+        } else {
+          monitor.addValue(ros_machines[i]+"/delay", pingers[i]->delay, "ms", 0.0);
+        }
       }
 
       ros::spinOnce();
