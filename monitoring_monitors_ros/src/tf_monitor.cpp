@@ -41,7 +41,7 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
       transforms_[frame] = TransformData();
       transforms_[frame].frame = frame;
 
-      ROS_INFO("New Frame: %s", frame.c_str());
+      ROS_DEBUG("New Frame: %s", frame.c_str());
       new_frame = true;
       NeedToCheckSperationAndLoop =true;
       wait_times_offset=0;
@@ -139,24 +139,24 @@ void TFMonitor::process_callback(const tf::tfMessage& message, const std::string
   if( NeedToCheckSperationAndLoop==true && wait_times_offset>10){
 
     map<std::string, TransformData>::iterator iter=transforms_.begin();
-    ////Seperation check
-    for(iter = transforms_.begin(); iter!=transforms_.end(); iter++){
+//    ////Seperation check
+//    for(iter = transforms_.begin(); iter!=transforms_.end(); iter++){
 
-      if(transforms_.count(iter->second.parent)==0 && iter->second.parent !=base_parent_frame){
+//      if(transforms_.count(iter->second.parent)==0 && iter->second.parent !=base_parent_frame){
 
-        if(iter->first==base_parent_frame || base_parent_frame==""){
-          base_parent_frame=iter->second.parent;
-          ROS_INFO("New base for tf_tree: %s",iter->second.parent.c_str());
+//        if(iter->first==base_parent_frame || base_parent_frame==""){
+//          base_parent_frame=iter->second.parent;
+//          ROS_DEBUG("New base for tf_tree: %s",iter->second.parent.c_str());
 
-        }
-        else{
-          ROS_WARN("TF_Monitor: multi base frame:New base:%s and Old base:%s ",iter->second.parent.c_str(),base_parent_frame.c_str());
-          monitor_->addValue("multi base frame : Old base:"+base_parent_frame+" multi base: "+iter->second.parent, -1, "", 1.0);
+//        }
+//        else{
+//          ROS_WARN("TF_Monitor: multi base frame:New base:%s and Old base:%s ",iter->second.parent.c_str(),base_parent_frame.c_str());
+//          monitor_->addValue("multi base frame : Old base:"+base_parent_frame+" multi base: "+iter->second.parent, -1, "", 1.0);
 
-        }
-      }
+//        }
+//      }
 
-    }
+//    }
     ////loop check
     std::string checkname;
     std::vector<std::string> checked_frames;
@@ -200,13 +200,8 @@ int main(int argc, char ** argv)
   //Initialize ROS
   init(argc, argv, "tf_monitor");
 
-  std::string searched_param;
-  std::string tf_prefix;
   ros::NodeHandle local_nh("~");
-  local_nh.searchParam("tf_prefix", searched_param);
-  local_nh.getParam(searched_param, tf_prefix);
-  local_nh.searchParam("monitor_mode", searched_param);
-  local_nh.getParam(searched_param, monitor_mode);
+  local_nh.param<int>("monitor_mode", monitor_mode, 4);
 
   switch (monitor_mode){
   case 1 :
@@ -225,18 +220,6 @@ int main(int argc, char ** argv)
     aggregation = AggregationStrategies::AVG;
     break;
 
-  }
-
-  //Make sure we don't start before recieving time when in simtime
-  int iterations = 0;
-  while (ros::Time::now() == ros::Time())
-  {
-    if (++iterations > 10)
-    {
-      ROS_INFO("tf_monitor waiting for time to be published");
-      iterations = 0;
-    }
-    ros::WallDuration(0.1).sleep();
   }
 
   TFMonitor monitor;

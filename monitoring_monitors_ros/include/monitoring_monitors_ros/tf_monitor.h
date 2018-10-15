@@ -98,6 +98,6 @@ private:
 };
 
   AggregationStrategies aggregation;
-  int monitor_mode;
+  int monitor_mode = 4;
 
 #endif // TF_MONITOR_H
