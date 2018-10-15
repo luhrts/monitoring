@@ -106,41 +106,48 @@ void CpuMonitor::init()
   }
   fclose(file);
 
-  //tempreature file init
-  bool corefound = false;
-  int i = -1;
-  char path[80];
-  while (!corefound && i < 4)
-  { //TODO: was wenn kein coretemp gefunden || Probleme mit i! TODO: in den construcktor verschieben.
-    i++;
-    FILE* fname;
-    sprintf(path, "/sys/class/hwmon/hwmon%d/name", i);
-    fname = fopen(path, "r");
-    char name[30];
-    fscanf(fname, "%29s", name);
-    fclose(fname);
-    if (strcmp(name, "coretemp") == 0)
-    {	//check which is coretemp
-      corefound = true;
-      break;
-    }
-  }
+//  try {
+//    //tempreature file init
+//    bool corefound = false;
+//    int i = -1;
+//    char path[80];
+//    while (!corefound && i < 4)
+//    { //TODO: was wenn kein coretemp gefunden || Probleme mit i! TODO: in den construcktor verschieben.
+//      i++;
+//      FILE* fname;
+//      sprintf(path, "/sys/class/hwmon/hwmon%d/name", i);
+//      fname = fopen(path, "r");
+//      char name[30];
+//      fscanf(fname, "%29s", name);
+//      fclose(fname);
+//      if (strcmp(name, "coretemp") == 0)
+//      {	//check which is coretemp
+//        corefound = true;
+//        break;
+//      }
+//    }
 
-  hwmon_index_ = i;
+//    sprintf(path, "/sys/class/hwmon/hwmon%d/temp%d_input", hwmon_index_, 10);
+//    if (file_exists_test(path))
+//    {
+//      ROS_INFO("%s exists", path);
+//      temp_index_ = 10;
+//    }
 
-  sprintf(path, "/sys/class/hwmon/hwmon%d/temp%d_input", hwmon_index_, 10);
-  if (file_exists_test(path))
-  {
-    ROS_INFO("%s exists", path);
-    temp_index_ = 10;
-  }
+//    sprintf(path, "/sys/class/hwmon/hwmon%d/temp%d_input", hwmon_index_, 1);
+//    if (file_exists_test(path))
+//    {
+//      ROS_INFO("%s exists", path);
+//      temp_index_ = 1;
+//    }
 
-  sprintf(path, "/sys/class/hwmon/hwmon%d/temp%d_input", hwmon_index_, 1);
-  if (file_exists_test(path))
-  {
-    ROS_INFO("%s exists", path);
-    temp_index_ = 1;
-  }
+//    hwmon_index_ = i;
+
+//  } catch (...){
+//    hwmon_index_ = -1;
+//  }
+
+  hwmon_index_ = -1;
 }
 
 
