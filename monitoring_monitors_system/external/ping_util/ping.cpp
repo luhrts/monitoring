@@ -32,7 +32,6 @@ public:
     destination_ = *resolver_.resolve(query);
     //        destination_adress_ = boost::asio::ip::address_v4::from_string(destination);
     destination_adress_ = destination_.address();
-    std::cout << destination_adress_ << std::endl;
 
     start_send();
     start_receive();
@@ -71,7 +70,6 @@ private:
   void handle_timeout()
   {
     if (num_replies_ == 0) {
-      std::cout << "Request timed out" << std::endl;
       delay = -1;
     }
 
