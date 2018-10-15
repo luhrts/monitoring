@@ -70,6 +70,7 @@ void GuiConcatenation::monitor_cb(monitoring_msgs::MonitoringArray ma) {
 
 }
 void GuiConcatenation::suit_unit(std::string& value, std::string& unit){
+//    ROS_INFO("v: %s, u: %s", value.c_str(), unit.c_str());
     double double_value = atof(value.c_str());
 
     if(std::count(Freq_unit.begin(),Freq_unit.end(),unit) != 0){
@@ -121,23 +122,23 @@ void GuiConcatenation::suit_unit(std::string& value, std::string& unit){
           unit = "";
        }
        else{
-           while(double_value >60){
-             std::vector<std::string>::iterator iter=find(Time_unit.begin(),Time_unit.end(),unit);
-             try
-             {
-                 iter +=1;
-                 unit = *iter;
-                 double_value = floor(double_value/60);
-                 double remainder = fmod(double_value , 60);
-                 form_time = double_to_string(remainder)+unit+form_time;
-             }
-             catch (std::exception& e)
-             {
-             ROS_WARN("Too long time ,cannot transfer unit ");
-             }
-           value = form_time;
-           unit = "";
-           }
+//           while(double_value >60){
+//             std::vector<std::string>::iterator iter=find(Time_unit.begin(),Time_unit.end(),unit);
+//             try
+//             {
+//                 iter +=1;
+//                 unit = *iter;
+//                 double_value = floor(double_value/60);
+//                 double remainder = fmod(double_value , 60);
+//                 form_time = double_to_string(remainder)+unit+form_time;
+//             }
+//             catch (std::exception& e)
+//             {
+//             ROS_WARN("Too long time ,cannot transfer unit ");
+//             }
+//           value = form_time;
+//           unit = "";
+//           }
 
        }
 
