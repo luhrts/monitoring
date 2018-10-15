@@ -85,7 +85,7 @@ class Monitor(object):
     def timercallback(self, event):
         self.publish()
 
-    def addValue(self, key, value, unit, errorlevel, monitor_mode):
+    def addValue(self, key, value, unit, errorlevel, monitor_mode=AggregationStrategies.LAST):
 	def aggregation(mode):
     	    switcher = {
         	1: AggregationStrategies.LAST,
