@@ -264,7 +264,7 @@ float CpuMonitor::getCPUTemp()
   FILE* file;
 
   sprintf(path, "%s/temp1_input", temp_path_);
-  ROS_INFO("checking: %s", path);
+//  ROS_INFO("checking: %s", path);
   file = fopen(path, "r");
   int input = 0;
   fscanf(file, "%d", &input);
