@@ -91,8 +91,7 @@ def get_node_list():
     for node_name in node_array_temp:
         try:
             node_api = rosnode.get_api_uri(rospy.get_master(), node_name)
-
-            if socket.gethostname() not in node_api[2]:         # Only Get Info for Local Nodes
+            if socket.gethostname() not in node_api[2] and socket.gethostbyname(socket.gethostname()) not in node_api[2]:         # Only Get Info for Local Nodes
                 continue
 
             code, msg, pid = xmlrpclib.ServerProxy(node_api[2]).getPid(ID)
@@ -157,7 +156,7 @@ def print_to_console_and_monitor(name, pid):
     if FILTER_TYPE_ == Filter_type.BLACKLIST:
         if rospy.has_param('/node_ressource_monitor' + name):
             blacklist_value_= rospy.get_param('/node_ressource_monitor' + name)
-	    default_value = {'values':['cpu_affinity', 'cpu_percent', 'cpu_times', 'create_time',
+            default_value = {'values':['cpu_affinity', 'cpu_percent', 'cpu_times', 'create_time',
 			     'exe','io_counters', 'memory_info', 'memory_percent', 'name', 'num_ctx_switches', 'status']}
 
 	    for i in blacklist_value_['values']:
@@ -169,7 +168,7 @@ def print_to_console_and_monitor(name, pid):
             return
     #Define DEFAULT values to publish
     if FILTER_TYPE_ == Filter_type.DEFAULT:
-        node_value_filter = {'values':['cpu_affinity', 'cpu_percent', 'cpu_times', 'create_time',
+        node_value_filter = {'values':['cpu_affinity', 'cpu_times', 'create_time',
 			     'exe','io_counters', 'memory_info', 'memory_percent', 'name', 'num_ctx_switches', 'status']}
     #iterate over all keys given for node in node_filter
     for key in node_value_filter.get("values"):
@@ -534,7 +533,6 @@ if __name__ == '__main__':
     FREQUENCY, FILTER_TYPE_ = init()
     RATE = rospy.Rate(FREQUENCY)
     # create MONITOR_ object the node had no name ....
-    rospy.loginfo("init done")
     MONITOR_ = Monitor("node_ressource_monitor")
     while not rospy.is_shutdown():
         try:
