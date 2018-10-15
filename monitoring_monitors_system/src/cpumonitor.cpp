@@ -106,48 +106,58 @@ void CpuMonitor::init()
   }
   fclose(file);
 
-//  try {
-//    //tempreature file init
-//    bool corefound = false;
-//    int i = -1;
-//    char path[80];
-//    while (!corefound && i < 4)
-//    { //TODO: was wenn kein coretemp gefunden || Probleme mit i! TODO: in den construcktor verschieben.
-//      i++;
-//      FILE* fname;
-//      sprintf(path, "/sys/class/hwmon/hwmon%d/name", i);
-//      fname = fopen(path, "r");
-//      char name[30];
-//      fscanf(fname, "%29s", name);
-//      fclose(fname);
-//      if (strcmp(name, "coretemp") == 0)
-//      {	//check which is coretemp
-//        corefound = true;
-//        break;
-//      }
-//    }
+  int id = 0;
 
-//    sprintf(path, "/sys/class/hwmon/hwmon%d/temp%d_input", hwmon_index_, 10);
-//    if (file_exists_test(path))
-//    {
-//      ROS_INFO("%s exists", path);
-//      temp_index_ = 10;
-//    }
+  while (true){
+    sprintf(temp_path_, "/sys/class/hwmon/hwmon%d/", id);
+    if (!file_exists_test(temp_path_))
+    {
+        ROS_INFO("%s does not exists", temp_path_);
+        hwmon_index_ = -1;
+        break;
+    }
 
-//    sprintf(path, "/sys/class/hwmon/hwmon%d/temp%d_input", hwmon_index_, 1);
-//    if (file_exists_test(path))
-//    {
-//      ROS_INFO("%s exists", path);
-//      temp_index_ = 1;
-//    }
 
-//    hwmon_index_ = i;
+    sprintf(temp_path_, "/sys/class/hwmon/hwmon%d/name", id);
+    if (file_exists_test(temp_path_))
+    {
+        ROS_INFO("%s does exists", temp_path_);
+        FILE* fname;
+        fname = fopen(temp_path_, "r");
+        char name[30];
+        fscanf(fname, "%29s", name);
+        fclose(fname);
+        if (strcmp(name, "coretemp") == 0)
+        {	//check which is coretemp
+          ROS_INFO("%s fits", temp_path_);
+          temp_path_[strlen(temp_path_)-5] = '\0';   //remove the name
+          hwmon_index_ = 1;
+          break;
+        }
+    }
 
-//  } catch (...){
-//    hwmon_index_ = -1;
-//  }
+    sprintf(temp_path_, "/sys/class/hwmon/hwmon%d/devices/name", id);
+    if (file_exists_test(temp_path_))
+    {
+        ROS_INFO("%s does exists", temp_path_);
+        FILE* fname;
+        fname = fopen(temp_path_, "r");
+        char name[30];
+        fscanf(fname, "%29s", name);
+        fclose(fname);
+        if (strcmp(name, "coretemp") == 0)
+        {	//check which is coretemp
+          ROS_INFO("%s fits", temp_path_);
+          temp_path_[strlen(temp_path_)-5] = '\0';   //remove the name
+          hwmon_index_ = 1;
+          break;
+        }
+    }
 
-  hwmon_index_ = -1;
+    ++id;
+
+  }
+
 }
 
 
@@ -253,7 +263,8 @@ float CpuMonitor::getCPUTemp()
   char path[80];
   FILE* file;
 
-  sprintf(path, "/sys/class/hwmon/hwmon%d/temp%d_input", hwmon_index_, temp_index_);
+  sprintf(path, "%s/temp1_input", temp_path_);
+  ROS_INFO("checking: %s", path);
   file = fopen(path, "r");
   int input = 0;
   fscanf(file, "%d", &input);

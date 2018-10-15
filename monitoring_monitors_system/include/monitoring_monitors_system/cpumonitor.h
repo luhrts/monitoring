@@ -78,6 +78,8 @@ public:
 private:
   std::vector<unsigned long long> lastTotalUser, lastTotalUserLow, lastTotalSys, lastTotalIdle; ///< vector to save the previous jiffie states of each cpu core and for overall
   void init();      ///< inits the jiffie state vectors aswell as the temp_index
+  char temp_path_[80];
+
 
 };
 

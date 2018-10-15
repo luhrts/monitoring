@@ -1,7 +1,7 @@
 avarage: true   #the Average of the Last Minute. New info every 5s (Calculated by Kernel)
 percent: true   #The Average over frequency/1s in percent
 percentPerCore: true  #like percent but for every core
-temperature: false   #temperature of the CPU
+temperature: true   #temperature of the CPU
 
 monitoring:
   frequency: 1   #Publish and calculation frequency
