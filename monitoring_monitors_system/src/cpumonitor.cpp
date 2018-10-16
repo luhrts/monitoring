@@ -297,7 +297,20 @@ int main(int argc, char **argv)
   n.param<bool>("percentPerCore", bPercentPerCore, true);
 
   bool bTemp;
-  n.param<bool>("temperature", bTemp, false);
+  n.param<bool>("temperature", bTemp, true);
+
+  double warnTemp;
+  n.param<double>("temperature_warn", warnTemp, 80);
+
+  double errorTemp;
+  n.param<double>("temperature_error", errorTemp, 95);
+
+  double warnTotal;
+  n.param<double>("percent_total_warn", warnTotal, 85);
+
+  double errorTotal;
+  n.param<double>("percent_total_error", errorTotal, 95);
+
   int monitor_mode;
   n.param<int>("monitor_mode", monitor_mode,1);
   AggregationStrategies aggregation;
@@ -332,7 +345,14 @@ int main(int argc, char **argv)
     if (bPercent)
     {
       float cpuload = cpum.getCurrentCpuLoad();
-      msg.addValue("load", cpuload, "%", 0,aggregation);
+      double error = 0.0;
+      if (cpuload > warnTotal){
+        error = 0.5;
+      }
+      if (cpuload > errorTotal){
+        error = 0.7;
+      }
+      msg.addValue("load", cpuload, "%", error,aggregation);
     }
     if (bAvarage)
     {
@@ -342,7 +362,14 @@ int main(int argc, char **argv)
     if (bTemp && cpum.hwmon_index_ != -1)
     {
       float temp = cpum.getCPUTemp();
-      msg.addValue("temp", temp, "C", 0,aggregation);
+      double error = 0.0;
+      if (temp > warnTemp){
+        error = 0.5;
+      }
+      if (temp > errorTemp){
+        error = 0.7;
+      }
+      msg.addValue("temp", temp, "C", error, aggregation);
     }
     if (bPercentPerCore)
     {
