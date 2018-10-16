@@ -306,7 +306,7 @@ int main(int argc, char **argv)
   n.param<double>("temperature_error", errorTemp, 95);
 
   double warnTotal;
-  n.param<double>("percent_total_warn", warnTotal, 85);
+  n.param<double>("percent_total_warn", warnTotal, 80);
 
   double errorTotal;
   n.param<double>("percent_total_error", errorTotal, 95);

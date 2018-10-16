@@ -56,6 +56,14 @@ int main(int argc, char **argv)
   n.param<bool>("percent", bPercent, true);
   int monitor_mode;
   n.param<int>("monitor_mode", monitor_mode,1);
+
+  double warnPercent;
+  n.param<double>("percent_total_warn", warnPercent, 80);
+
+  double errorPercent;
+  n.param<double>("percent_total_error", errorPercent, 95);
+
+
   AggregationStrategies aggregation;
   switch (monitor_mode){
   case 1 :
@@ -94,7 +102,14 @@ int main(int argc, char **argv)
     {
       float perc = ((float)kb_main_used / (float)kb_main_total) * 100.0;
 
-      msg.addValue("percentage_used", perc, "%", 0,aggregation);
+      double error = 0.0;
+      if (perc > warnPercent){
+        error = 0.5;
+      }
+      if (perc > errorPercent){
+        error = 0.7;
+      }
+      msg.addValue("percentage_used", perc, "%", error,aggregation);
     }
     ros::spinOnce();
 
