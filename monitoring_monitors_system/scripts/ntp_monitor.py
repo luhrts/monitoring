@@ -48,12 +48,21 @@ if __name__ == '__main__':
     monitor = Monitor("ntp_monitor")
 
     ntp_servers = rospy.get_param('ntp_servers', rosnode.get_machines_by_nodes())
+
+    offset_warn = rospy.get_param('abs_offset_warn', 1.0)
+    offset_error = rospy.get_param('abs_offset_error', 5.0)
+
     ntp_client = ntplib.NTPClient()
     while not rospy.is_shutdown():
         for server in ntp_servers:
             try:
                 response = ntp_client.request(server)
-                monitor.addValue(server+"/ntp_offset", response.offset, "s", 0.0, 1)
+                error = 0.0
+                if abs(response.offset) > offset_warn:
+                    error = 0.6
+                if abs(response.offset) > offset_error:
+                    error = 1.0
+                monitor.addValue(server+"/ntp_offset", response.offset, "s", error, 1)
                 monitor.addValue(server+"/ntp_version", response.version, "", 0.0, 1)
                 monitor.addValue(server+"/ntp_time", ctime(response.tx_time), "", 0.0, 1)
                 monitor.addValue(server+"/ntp_time_unix", response.tx_time, "", 0.0, 1)
