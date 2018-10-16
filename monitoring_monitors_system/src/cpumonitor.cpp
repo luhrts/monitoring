@@ -136,7 +136,7 @@ void CpuMonitor::init()
         }
     }
 
-    sprintf(temp_path_, "/sys/class/hwmon/hwmon%d/devices/name", id);
+    sprintf(temp_path_, "/sys/class/hwmon/hwmon%d/device/name", id);
     if (file_exists_test(temp_path_))
     {
         ROS_INFO("%s does exists", temp_path_);
