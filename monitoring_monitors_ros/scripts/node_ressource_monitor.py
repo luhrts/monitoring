@@ -37,6 +37,7 @@ import rospy
 import psutil
 import rosnode
 import socket
+import subprocess
 
 from socket import error as socket_error
 
@@ -105,6 +106,31 @@ def get_node_list():
     rospy.logdebug("=============================")
     return node_list
 
+def get_pid_list(filter_string='/devel/bin/unibw/bin'):
+    temp = subprocess.check_output('ps ax | grep '+filter_string, shell=True).split('\n')
+    pids, names = [], []
+    for val in temp:
+        if val.find('grep') == -1 and val:
+            pid = val.split(' ')[0]
+            if not pid:
+                try:
+                    pid = val.split(' ')[1]
+                except Exception as e:
+                    pass
+                    # we need this except cause ps ax aslo finds the pid of the grep command itself
+            name = val.split(filter_string)[1].split(" ")[0]
+            if pid:
+                pids.append(pid)
+                names.append(name)
+    return [names, pids]
+
+def get_non_ros_process_list()
+    program_list = []
+    temp = get_pid_list('/devel/bin/unibw/bin')
+    for idx, val in enumerate(temp[0]):
+        program_list.append(NODE(temp[0][idx],temp[1][idx]))
+    return program_list
+
 def get_process_info(pid):
     """
     gather all information provided by psutil.Process(pid)
@@ -119,7 +145,9 @@ def gather_info():
     calls print_to_console_and_monitor for each retrieved node
     calls monitor.publish() after iterating over alle nodes in list
     """
-    node_list = get_node_list()
+    node_list = get_node_list() + get_non_ros_process_list()
+    #bw_node_list = get_programm_list()
+    #node_list += get_programm_list()
     for i in node_list:
         if rospy.is_shutdown():
             break
