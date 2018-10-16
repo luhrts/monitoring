@@ -160,6 +160,7 @@ void Monitor::resetMsg()
   monitoring_msgs::MonitoringInfo mi;
   mi.name = host_name_+node_name_;
   mi.description = monitor_description_;
+  ma.info.clear();
   ma.info.push_back(mi);
   miIndex = 0;
 }

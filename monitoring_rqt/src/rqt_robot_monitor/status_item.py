@@ -56,6 +56,12 @@ class StatusItem(object):
         self._children = {}
         #self.updated = False
         self.data_age = 0
+
+        self.old_displayname = ""
+        self.old_error_level = -1
+        self.old_value = ""
+        self.old_unit = ""
+
         if item is not None:
             self._item = item
         else:
@@ -65,10 +71,22 @@ class StatusItem(object):
         self.data_age = 0
         self.displayname = displayname
         self._item.name = info.name
-        self._item.setText(0, self.displayname)
-        self._item.setIcon(0, util.level_to_icon(info.errorlevel)) 
-        self._item.setText(1, info.value + " " + info.unit)
-        self._item.setText(2, str(info.errorlevel)) #TODO
+
+        if self.old_displayname != self.displayname:
+            self._item.setText(0, self.displayname)
+            self.old_displayname = self.displayname
+
+        if self.old_error_level != info.errorlevel:
+            self._item.setIcon(0, util.level_to_icon(info.errorlevel))
+            self._item.setText(2, str(info.errorlevel)) #TODO
+            self.old_error_level = info.errorlevel
+
+        if self.old_value != info.value or self.old_unit != info.unit:
+            self._item.setText(1, info.value + " " + info.unit)
+            self.old_value = info.value
+            self.old_unit = info.unit
+
+
             
 
     def prune(self):

@@ -1,7 +1,7 @@
 monitoring:
   frequency: 1    #Publish and calculation frequency
 
-monitor_mode : 5
+monitor_mode : 1
 #AggregationStrategies mode: 1 LAST, 2 FIRST, 3 MIN, 4 MAX, 5 AVG#
 
 bytes: true     #networktrafic in bytes
@@ -9,4 +9,4 @@ packets: true   #networktrafic in packets
 load: true      #networkload scala 0..1
 networkerrors: true
 networkthroughput: 100 #maximal possible throughput in MBit/s.
-networkinterface: lo    #the networkinterface to monitor. If you need to monitor more interfaces, start multiple nodes with diffrent configurations
+networkinterface: enp0s31f6    #the networkinterface to monitor. If you need to monitor more interfaces, start multiple nodes with diffrent configurations

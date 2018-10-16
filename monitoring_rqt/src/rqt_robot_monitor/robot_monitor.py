@@ -139,16 +139,18 @@ class RobotMonitorWidget(QWidget):
                 if path[0] == '':
                     path = path[1:]
                 tmp_tree = self._tree
-                
-                for p in path:
-                    if p == '':
-                        continue
 
-                    tmp_tree = tmp_tree[p]
-                    infoP = GuiInfo()
-                    infoP.name = p
-                    infoP.errorlevel = info.errorlevel
-                    tmp_tree.update(infoP, p)
+                print info
+                
+#                for p in path:
+#                    if p == '':
+#                        continue
+#                    print p
+#                    tmp_tree = tmp_tree[p]
+#                    infoP = GuiInfo()
+#                    infoP.name = p
+#                    infoP.errorlevel = info.errorlevel
+#                    tmp_tree.update(infoP, p)
                 
                 tmp_tree.update(info, path[-1])
     
