@@ -1,10 +1,3 @@
-/*
- * guiconcatenation.cpp
- *
- *  Created on: Jan 5, 2018
- *      Author: matthias
- */
-
 #include "monitoring_visualization/guiconcatenation.h"
 
 GuiConcatenation::GuiConcatenation(ros::NodeHandle& n) {
@@ -37,8 +30,13 @@ void GuiConcatenation::error_cb(monitoring_msgs::Error er) {
 
 void GuiConcatenation::monitor_cb(monitoring_msgs::MonitoringArray ma) {
 	for(int j=0; j< ma.info.size(); j++) {
-    monitoring_msgs::MonitoringInfo mi = ma.info[j];
-    monitoring_msgs::GuiInfo gi1;
+        if (ma.info[j].values.size() == 0)
+        {
+            continue;
+        }        
+
+        monitoring_msgs::MonitoringInfo mi = ma.info[j];
+        monitoring_msgs::GuiInfo gi1;
 		gi1.name = mi.name;
 		gi1.value = "";
 
