@@ -167,18 +167,34 @@ def print_to_console_and_monitor(name, pid):
             return
     #Define DEFAULT values to publish
     if FILTER_TYPE_ == Filter_type.DEFAULT:
-        node_value_filter = {'values':['cpu_affinity', 'cpu_times', 'create_time',
+        node_value_filter = {'values':['cpu_affinity','cpu_times','cpu_times', 'create_time',
                              'exe','io_counters', 'memory_info', 'memory_percent', 'name', 'num_ctx_switches', 'status']}
     #iterate over all keys given for node in node_filter
     for key in node_value_filter.get("values"):
 
-        method_to_call = getattr(node_process_info, key)
-        value = method_to_call()
+        if hasattr(node_process_info, key):
+            method_to_call = getattr(node_process_info, key)
+            if callable(method_to_call):
+                value = method_to_call()
+            else:
+                value = method_to_call
 
-        if VALUE_DICT.has_key(key):
-            #call dedicated function for key which adds relevant monitoring parameters to
-            #/monitoring topic
-            VALUE_DICT[key](value, name)
+            if VALUE_DICT.has_key(key):
+                #call dedicated function for key which adds relevant monitoring parameters to
+                #/monitoring topic
+                VALUE_DICT[key](value, name)
+
+        elif hasattr(node_process_info, "get_"+key):
+            method_to_call = getattr(node_process_info, "get_"+key)
+            if callable(method_to_call):
+                value = method_to_call()
+            else:
+                value = method_to_call
+
+            if VALUE_DICT.has_key(key):
+                #call dedicated function for key which adds relevant monitoring parameters to
+                #/monitoring topic
+                VALUE_DICT[key](value, name)
 
 """
 psutil values to monitor functions
