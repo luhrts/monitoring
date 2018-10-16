@@ -17,6 +17,10 @@ int main(int argc, char* argv[])
     std::vector<std::string> ros_machines;
     private_nh.getParam("machines", ros_machines);
 
+    double warnPing;
+    private_nh.param<double>("high_ping", warnPing, 10);
+
+
     std::vector<pinger*> pingers;
 
     for(std::string machine : ros_machines){
@@ -34,7 +38,11 @@ int main(int argc, char* argv[])
         if (pingers[i]->delay == -1){
           monitor.addValue(ros_machines[i]+"/delay", "Destination Host Unreachable", "", 1.0);
         } else {
-          monitor.addValue(ros_machines[i]+"/delay", pingers[i]->delay, "ms", 0.0);
+          double error = 0.0;
+          if (pingers[i]->delay > warnPing){
+            error = 0.6;
+          }
+          monitor.addValue(ros_machines[i]+"/delay", pingers[i]->delay, "ms", error);
         }
       }
 
