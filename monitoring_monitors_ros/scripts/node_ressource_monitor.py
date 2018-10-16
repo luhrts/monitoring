@@ -120,11 +120,11 @@ def get_pid_list(filter_string='/devel/bin/unibw/bin'):
                     # we need this except cause ps ax aslo finds the pid of the grep command itself
             name = val.split(filter_string)[1].split(" ")[0]
             if pid:
-                pids.append(pid)
+                pids.append(int(pid))
                 names.append(name)
     return [names, pids]
 
-def get_non_ros_process_list()
+def get_non_ros_process_list():
     program_list = []
     temp = get_pid_list('/devel/bin/unibw/bin')
     for idx, val in enumerate(temp[0]):
@@ -195,34 +195,37 @@ def print_to_console_and_monitor(name, pid):
             return
     #Define DEFAULT values to publish
     if FILTER_TYPE_ == Filter_type.DEFAULT:
-        node_value_filter = {'values':['cpu_affinity','cpu_times','cpu_times', 'create_time',
+        node_value_filter = {'values':['cpu_affinity','cpu_percent','cpu_times', 'create_time',
                              'exe','io_counters', 'memory_info', 'memory_percent', 'name', 'num_ctx_switches', 'status']}
     #iterate over all keys given for node in node_filter
     for key in node_value_filter.get("values"):
+        try:
+            if hasattr(node_process_info, key):
+                method_to_call = getattr(node_process_info, key)
+                if callable(method_to_call):
+                    value = method_to_call()
+                else:
+                    value = method_to_call
 
-        if hasattr(node_process_info, key):
-            method_to_call = getattr(node_process_info, key)
-            if callable(method_to_call):
-                value = method_to_call()
-            else:
-                value = method_to_call
+                if VALUE_DICT.has_key(key):
+                    #call dedicated function for key which adds relevant monitoring parameters to
+                    #/monitoring topic
+                    VALUE_DICT[key](value, name)
 
-            if VALUE_DICT.has_key(key):
-                #call dedicated function for key which adds relevant monitoring parameters to
-                #/monitoring topic
-                VALUE_DICT[key](value, name)
+            elif hasattr(node_process_info, "get_"+key):
+                method_to_call = getattr(node_process_info, "get_"+key)
+                if callable(method_to_call):
+                    value = method_to_call()
+                else:
+                    value = method_to_call
 
-        elif hasattr(node_process_info, "get_"+key):
-            method_to_call = getattr(node_process_info, "get_"+key)
-            if callable(method_to_call):
-                value = method_to_call()
-            else:
-                value = method_to_call
-
-            if VALUE_DICT.has_key(key):
-                #call dedicated function for key which adds relevant monitoring parameters to
-                #/monitoring topic
-                VALUE_DICT[key](value, name)
+                if VALUE_DICT.has_key(key):
+                    #call dedicated function for key which adds relevant monitoring parameters to
+                    #/monitoring topic
+                    VALUE_DICT[key](value, name)
+        except Exception as e:
+            rospy.logdebug("Node: %s (%d) - %s not found", name, pid, key)
+            pass
 
 """
 psutil values to monitor functions
