@@ -1,14 +1,42 @@
-# Monitoring System
+# ROS Monitoring
+
+The ROS Monitoring Tools helps to analyse and improve ROS Systems. It collects information about the coputer, operating system and ros environment and filters them. All Values and detected Warnings and Errors can be visualised in a RQT Plugin.
 
 # Overview
-This is a python and C++ library with ROS interface and designed to monitor the ROS-System during robot operation.
 
-The computer system and the ROS communication will be watched .All message will be published in a ROS topic and show with a rqt-plugin.
-User can write the fault detection and recovery itself by SDK.
-More infomation please see the documentations and the usage
+This tool is designed to collect and observe system values, detect and identify failures and to perform recovery when possible. It can handle a number of distributed Monitors. Some gernal Monitors are included within this package, for all other nodes libraries for C++ and Python exist to integrate the Monitoring into custom Nodes. 
+
+All Monitoring-Data is aggregated and can be visualised by two different RQT-Plugins (a varriant of the ROS Monitor and the ROS Plot, modified to support Monitoring)
+
+Besides visualisation, Faultdetection and Recovery are supported. 
+
+## TODO NEW IMAGE
+### Find Icons:
+
+Icons need to be Free Licensed
+
+Icons:
+
+- CPU
+- Memory
+- Network
+- Nodes
+- Topics
+- Frequencys
+- Batteries
+- Kameras
+- Laserscanner
+- Warning
+- Error
+- GUI Symbol
 
 
-Features:
+![](monitoring/images/Monitoring_Overview.png)
+
+
+# Packages
+
+The following packages are Included 
 
 **monitoring_core:** other monitor use this pkg to add the value for topic /monitoring
 
