@@ -20,3 +20,18 @@ Base Classes for other Monitors
 * **helper: waitAndSpin(ros::Duration dur = ros::Duration(0.1), int iterations = 50)**: Make sure the messages are received
 * **helper: hasReceivedKey(std::string key)**: check if key - value is in the stored receivedArrays_
  
+
+
+## Errorlevel
+The Errorlevel is a value between 0.0 and 1.0 it can be any float value. They are further devided in 3 groups. Ok, Warn and Error states. Ok is between 0 and 0.35. Warn is till 0.7 and Error is till 1.0.
+
+## Aggregation Strategies
+When monitoring a Value, not all values are required to be transmitted. Therefore an aggregation Startegiy can be selected:
+
+- MIN 
+- MAX 
+- FIRST
+- LAST
+- AVG
+
+You can change the mode in every config file.
