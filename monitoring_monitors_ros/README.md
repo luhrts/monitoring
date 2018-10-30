@@ -1,34 +1,30 @@
-# ROS monitor
+# ROS monitors
 
-# Overview
-This is the monitor for ROS 
+This package contains monitors to observe the ROS system. 
 
+## Node monitor
 
-**ROS monitor:**
+The node monitor uses the rosping method to ping a list of ROS-Nodes and therefore estimate if they are still running and able to handle rospings. 
 
-* **Topic-monitor**:this is a monitor for a topic,watch the daten in the topic .when you just want to watch a specific topic,use this monitore.
+	frequency: 1					# Frequency used to ping the nodes
+	nodes: [node_a, node_b]			# List of nodes to monitor
 
-* **TF-monitor**:this is a monitor for TF-tree ,check the TF-tree if it is in right configuation.User can see the transform for each frame.Parent Change ,Autohrity Change ,Speration tree,loop tree  for tf_tree will be checked and warned.
+	monitoring:
+	    frequency: 1				# Frecuency used to send monitored values
+	monitor_mode : 2				# AggregationStrategies mode: 1 LAST, 2 FIRST, 3 MIN, 4 MAX, 5 AVG#
 
-* **Statistics-monitor**: this is a monitor for topic:Statistics. the publisher und subscriber for all the topic will be checked if it work in right frequency and size.
-
-* **node-monitor**: this is a monitor for ros-node,check the node if it works or not 
-
-* **node-resource-monitor** :  lists all running rosnodes and displays all values the psutil package is providing for each node
-
-# Configuration
 
 ## Topic monitor
-You should configure one Topicmonitor per pc-system which only monitors local content to minimize networkload
 
-## StatisticsMonitor
-This monitor can only watch data flow from one node to another. If nobody subscribes the topic, the monitor is unable to monitor the content. If you record a rosbag, it subscribes the topic!
+The topic monitor subscribes to all topics in a list and verifies that the are published on a certain frequency. It is based on the rostopic hz mechanism. For high bandwith topics this will cause a hiogh overhead since the topics are subscribed. The statistics monitor is a better solution in this case.
 
-## node-monitor
-you need to configure which node do you want to watch
+	frequency: 1									# Frequency used to poll rostopic hz
+	monitoring:		
+	    frequency: 2								# Frequency to send the monitored values
+	topics: [{name: /monitoring, frequency: 2}]		# List of the monitored topics
 
-## node-resource-monitor
-you need to chose which mode do you want to use,blacklist or whitelist.configure it im start_ros_monitorings.launch.Then you have to configure filter for each node im node_ressource_monitor_filter.yaml.
-
-## TF-monitor
-you dont need to configure anything
+## Node ressource monitor
+## Map monitor
+## Statistics monitor
+## Tf monitor
+## Topic value monitor
