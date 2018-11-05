@@ -19,7 +19,7 @@ The node monitor uses the rosping method to ping a list of ROS-Nodes and therefo
 
 
 	frequency: 1					# Frequency used to ping the nodes
-	nodes: [node_a, node_b]			# List of nodes to monitor
+	nodes: [node_a, node_b]			        # List of nodes to monitor
 
 	monitoring:
 	    frequency: 1				# Frecuency used to send monitored values
@@ -45,7 +45,7 @@ The topic monitor subscribes to all topics in a list and verifies that the are p
 	frequency: 1									# Frequency used to poll rostopic hz
 	monitoring:		
 	    frequency: 2								# Frequency to send the monitored values
-	topics: [{name: /monitoring, frequency: 2}]		# List of the monitored topics
+	topics: [{name: /monitoring, frequency: 2}]		                        # List of the monitored topics
 
 ## Node ressource monitor
 
@@ -111,5 +111,76 @@ The Node ressource monitor is able to monitor the ressources a node uses. Using 
 
 ## Map monitor
 ## Statistics monitor
+This is a monitor for TF-tree in ROS, check the TF-tree if it is in right configuration.
+
+**Monitored Values:**
+
+* dx
+* dy
+* dz
+* drow
+* dpitch
+* dyaw
+
+**Warning/Errors:**
+
+* Error if static frame, parent and autohrity of the frame Changed
+* Error if the loop and Seperation in the tf tree
+
+**Parameters:**
+
+monitoring:
+  frequency: 1                                  # Frequency to send the monitored values
+monitor_mode : 5                                # AggregationStrategies mode: 1 LAST, 2 FIRST, 3 MIN, 4 MAX, 5 AVG#
+timeTilDelete: 3                                # Time for delete value from the  Message
+topics: [groupe_1,groupe_2]                            # List of titel name for the following groupe 
+
+groupe_1:
+  topic: /topic_1                               # The 'Topic' value in statistic topic,Which user want to watch by statistic monitor
+  source: /Publisher                            # Publisher for the 'Topic'
+  destination: /Subscriber                      # Subscriber for the 'Topic'
+  frequency: 1                                  # Publish frequency of the 'Topic' that User have configured
+  dFrequency: 0.5                               # Tolerance of the frequency
+  size: 0                                       # Size of the message in the 'Topic'
+  dSize: 1                                      # Tolerance of the size
+
+  type: geometry_msgs::Twist                    # Message of the 'Topic'
+  errorlevel: 0.5                               # errorlevel of the Warn message
+
 ## Tf monitor
+The node monitor uses the rosping method to ping a list of ROS-Nodes and therefore estimate if they are still running and able to handle rospings. 
+
+**Monitored Values:**
+
+* None
+
+**Warning/Errors:**
+
+* Error if Node is not available
+
+
+**Parameters:**
+
+	monitoring:
+	    frequency: 1				# Frecuency used to send monitored values
+	monitor_mode : 2				# AggregationStrategies mode: 1 LAST, 2 FIRST, 3 MIN, 4 MAX, 5 AVG#
+
+
 ## Topic value monitor
+
+The Topic valhe monitor use to watch the value in the topic
+
+**Monitored Values:**
+
+* None
+
+**Warning/Errors:**
+
+* None
+
+
+**Parameters:**
+
+topic_name: /topic_1                                  #The topic which user want to watch
+monitoring_key: /monitor_name                         #The name of the topic in 'monitoring' topic
+si_unit: unit_1                                       #Unit for the topic value 
