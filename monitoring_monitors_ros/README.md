@@ -113,14 +113,14 @@ This is a monitor for TF-tree in ROS, check the TF-tree if it is in right config
 
 **Monitored Values:**
 
-|     values      | unit  | Comment  |   |   |
-|-----------------|-------|----------|---|---|
-|        dx       |  m    |          |   |   |
-|        dy       |  m    |          |   |   |
-|        dz       |  m    |          |   |   |
-|       drow      |degree |          |   |   |
-|      dpitch     |degree |          |   |   |
-|       dyaw      |degree |          |   |   |
+|     values      | unit  | Comment                |   |   |
+|-----------------|-------|------------------------|---|---|
+|        dx       |  m    |variance in x direction |   |   |
+|        dy       |  m    |variance in y direction |   |   |
+|        dz       |  m    |variance in z direction |   |   |
+|       drow      |degree |variance of Rotation around x direction|   |   |
+|      dpitch     |degree |variance of Rotation around y direction|   |   |
+|       dyaw      |degree |variance of Rotation around z direction|   |   |
 
 
 **Warning/Errors:**
@@ -178,7 +178,7 @@ The Topic valhe monitor use to watch the value in the topic
 
 |     values      | unit  | Comment  |   |   |
 |-----------------|-------|----------|---|---|
-|  monitor_key    |       |          |   |   |
+|  monitor_key    |si-unit|the topic which user want to watch |   |   |
 
 **Warning/Errors:**
 

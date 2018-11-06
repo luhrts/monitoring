@@ -64,11 +64,6 @@ The network monitor watch the network,speed and the number of the package and ne
 |      Load_RX    |  %    |          |   |   |
 |      load_TX    |  %    |          |   |   |
 
-* RX
-* TX
-* Load_RX
-* load_TX
-
 
 **Warning/Errors:**
 
@@ -117,9 +112,6 @@ The wifi monitor watch the wifi Strength
 |     quality     |       |          |   |   |
 |      noise      |       |          |   |   |
 
-* signal_strength
-* quality
-* noise
 
 **Warning/Errors:**
 
@@ -142,8 +134,6 @@ The RAM-monitor watch the RAM last
 |   total_used    |  kB   |          |   |   |
 | percentage_used |   %   |          |   |   |
 
-* total_used
-* percentage_used
 
 **Warning/Errors:**
 
@@ -174,14 +164,6 @@ The ntp-monitor checkout the time by use NTP
 |   ntp_leap      |       |          |   |   |
 | ntp_time_unix   |       |          |   |   |
 | ntp_root_delay  |   s   |          |   |   |
-
-* ntp_offset
-* ntp_version
-* ntp_time
-* ntp_time_unix
-* ntp_leap
-* ntp_root_delay
-
 
 
 **Warning/Errors:**
