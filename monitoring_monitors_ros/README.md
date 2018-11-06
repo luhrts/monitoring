@@ -54,11 +54,44 @@ The Node ressource monitor is able to monitor the ressources a node uses. Using 
 **Monitored Values:**
 
 
-|   |   |   |   |   |
-|---|---|---|---|---|
-|   |   |   |   |   |
-|   |   |   |   |   |
-|   |   |   |   |   |
+|     values      | unit  | Comment  |   |   |
+|-----------------|-------|----------|---|---|
+|     children    |       |          |   |   |
+|     cmdline     |       |          |   |   |
+|   connections   |       |          |   |   |
+|   cpu_afinity   |       |          |   |   |
+|   cpu_percent   |       |          |   |   |
+|   create_time   |       |          |   |   |
+|       cwd       |       |          |   |   |
+|       exe       |       |          |   |   |
+|       gids      |       |          |   |   |
+|      ionice     |       |          |   |   |
+|    is_running   |       |          |   |   |
+| memory_info_rss |       |          |   |   |
+| memory_info_vms |       |          |   |   |
+| memory_info_ex  |       |          |   |   |
+|   memory_maps   |       |          |   |   |
+| memory_percent  |       |          |   |   |
+|      name       |       |          |   |   |
+|      nice       |       |          |   |   |
+|num_ctx_switches_voluntary|       |          |   |   |
+|num_ctx_switches_involuntary|       |          |   |   |
+|     num_fds     |       |          |   |   |
+|   num_handles   |       |          |   |   |
+|   num_threads   |       |          |   |   |
+|    open_files   |       |          |   |   |
+|      parent     |       |          |   |   |
+|       pid       |       |          |   |   |
+|       ppid      |       |          |   |   |
+|      rlimit     |       |          |   |   |
+|      status     |       |          |   |   |
+|     terminal    |       |          |   |   |
+|     threads     |       |          |   |   |
+|      uids       |       |          |   |   |
+|     username    |       |          |   |   |
+
+
+
 
 * children
 * cmdline
