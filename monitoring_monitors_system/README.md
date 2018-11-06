@@ -56,6 +56,12 @@ The topic monitor subscribes to all topics in a list and verifies that the are p
 
 The network monitor watch the network,speed and the number of the package and network error will be checked
 **Monitored Values:**
+|     values      | unit  | Comment  |   |   |
+|-----------------|-------|----------|---|---|
+|        RX       |       |          |   |   |
+|        TX       |       |          |   |   |
+|      Load_RX    |       |          |   |   |
+|      load_TX    |       |          |   |   |
 
 * RX
 * TX
@@ -104,6 +110,12 @@ The following Error will be demonstrated:
 The wifi monitor watch the wifi Strength
 **Monitored Values:**
 
+|     values      | unit  | Comment  |   |   |
+|-----------------|-------|----------|---|---|
+| signal_strength |       |          |   |   |
+|     quality     |       |          |   |   |
+|      noise      |       |          |   |   |
+
 * signal_strength
 * quality
 * noise
@@ -123,6 +135,11 @@ None
 
 The RAM-monitor watch the RAM last
 **Monitored Values:**
+
+|     values      | unit  | Comment  |   |   |
+|-----------------|-------|----------|---|---|
+|   total_used    |       |          |   |   |
+| percentage_used |       |          |   |   |
 
 * total_used
 * percentage_used
