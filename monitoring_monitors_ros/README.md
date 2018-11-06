@@ -176,7 +176,9 @@ The Topic valhe monitor use to watch the value in the topic
 
 **Monitored Values:**
 
-* None
+|     values      | unit  | Comment  |   |   |
+|-----------------|-------|----------|---|---|
+|  monitor_key    |       |          |   |   |
 
 **Warning/Errors:**
 
