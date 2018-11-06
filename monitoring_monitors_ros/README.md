@@ -60,18 +60,19 @@ The Node ressource monitor is able to monitor the ressources a node uses. Using 
 |     cmdline     |       |          |   |   |
 |   connections   |       |          |   |   |
 |   cpu_afinity   |       |          |   |   |
-|   cpu_percent   |       |          |   |   |
-|   create_time   |       |          |   |   |
+|   cpu_percent   |   %   |          |   |   |
+|   create_time   |  sec  |          |   |   |
 |       cwd       |       |          |   |   |
 |       exe       |       |          |   |   |
 |       gids      |       |          |   |   |
 |      ionice     |       |          |   |   |
+|    io_counters  | byte  |          |   |   |
 |    is_running   |       |          |   |   |
-| memory_info_rss |       |          |   |   |
-| memory_info_vms |       |          |   |   |
+| memory_info_rss | byte  |          |   |   |
+| memory_info_vms | byte  |          |   |   |
 | memory_info_ex  |       |          |   |   |
 |   memory_maps   |       |          |   |   |
-| memory_percent  |       |          |   |   |
+| memory_percent  |   %   |          |   |   |
 |      name       |       |          |   |   |
 |      nice       |       |          |   |   |
 |num_ctx_switches_voluntary|       |          |   |   |
@@ -150,12 +151,12 @@ This is a monitor for TF-tree in ROS, check the TF-tree if it is in right config
 
 |     values      | unit  | Comment  |   |   |
 |-----------------|-------|----------|---|---|
-|        dx       |       |          |   |   |
-|        dy       |       |          |   |   |
-|        dz       |       |          |   |   |
-|       drow      |       |          |   |   |
-|      dpitch     |       |          |   |   |
-|       dyaw      |       |          |   |   |
+|        dx       |  m    |          |   |   |
+|        dy       |  m    |          |   |   |
+|        dz       |  m    |          |   |   |
+|       drow      |degree |          |   |   |
+|      dpitch     |degree |          |   |   |
+|       dyaw      |degree |          |   |   |
 
 
 * dx

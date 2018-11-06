@@ -56,12 +56,13 @@ The topic monitor subscribes to all topics in a list and verifies that the are p
 
 The network monitor watch the network,speed and the number of the package and network error will be checked
 **Monitored Values:**
+
 |     values      | unit  | Comment  |   |   |
 |-----------------|-------|----------|---|---|
-|        RX       |       |          |   |   |
-|        TX       |       |          |   |   |
-|      Load_RX    |       |          |   |   |
-|      load_TX    |       |          |   |   |
+|        RX       | Byte/s or Packet/s|          |   |   |
+|        TX       | Byte/s or Packet/s|          |   |   |
+|      Load_RX    |  %    |          |   |   |
+|      load_TX    |  %    |          |   |   |
 
 * RX
 * TX
@@ -112,7 +113,7 @@ The wifi monitor watch the wifi Strength
 
 |     values      | unit  | Comment  |   |   |
 |-----------------|-------|----------|---|---|
-| signal_strength |       |          |   |   |
+| signal_strength | dBm   |          |   |   |
 |     quality     |       |          |   |   |
 |      noise      |       |          |   |   |
 
@@ -138,8 +139,8 @@ The RAM-monitor watch the RAM last
 
 |     values      | unit  | Comment  |   |   |
 |-----------------|-------|----------|---|---|
-|   total_used    |       |          |   |   |
-| percentage_used |       |          |   |   |
+|   total_used    |  kB   |          |   |   |
+| percentage_used |   %   |          |   |   |
 
 * total_used
 * percentage_used
@@ -163,6 +164,16 @@ None
 
 The ntp-monitor checkout the time by use NTP
 **Monitored Values:**
+
+|     values      | unit  | Comment  |   |   |
+|-----------------|-------|----------|---|---|
+|   ntp_offset    |   s   |          |   |   |
+|   ntp_version   |       |          |   |   |
+|   total_used    |       |          |   |   |
+|     ntp_time    |       |          |   |   |
+|   ntp_leap      |       |          |   |   |
+| ntp_time_unix   |       |          |   |   |
+| ntp_root_delay  |   s   |          |   |   |
 
 * ntp_offset
 * ntp_version
