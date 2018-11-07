@@ -54,42 +54,42 @@ The Node ressource monitor is able to monitor the ressources a node uses. Using 
 **Monitored Values:**
 
 
-|     values      | unit  |          Comment                   |   |   |
-|-----------------|-------|------------------------------------|---|---|
-|     children    |       |                                    |   |   |
-|     cmdline     |       |                                    |   |   |
-|   connections   |       |                                    |   |   |
-|   cpu_afinity   |       |       Afinity of CPU               |   |   |
-|   cpu_percent   |   %   |      Usage of CPU  in percentage   |   |   |
-|   create_time   |  sec  |Create time for node in Linux time  |   |   |
-|       cwd       |       |      Current working directory     |   |   |
-|       exe       |       |                                    |   |   |
-|       gids      |       |          Group Identifier          |   |   |
-|      ionice     |       |  I/O scheduling class and priority |   |   |
-|    io_counters  | byte  |       I/O accounting information   |   |   |
-|    is_running   |       |                                    |   |   |
-| memory_info_rss | byte  |   Resident Set Size of memory      |   |   |
-| memory_info_vms | byte  |    Size of  Virtual Memory         |   |   |
-| memory_info_ex  |       |                                    |   |   |
-|   memory_maps   |       |                                    |   |   |
-| memory_percent  |   %   |    Memory usage in percentage      |   |   |
-|      name       |       |            Name of node            |   |   |
-|      nice       |       |                                    |   |   |
-|num_ctx_switches_voluntary  |      |     Voluntary context switch      |   |   |
-|num_ctx_switches_involuntary|      |    Involuntary context switches   |   |   |
-|     num_fds     |       |                                    |   |   |
-|   num_handles   |       |                                    |   |   |
-|   num_threads   |       |                                    |   |   |
-|    open_files   |       |                                    |   |   |
-|      parent     |       |          Parent of node            |   |   |
-|       pid       |       |       Prozess ID of node           |   |   |
-|       ppid      |       |       Parent Process Id of node    |   |   |
-|      rlimit     |       |          Resource limits           |   |   |
-|      status     |       |                                    |   |   |
-|     terminal    |       |                                    |   |   |
-|     threads     |       |          Threads of node           |   |   |
-|      uids       |       |             User ID                |   |   |
-|     username    |       |         Username of node           |   |   |
+|     values      | unit  |          Comment                   |
+|-----------------|-------|------------------------------------|
+|     children    |       |                                    |
+|     cmdline     |       |                                    |
+|   connections   |       |                                    |
+|   cpu_afinity   |       |       Afinity of CPU               |
+|   cpu_percent   |   %   |      Usage of CPU  in percentage   |
+|   create_time   |  sec  |Create time for node in Linux time  |
+|       cwd       |       |      Current working directory     |
+|       exe       |       |                                    |
+|       gids      |       |          Group Identifier          |
+|      ionice     |       |  I/O scheduling class and priority |
+|    io_counters  | byte  |       I/O accounting information   |
+|    is_running   |       |                                    |
+| memory_info_rss | byte  |   Resident Set Size of memory      |
+| memory_info_vms | byte  |    Size of  Virtual Memory         |
+| memory_info_ex  |       |                                    |
+|   memory_maps   |       |                                    |
+| memory_percent  |   %   |    Memory usage in percentage      |
+|      name       |       |            Name of node            |
+|      nice       |       |                                    |
+|num_ctx_switches_voluntary  |      |     Voluntary context switch      |
+|num_ctx_switches_involuntary|      |    Involuntary context switches   |
+|     num_fds     |       |                                    |
+|   num_handles   |       |                                    |
+|   num_threads   |       |                                    |
+|    open_files   |       |                                    |
+|      parent     |       |          Parent of node            |
+|       pid       |       |       Prozess ID of node           |
+|       ppid      |       |       Parent Process Id of node    |
+|      rlimit     |       |          Resource limits           |
+|      status     |       |                                    |
+|     terminal    |       |                                    |
+|     threads     |       |          Threads of node           |
+|      uids       |       |             User ID                |
+|     username    |       |         Username of node           |
 
 
 **Warning/Errors:**
@@ -113,14 +113,14 @@ This is a monitor for TF-tree in ROS, check the TF-tree if it is in right config
 
 **Monitored Values:**
 
-|     values      | unit  | Comment                |   |   |
-|-----------------|-------|------------------------|---|---|
-|        dx       |  m    |Variance in x direction |   |   |
-|        dy       |  m    |Variance in y direction |   |   |
-|        dz       |  m    |Variance in z direction |   |   |
-|       drow      |degree |Variance of Rotation around x direction|   |   |
-|      dpitch     |degree |Variance of Rotation around y direction|   |   |
-|       dyaw      |degree |Variance of Rotation around z direction|   |   |
+|     values      | unit  | Comment                |
+|-----------------|-------|------------------------|
+|        dx       |  m    |Variance in x direction |
+|        dy       |  m    |Variance in y direction |
+|        dz       |  m    |Variance in z direction |
+|       drow      |degree |Variance of Rotation around x direction|
+|      dpitch     |degree |Variance of Rotation around y direction|
+|       dyaw      |degree |Variance of Rotation around z direction|
 
 
 **Warning/Errors:**
@@ -176,9 +176,9 @@ The Topic valhe monitor use to watch the value in the topic
 
 **Monitored Values:**
 
-|     values      | unit  | Comment  |   |   |
-|-----------------|-------|----------|---|---|
-|  monitor_key    |si-unit|The Topic which user want to watch |   |   |
+|     values      | unit  |            Comment                |
+|-----------------|-------|-----------------------------------|
+|  monitor_key    |si-unit|The Topic which user want to watch |
 
 **Warning/Errors:**
 
