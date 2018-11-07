@@ -185,9 +185,8 @@ The Topic valhe monitor use to watch the value in the topic
 
 **Parameters:**
 
-
-	topic_name: /topic_1                                  #The topic which user want to watch
-	monitoring_key: /monitor_name                         #The name of the topic in 'monitoring' topic
-	si_unit: unit_1                                       #Unit for the topic value 
+        frequency: 1                                          # Frequency to send the monitored values
+        topics: [{name: /monitoring, frequency: 2}]           #List of topic which user want to watch and the topic frequency
+ 
 	
 	
