@@ -174,19 +174,16 @@ The Topic valhe monitor use to watch the value in the topic
 
 **Monitored Values:**
 
-|     values      | unit  |            Comment                |
-|-----------------|-------|-----------------------------------|
-|  monitor_key    |si-unit|The Topic which user want to watch |
+None
 
 **Warning/Errors:**
 
-* None
+* Warn if topic is missing or topic frequency is too slow
 
 
 **Parameters:**
 
-        frequency: 1                                          # Frequency to send the monitored values
-        topics: [{name: /monitoring, frequency: 2}]           #List of topic which user want to watch and the topic frequency
- 
+	frequency: 1                                          # Frequency to send the monitored values
+	topics: [{name: /monitoring, frequency: 2}]           #List of topic which user want to watch and the topic frequency
 	
 	
