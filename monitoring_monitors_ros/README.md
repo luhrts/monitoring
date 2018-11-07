@@ -54,42 +54,42 @@ The Node ressource monitor is able to monitor the ressources a node uses. Using 
 **Monitored Values:**
 
 
-|     values      | unit  | Comment  |   |   |
-|-----------------|-------|----------|---|---|
-|     children    |       |          |   |   |
-|     cmdline     |       |          |   |   |
-|   connections   |       |          |   |   |
-|   cpu_afinity   |       |          |   |   |
-|   cpu_percent   |   %   |          |   |   |
-|   create_time   |  sec  |          |   |   |
-|       cwd       |       |          |   |   |
-|       exe       |       |          |   |   |
-|       gids      |       |          |   |   |
-|      ionice     |       |          |   |   |
-|    io_counters  | byte  |          |   |   |
-|    is_running   |       |          |   |   |
-| memory_info_rss | byte  |          |   |   |
-| memory_info_vms | byte  |          |   |   |
-| memory_info_ex  |       |          |   |   |
-|   memory_maps   |       |          |   |   |
-| memory_percent  |   %   |          |   |   |
-|      name       |       |          |   |   |
-|      nice       |       |          |   |   |
-|num_ctx_switches_voluntary|       |          |   |   |
-|num_ctx_switches_involuntary|       |          |   |   |
-|     num_fds     |       |          |   |   |
-|   num_handles   |       |          |   |   |
-|   num_threads   |       |          |   |   |
-|    open_files   |       |          |   |   |
-|      parent     |       |          |   |   |
-|       pid       |       |          |   |   |
-|       ppid      |       |          |   |   |
-|      rlimit     |       |          |   |   |
-|      status     |       |          |   |   |
-|     terminal    |       |          |   |   |
-|     threads     |       |          |   |   |
-|      uids       |       |          |   |   |
-|     username    |       |          |   |   |
+|     values      | unit  |          Comment                   |   |   |
+|-----------------|-------|------------------------------------|---|---|
+|     children    |       |                                    |   |   |
+|     cmdline     |       |                                    |   |   |
+|   connections   |       |                                    |   |   |
+|   cpu_afinity   |       |       afinity of cpu               |   |   |
+|   cpu_percent   |   %   |      Usage of cpu  in percentage   |   |   |
+|   create_time   |  sec  |create time for node in Linux time  |   |   |
+|       cwd       |       |      current working directory     |   |   |
+|       exe       |       |                                    |   |   |
+|       gids      |       |          group Identifier          |   |   |
+|      ionice     |       |  I/O scheduling class and priority |   |   |
+|    io_counters  | byte  |       I/O accounting information   |   |   |
+|    is_running   |       |                                    |   |   |
+| memory_info_rss | byte  |   Resident Set Size of memory      |   |   |
+| memory_info_vms | byte  |    Size of  Virtual Memory         |   |   |
+| memory_info_ex  |       |                                    |   |   |
+|   memory_maps   |       |                                    |   |   |
+| memory_percent  |   %   |    memory usage in percentage      |   |   |
+|      name       |       |            name of node            |   |   |
+|      nice       |       |                                    |   |   |
+|num_ctx_switches_voluntary  |      |     voluntary context switch      |   |   |
+|num_ctx_switches_involuntary|      |    involuntary context switches   |   |   |
+|     num_fds     |       |                                    |   |   |
+|   num_handles   |       |                                    |   |   |
+|   num_threads   |       |                                    |   |   |
+|    open_files   |       |                                    |   |   |
+|      parent     |       |          parent of node            |   |   |
+|       pid       |       |       Prozess ID of node           |   |   |
+|       ppid      |       |       Parent Process Id of node    |   |   |
+|      rlimit     |       |          resource limits           |   |   |
+|      status     |       |                                    |   |   |
+|     terminal    |       |                                    |   |   |
+|     threads     |       |          threads of node           |   |   |
+|      uids       |       |             user ID                |   |   |
+|     username    |       |         username of node           |   |   |
 
 
 **Warning/Errors:**
