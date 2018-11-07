@@ -59,10 +59,10 @@ The network monitor watch the network,speed and the number of the package and ne
 
 |     values      | unit  | Comment  |   |   |
 |-----------------|-------|----------|---|---|
-|        RX       | Byte/s or Packet/s|          |   |   |
-|        TX       | Byte/s or Packet/s|          |   |   |
-|      Load_RX    |  %    |          |   |   |
-|      load_TX    |  %    |          |   |   |
+|        RX       | Byte/s or Packet/s|     Speed of Receive       |   |   |
+|        TX       | Byte/s or Packet/s|     Speed of Transmit      |   |   |
+|      Load_RX    |  %    |       Speed of Receive in percentage   |   |   |
+|      load_TX    |  %    |      Speed of Transmit in percentage   |   |   |
 
 
 **Warning/Errors:**
@@ -106,11 +106,11 @@ The following Error will be demonstrated:
 The wifi monitor watch the wifi Strength
 **Monitored Values:**
 
-|     values      | unit  | Comment  |   |   |
-|-----------------|-------|----------|---|---|
-| signal_strength | dBm   |          |   |   |
-|     quality     |       |          |   |   |
-|      noise      |       |          |   |   |
+|     values      | unit  |            Comment           |   |   |
+|-----------------|-------|------------------------------|---|---|
+| signal_strength | dBm   |     WIFI strength in dBm     |   |   |
+|     quality     |       |     WIFI quality             |   |   |
+|      noise      |       |     WIFI noise               |   |   |
 
 
 **Warning/Errors:**
@@ -129,10 +129,10 @@ None
 The RAM-monitor watch the RAM last
 **Monitored Values:**
 
-|     values      | unit  | Comment  |   |   |
-|-----------------|-------|----------|---|---|
-|   total_used    |  kB   |          |   |   |
-| percentage_used |   %   |          |   |   |
+|     values      | unit  |                Comment            |   |   |
+|-----------------|-------|-----------------------------------|---|---|
+|   total_used    |  kB   |    Usage of Ram                   |   |   |
+| percentage_used |   %   |    Usage of Ram in percentage     |   |   |
 
 
 **Warning/Errors:**
