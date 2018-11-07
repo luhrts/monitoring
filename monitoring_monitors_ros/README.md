@@ -100,12 +100,10 @@ The Node ressource monitor is able to monitor the ressources a node uses. Using 
 **Parameters:**
 
 
-	frequency: 1
-	# 0 = default(list all), 1 = whitelist, 2 = blacklist
-	filter_type: 0
+	frequency: 1                              # Frequency used to poll rostopic hz
+	filter_type: 0                            # 0 = default(list all), 1 = whitelist, 2 = blacklist
+	monitor_mode: 3                           #AggregationStrategies mode: 1 LAST, 2 FIRST, 3 MIN, 4 MAX, 5 AVG#
 
-	monitor_mode: 3
-	#AggregationStrategies mode: 1 LAST, 2 FIRST, 3 MIN, 4 MAX, 5 AVG#
 
 ## Map monitor
 ## Statistics monitor
@@ -135,7 +133,7 @@ This is a monitor for TF-tree in ROS, check the TF-tree if it is in right config
 	  frequency: 1                                  # Frequency to send the monitored values
 	monitor_mode : 5                                # AggregationStrategies mode: 1 LAST, 2 FIRST, 3 MIN, 4 MAX, 5 AVG#
 	timeTilDelete: 3                                # Time for delete value from the  Message
-	topics: [groupe_1,groupe_2]                            # List of titel name for the following groupe 
+	topics: [groupe_1,groupe_2]                     # List of titel name for the following groupe 
 	
 	groupe_1:
 	  topic: /topic_1                               # The 'Topic' value in statistic topic,Which user want to watch by statistic monitor
@@ -146,7 +144,7 @@ This is a monitor for TF-tree in ROS, check the TF-tree if it is in right config
 	  size: 0                                       # Size of the message in the 'Topic'
 	  dSize: 1                                      # Tolerance of the size
 	
-	  type: geometry_msgs::Twist                    # Message of the 'Topic'
+	  type: geometry_msgs::Twist                    # Message tpye of the 'Topic'
 	  errorlevel: 0.5                               # errorlevel of the Warn message
 
 
