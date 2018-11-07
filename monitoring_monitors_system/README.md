@@ -57,12 +57,12 @@ The topic monitor subscribes to all topics in a list and verifies that the are p
 The network monitor watch the network,speed and the number of the package and network error will be checked
 **Monitored Values:**
 
-|     values      | unit  | Comment  |   |   |
-|-----------------|-------|----------|---|---|
-|        RX       | Byte/s or Packet/s|     Speed of Receive       |   |   |
-|        TX       | Byte/s or Packet/s|     Speed of Transmit      |   |   |
-|      Load_RX    |  %    |       Speed of Receive in percentage   |   |   |
-|      load_TX    |  %    |      Speed of Transmit in percentage   |   |   |
+|     values      | unit  | Comment  | 
+|-----------------|-------|----------|
+|        RX       | Byte/s or Packet/s|     Speed of Receive       |
+|        TX       | Byte/s or Packet/s|     Speed of Transmit      |
+|      Load_RX    |  %    |       Speed of Receive in percentage   |
+|      load_TX    |  %    |      Speed of Transmit in percentage   |
 
 
 **Warning/Errors:**
@@ -106,11 +106,11 @@ The following Error will be demonstrated:
 The wifi monitor watch the wifi Strength
 **Monitored Values:**
 
-|     values      | unit  |            Comment           |   |   |
-|-----------------|-------|------------------------------|---|---|
-| signal_strength | dBm   |     WIFI strength in dBm     |   |   |
-|     quality     |       |     WIFI quality             |   |   |
-|      noise      |       |     WIFI noise               |   |   |
+|     values      | unit  |            Comment           |
+|-----------------|-------|------------------------------|
+| signal_strength | dBm   |     WIFI strength in dBm     |
+|     quality     |       |     WIFI quality             |
+|      noise      |       |     WIFI noise               |
 
 
 **Warning/Errors:**
@@ -129,10 +129,10 @@ None
 The RAM-monitor watch the RAM last
 **Monitored Values:**
 
-|     values      | unit  |                Comment            |   |   |
-|-----------------|-------|-----------------------------------|---|---|
-|   total_used    |  kB   |    Usage of Ram                   |   |   |
-| percentage_used |   %   |    Usage of Ram in percentage     |   |   |
+|     values      | unit  |                Comment            | 
+|-----------------|-------|-----------------------------------|
+|   total_used    |  kB   |    Usage of Ram                   |
+| percentage_used |   %   |    Usage of Ram in percentage     |
 
 
 **Warning/Errors:**
@@ -155,15 +155,14 @@ None
 The ntp-monitor checkout the time by use NTP
 **Monitored Values:**
 
-|     values      | unit  | Comment  |   |   |
-|-----------------|-------|----------|---|---|
-|   ntp_offset    |   s   |          |   |   |
-|   ntp_version   |       |          |   |   |
-|   total_used    |       |          |   |   |
-|     ntp_time    |       |          |   |   |
-|   ntp_leap      |       |          |   |   |
-| ntp_time_unix   |       |          |   |   |
-| ntp_root_delay  |   s   |          |   |   |
+|     values      | unit  |                                 Comment                         |
+|-----------------|-------|-----------------------------------------------------------------|
+|   ntp_offset    |   s   |  the time difference  between the client server and source      |
+|   ntp_version   |       |                              version of ntp                     |
+|     ntp_time    |       |                               Time in UTC                       |
+|   ntp_leap      |       |                              leap seconds                       |
+| ntp_time_unix   |       |                            Time in unix time                    |
+| ntp_root_delay  |   s   |total roundtrip delay to the primary reference source at the root| 
 
 
 **Warning/Errors:**
