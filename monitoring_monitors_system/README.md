@@ -2,9 +2,9 @@
 
 There are the monitor for System
 
-## clock_diference-monitor
+## clock_difference-monitor
 
-The clock_diference-monitor Checksum routine for Internet Protocol family headers.
+The clock_difference-monitor Checksum routine for Internet Protocol family headers. Measures the differences between machines' clocks using ICMP timestamp messages.
 
 **Monitored Values:**
 
@@ -20,13 +20,7 @@ The clock_diference-monitor Checksum routine for Internet Protocol family header
 * None
 
 
-## Topic monitor
-
-The topic monitor subscribes to all topics in a list and verifies that the are published on a certain frequency. It is based on the rostopic hz mechanism. For high bandwith topics this will cause a hiogh overhead since the topics are subscribed. The statistics monitor is a better solution in this case.
-
-**Monitored Values:**
-
-* None
+## CPU monitor
 
 **Warning/Errors:**
 
@@ -192,7 +186,8 @@ None
 	  frequency: 1   #Publish and calculation frequency
 
 
-* **ping-monitor**:  A pure python ping implementation using raw socket. Note that ICMP messages can only be sent from processes running as root.**Does not connect to GUI.** use it by :
+* **ping-monitor**:  A pure python ping implementation using raw socket. Note that ICMP messages can only be sent from processes running as root. **Does not connect to GUI.**
+use it by :
 
 
 
