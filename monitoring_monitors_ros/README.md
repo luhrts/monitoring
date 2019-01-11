@@ -140,9 +140,11 @@ This is a monitor for TF-tree in ROS, check the TF-tree if it is in right config
 The Statistics Monitor monitors advanced information about topics. It uses topic-statistics, so it must be enabled to  ros-system-start.
 
 **Monitored Values:**
+
 * **TODO**
 
 **Warning/Errors:**
+
 * **TODO**
 
 **Parameters:**
@@ -168,20 +170,20 @@ The Statistics Monitor monitors advanced information about topics. It uses topic
 
 ## Topic value monitor
 
-The Topic value monitor use to watch the value in the topic
+The Topic value monitor is used to watch a message's' value that is published on a topic.
+**Currently under development**
 
 **Monitored Values:**
 
-None
+* **TODO**
 
 **Warning/Errors:**
 
-* Warn if topic is missing or topic frequency is too slow
+* **TODO**
 
 
 **Parameters:**
 
-	frequency: 1                                          # Frequency to send the monitored values
-	topics: [{name: /monitoring, frequency: 2}]           #List of topic which user want to watch and the topic frequency
+* **TODO**
 	
 	
