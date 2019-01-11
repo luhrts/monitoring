@@ -48,7 +48,7 @@ The clock_difference-monitor Checksum routine for Internet Protocol family heade
 
 ## Network-monitor
 
-The network monitor watch the network,speed and the number of the package and network error will be checked
+The network monitor watches the network's speed and the number of the packages. Network transmiting error will be checked.
 **Monitored Values:**
 
 |     values      | unit  | Comment  | 
@@ -97,7 +97,8 @@ The following Error will be demonstrated:
 
 ## wifi-monitor
 
-The wifi monitor watch the wifi Strength
+The wifi monitor watch the wifi Strength.
+
 **Monitored Values:**
 
 |     values      | unit  |            Comment           |
@@ -120,7 +121,8 @@ None
 
 ## RAM-monitor
 
-The RAM-monitor watch the RAM last
+The RAM-monitor watch the RAM load.
+
 **Monitored Values:**
 
 |     values      | unit  |                Comment            | 
@@ -146,22 +148,22 @@ None
 
 ## ntp-monitor
 
-The ntp-monitor checkout the time by use NTP
+The ntp-monitor check's the time used NTP.
 **Monitored Values:**
 
 |     values      | unit  |                                 Comment                         |
 |-----------------|-------|-----------------------------------------------------------------|
-|   ntp_offset    |   s   |  the time difference  between the client server and source      |
+|   ntp_offset    |   s   |  the time difference between the client server and source      |
 |   ntp_version   |       |                              version of ntp                     |
 |     ntp_time    |       |                               Time in UTC                       |
 |   ntp_leap      |       |                              leap seconds                       |
-| ntp_time_unix   |       |                            Time in unix time                    |
+| ntp_time_unix   |       |                             unix time                    |
 | ntp_root_delay  |   s   |total roundtrip delay to the primary reference source at the root| 
 
 
 **Warning/Errors:**
 
-Error if connect ntp failed
+Error if ntp-connection failed
 
 **Parameters:**
 
@@ -169,7 +171,8 @@ None
 
 ## Ping-monitor
 
-The ping-monitorr is a pure python ping implementation using raw socket
+The ping-monitorr is a pure python ping implementation using raw socket.
+
 **Monitored Values:**
 
 None
@@ -187,7 +190,4 @@ None
 
 
 * **ping-monitor**:  A pure python ping implementation using raw socket. Note that ICMP messages can only be sent from processes running as root. **Does not connect to GUI.**
-use it by :
-
-
 
