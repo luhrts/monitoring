@@ -1,14 +1,14 @@
 # ROS Monitoring
 
-The ROS Monitoring Tools helps to analyse and improve ROS Systems. It collects information about the computer, operating system and ros environment and filters them. All Values and detected Warnings and Errors can be visualised in a RQT Plugin.
+The ROS Monitoring Tools helps to analyse and improve ROS Systems. It collects information about the coputer, operating system and ros environment and filters them. All Values and detected Warnings and Errors can be visualised in a RQT Plugin.
 
 # Overview
 
-This tool is designed to collect and observe system values, detect and identify failures and to perform recovery if possible. It can handle a number of distributed Monitors. Some general Monitors are included within this package, for all other nodes libraries for C++ and Python exist to integrate the Monitoring into custom Nodes. 
+This tool is designed to collect and observe system values, detect and identify failures and to perform recovery when possible. It can handle a number of distributed Monitors. Some gernal Monitors are included within this package, for all other nodes libraries for C++ and Python exist to integrate the Monitoring into custom Nodes. 
 
 All Monitoring-Data is aggregated and can be visualised by two different RQT-Plugins (a varriant of the ROS Monitor and the ROS Plot, modified to support Monitoring)
 
-Besides visualisation, fault-detection and recovery are supported. 
+Besides visualisation, Faultdetection and Recovery are supported. 
 
 
 ![Overview_Image_Monitoring](monitoring/images/Monitoring_Overview.png)
@@ -75,7 +75,7 @@ To launch a default configuration execute:
     
     roslaunch monitoring_examples system.launch
     
-For futher configuration all monitors offer a number of parameters to tune.
+To futher configure the system all monitors offer a number of parameters to tune the configuration.
 
 
 

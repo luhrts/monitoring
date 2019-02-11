@@ -1,0 +1,7 @@
+<launch>
+	
+        <node pkg="monitoring_bag_plot" type="node_res_bag_plot.py" name="node_ressource_plot" output="screen" >
+                <rosparam command="load" file="$(find monitoring_bag_plot)/config/node_ressource_config.yaml" />
+	</node>
+	
+</launch>

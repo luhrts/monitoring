@@ -2,9 +2,9 @@
 
 There are the monitor for System
 
-## clock_difference-monitor
+## clock_diference-monitor
 
-The clock_difference-monitor Checksum routine for Internet Protocol family headers. Measures the differences between machines' clocks using ICMP timestamp messages.
+The clock_diference-monitor Checksum routine for Internet Protocol family headers.
 
 **Monitored Values:**
 
@@ -20,7 +20,13 @@ The clock_difference-monitor Checksum routine for Internet Protocol family heade
 * None
 
 
-## CPU monitor
+## Topic monitor
+
+The topic monitor subscribes to all topics in a list and verifies that the are published on a certain frequency. It is based on the rostopic hz mechanism. For high bandwith topics this will cause a hiogh overhead since the topics are subscribed. The statistics monitor is a better solution in this case.
+
+**Monitored Values:**
+
+* None
 
 **Warning/Errors:**
 
@@ -48,7 +54,7 @@ The clock_difference-monitor Checksum routine for Internet Protocol family heade
 
 ## Network-monitor
 
-The network monitor watches the network's speed and the number of the packages. Network transmiting error will be checked.
+The network monitor watch the network,speed and the number of the package and network error will be checked
 **Monitored Values:**
 
 |     values      | unit  | Comment  | 
@@ -97,8 +103,7 @@ The following Error will be demonstrated:
 
 ## wifi-monitor
 
-The wifi monitor watch the wifi Strength.
-
+The wifi monitor watch the wifi Strength
 **Monitored Values:**
 
 |     values      | unit  |            Comment           |
@@ -121,8 +126,7 @@ None
 
 ## RAM-monitor
 
-The RAM-monitor watch the RAM load.
-
+The RAM-monitor watch the RAM last
 **Monitored Values:**
 
 |     values      | unit  |                Comment            | 
@@ -148,22 +152,22 @@ None
 
 ## ntp-monitor
 
-The ntp-monitor check's the time used NTP.
+The ntp-monitor checkout the time by use NTP
 **Monitored Values:**
 
 |     values      | unit  |                                 Comment                         |
 |-----------------|-------|-----------------------------------------------------------------|
-|   ntp_offset    |   s   |  the time difference between the client server and source      |
+|   ntp_offset    |   s   |  the time difference  between the client server and source      |
 |   ntp_version   |       |                              version of ntp                     |
 |     ntp_time    |       |                               Time in UTC                       |
 |   ntp_leap      |       |                              leap seconds                       |
-| ntp_time_unix   |       |                             unix time                    |
+| ntp_time_unix   |       |                            Time in unix time                    |
 | ntp_root_delay  |   s   |total roundtrip delay to the primary reference source at the root| 
 
 
 **Warning/Errors:**
 
-Error if ntp-connection failed
+Error if connect ntp failed
 
 **Parameters:**
 
@@ -171,8 +175,7 @@ None
 
 ## Ping-monitor
 
-The ping-monitorr is a pure python ping implementation using raw socket.
-
+The ping-monitorr is a pure python ping implementation using raw socket
 **Monitored Values:**
 
 None
@@ -189,5 +192,7 @@ None
 	  frequency: 1   #Publish and calculation frequency
 
 
-* **ping-monitor**:  A pure python ping implementation using raw socket. Note that ICMP messages can only be sent from processes running as root. **Does not connect to GUI.**
+* **ping-monitor**:  A pure python ping implementation using raw socket. Note that ICMP messages can only be sent from processes running as root.**Does not connect to GUI.** use it by :
+
+
 

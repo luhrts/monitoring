@@ -3,10 +3,33 @@ monitoring:
 monitor_mode: 5
 #AggregationStrategies mode: 1 LAST, 2 FIRST, 3 MIN, 4 MAX, 5 AVG#
 ignore_default: 0
-topics: [/monitoring]
+topics: [/A_SELFLOCALIZATION/id5/A10_out_localization_data, /B_PATHPLANNER/id0/B10_out_planner_data, /monitoring]
 filter_type: DEFAULT  # WHITLELIST = only monitor these topics
                         # BLACKLIST = exclude these topics from monitoring
                         # DEFAULT = all topics
+
+
+/A_SELFLOCALIZATION/id5/A10_out_localization_data:
+    topic: /A_SELFLOCALIZATION/id5/A10_out_localization_data
+    source: [/oxts_driver_eth_survey]
+    destination: -1 # number of max subribers, or list of subriber node names
+    frequency: 2.5
+    dfrequency: 1
+    size: 180 #byte/msg
+    dsize: 10 #byte/msg
+    stampmaxage: 0.1
+    errorlevel: 0.3
+
+/B_PATHPLANNER/id0/B10_out_planner_data:
+    topic: /B_PATHPLANNER/id0/B10_out_planner_data
+    source: [/B01_Type01]
+    destination: [/B01_Type01, /VehicleController_id0]
+    frequency: 2.5
+    dfrequency: 1
+    size: 240 #byte/msg
+    dsize: 20 #byte/msg
+    stampmaxage: 0.1
+    errorlevel: 0.7
 
 /monitoring:
     topic: /monitoring
@@ -28,26 +51,3 @@ DEFAULT:               # custom default, use for unspecified topics
     dsize: 1000
     stampmaxage: 0.1
     errorlevel: 0.5
-
-############ EXAMPLE #############
-#/A_SELFLOCALIZATION/id5/A10_out_localization_data:
-#    topic: /A_SELFLOCALIZATION/id5/A10_out_localization_data
-#    source: [/oxts_driver_eth_survey]
-#    destination: -1 # number of max subribers, or list of subriber node names
-#    frequency: 2.5
-#    dfrequency: 1
-#    size: 180 #byte/msg
-#    dsize: 10 #byte/msg
-#    stampmaxage: 0.1
-#    errorlevel: 0.3
-
-#/B_PATHPLANNER/id0/B10_out_planner_data:
-#    topic: /B_PATHPLANNER/id0/B10_out_planner_data
-#    source: [/B01_Type01]
-#    destination: [/B01_Type01, /VehicleController_id0]
-#    frequency: 2.5
-#    dfrequency: 1
-#    size: 240 #byte/msg
-#    dsize: 20 #byte/msg
-#    stampmaxage: 0.1
-#    errorlevel: 0.7

@@ -1,0 +1,9 @@
+<launch>
+    <arg name="mon-output" default="screen" />
+
+    <node pkg="monitoring_visualization" type="gui_msg_concat_node" name="gui_concat" respawn="true" output="$(arg mon-output)"/>
+    <node pkg="monitoring_monitors_ros" type="multi_publish_monitor.py" name="multi_pub_monitor" output="$(arg mon-output)" respawn="true">
+      <rosparam command="load" file="$(find monitoring_monitors_ros)/config/multipubconfig.yaml" />
+    </node>
+
+</launch>

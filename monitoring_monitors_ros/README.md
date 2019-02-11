@@ -28,7 +28,7 @@ The node monitor uses the rosping method to ping a list of ROS-Nodes and therefo
 
 ## Topic monitor
 
-The topic monitor subscribes to all topics in a list and checks whether they are published with a certain frequency. It is based on the rostopic hz mechanism. For high bandwith topics this leads to a high overhead, as the topics are subscribed. The statistics monitor is a better solution in this case.
+The topic monitor subscribes to all topics in a list and verifies that the are published on a certain frequency. It is based on the rostopic hz mechanism. For high bandwith topics this will cause a hiogh overhead since the topics are subscribed. The statistics monitor is a better solution in this case.
 
 **Monitored Values:**
 
@@ -49,7 +49,7 @@ The topic monitor subscribes to all topics in a list and checks whether they are
 
 ## Node ressource monitor
 
-The Node ressource monitor is able to monitor the ressources used by a node. Using the psutil python library the monitor can monitor a number of values.
+The Node ressource monitor is able to monitor the ressources a node uses. Using the psutil python library the monitor is able to monitor a number of values.
 
 **Monitored Values:**
 
@@ -104,14 +104,9 @@ The Node ressource monitor is able to monitor the ressources used by a node. Usi
 	filter_type: 0                            # 0 = default(list all), 1 = whitelist, 2 = blacklist
 	monitor_mode: 3                           #AggregationStrategies mode: 1 LAST, 2 FIRST, 3 MIN, 4 MAX, 5 AVG#
 
-* see config/statisticsconfig.yaml
 
 ## Map monitor
-
-**TODO**
-
-## TF monitor
-
+## Statistics monitor
 This is a monitor for TF-tree in ROS, check the TF-tree if it is in right configuration.
 
 **Monitored Values:**
@@ -131,23 +126,8 @@ This is a monitor for TF-tree in ROS, check the TF-tree if it is in right config
 * Error if static frame, parent and autohrity of the frame Changed
 * Error if the loop and Seperation in the tf tree
 
-**Parameters**
-
-* **TODO**
-
-## Statistics Monitor
-
-The Statistics Monitor monitors advanced information about topics. It uses topic-statistics, so it must be enabled to  ros-system-start.
-
-**Monitored Values:**
-
-* **TODO**
-
-**Warning/Errors:**
-
-* **TODO**
-
 **Parameters:**
+
 
 	monitoring:
 	  frequency: 1                                  # Frequency to send the monitored values
@@ -168,22 +148,42 @@ The Statistics Monitor monitors advanced information about topics. It uses topic
 	  errorlevel: 0.5                               # errorlevel of the Warn message
 
 
-## Topic value monitor
-
-The Topic value monitor is used to watch a message's' value that is published on a topic.
-**Currently under development**
+## Tf monitor
+The node monitor uses the rosping method to ping a list of ROS-Nodes and therefore estimate if they are still running and able to handle rospings. 
 
 **Monitored Values:**
 
-* **TODO**
+* None
 
 **Warning/Errors:**
 
-* **TODO**
+* Error if Node is not available
 
 
 **Parameters:**
 
-* **TODO**
+
+	monitoring:
+	    frequency: 1				# Frecuency used to send monitored values
+	monitor_mode : 2				# AggregationStrategies mode: 1 LAST, 2 FIRST, 3 MIN, 4 MAX, 5 AVG#
+
+
+## Topic value monitor
+
+The Topic valhe monitor use to watch the value in the topic
+
+**Monitored Values:**
+
+None
+
+**Warning/Errors:**
+
+* Warn if topic is missing or topic frequency is too slow
+
+
+**Parameters:**
+
+	frequency: 1                                          # Frequency to send the monitored values
+	topics: [{name: /monitoring, frequency: 2}]           #List of topic which user want to watch and the topic frequency
 	
 	

@@ -1,0 +1,33 @@
+bag_dir: /home/rtros/BilderTest/2019-02-05-11-11-47.bag
+#bag_dir: /home/rtros/2019-01-23-14-04-07.bag
+monitor_type: node_ressource_monitor
+photo_path: /home/rtros/BilderTest/node_res/
+blacklist: ['create_time']
+debug_mode: True
+
+quality_criterion:
+  cpu_percent:
+      value_criterion: [50,80]        ## warn_value,error_value
+  cpu_times_user: 
+      linear_criterion: [0.003,0.006]
+  cpu_times_system:
+      linear_criterion: [0.003,0.006]
+  io_counters_read_count:
+      linear_criterion: [0.003,0.006]
+  io_counters_write_count:
+      linear_criterion: [0.003,0.006]
+  io_counters_read_bytes:
+      const_critertion: [3,6]              ##tolerence is 10^param 
+  io_counters_write_bytes:
+      const_critertion: [3,6]
+  memory_info_rss:
+      const_critertion: [3,6]
+  memory_info_vms:
+      const_critertion: [3,6]
+  memory_percent:
+      const_critertion: [-2,-1]
+  num_ctx_switches_voluntary:
+      linear_criterion: [0.003,0.006]
+  num_ctx_switches_involuntary:
+      tendency_criterion: [90,90,90,90,45,45,45,45]
+      ##[all_error, hight_error, mid_error, low_error, all_warn, hight_warn, mid_warn, low_warn]

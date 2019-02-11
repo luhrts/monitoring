@@ -1,0 +1,11 @@
+monitoring:
+  frequency: 1
+monitor_mode: 5
+#AggregationStrategies mode: 1 LAST, 2 FIRST, 3 MIN, 4 MAX, 5 AVG#
+ignored_topics: [/monitoring, /statistics, /tf]
+topics: [/A_SELFLOCALIZATION/id5/A10_out_localization_data, /B_PATHPLANNER/id0/B10_out_planner_data, /monitoring]
+filter_type: DEFAULT    # WHITLELIST = topics that can have multi publisher
+                        # other topics will cause warning messages
+                        # BLACKLIST = topics that shouldn't have more then one 
+                        # publisher, error level will be set
+                        # DEFAULT = no error level will be set

@@ -31,13 +31,24 @@
    ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
    POSSIBILITY OF SUCH DAMAGE.
 ''' 
-import xmlrpclib
-import traceback
+#import xmlrpclib
+from xmlrpclib import ServerProxy
+#import traceback
+from traceback import format_exc
 import rospy
-import psutil
-import rosnode
-import socket
-import subprocess
+#import psutil
+from psutil import Process
+from psutil import NoSuchProcess as psutil_error
+#import rosnode
+from rosnode import get_node_names
+from rosnode import get_api_uri
+#import socket
+from socket import gethostbyname
+from socket import gethostname
+#import subprocess
+from subprocess import check_output
+#import threading
+from threading import Thread
 
 from socket import error as socket_error
 
@@ -48,6 +59,9 @@ from monitoring_core.monitor import AggregationStrategies
 ID = "NODEINFO"
 MONITOR_ = Monitor("node_ressource_monitor")
 monitor_mode = 1
+cpu_percent = {}
+threads = []
+shutdown = False
 
 class NODE(object):
     def __init__(self, name, pid):
@@ -58,6 +72,25 @@ class Filter_type(object):
     DEFAULT = 0
     WHITLELIST = 1
     BLACKLIST = 2
+
+def get_cpu_percent_thread(pid):
+    global cpu_percent
+    global shutdown
+    while not shutdown:
+        try:
+            temp = Process(pid)
+            cpu_percent[pid] = temp.cpu_percent(0.3)
+        except Exception as e:
+            pass
+
+def check_cpu_percent_in_thread(pid):
+    global cpu_percent
+    global threads
+    if pid not in cpu_percent.keys():
+        cpu_percent[pid] = 0.0
+        t = Thread(target=get_cpu_percent_thread, args=(pid,))
+        t.start()
+        threads.append(t)
 
 def init():
     """
@@ -73,7 +106,7 @@ def init():
     if rospy.has_param('node_ressource_monitor/frequency'):
         frequency = rospy.get_param('node_ressource_monitor/frequency')
     else:
-        frequency = 10
+        frequency = 1
     if rospy.has_param('node_ressource_monitor/filter_type'):
         filter_type = rospy.get_param('node_ressource_monitor/filter_type')
     else:
@@ -86,28 +119,28 @@ def get_node_list():
     Return: List containing ROS Nodes(name, pid)
     """
     rospy.logdebug("GET_NODE_LIST:")
-    node_array_temp = rosnode.get_node_names()
+    node_array_temp = get_node_names()
     node_list = []
     j = 0
     for node_name in node_array_temp:
         try:
-            node_api = rosnode.get_api_uri(rospy.get_master(), node_name)
-            if socket.gethostname() not in node_api[2] and socket.gethostbyname(socket.gethostname()) not in node_api[2]:         # Only Get Info for Local Nodes
+            node_api = get_api_uri(rospy.get_master(), node_name)
+            if gethostname() not in node_api[2] and gethostbyname(gethostname()) not in node_api[2]:   # Only Get Info for Local Nodes
                 continue
 
-            code, msg, pid = xmlrpclib.ServerProxy(node_api[2]).getPid(ID)
+            code, msg, pid = ServerProxy(node_api[2]).getPid(ID)
 
             node_list.append(NODE(node_name, pid))
+            check_cpu_percent_in_thread(pid)
             rospy.logdebug("Node_name: " + node_list[j].name + " Node_PID: " + str(node_list[j].pid))
             j += 1
         except socket_error as serr:
              pass
-
     rospy.logdebug("=============================")
     return node_list
 
 def get_pid_list(base_name):
-    temp = subprocess.check_output('ps ax | grep '+filter_string, shell=True).split('\n')
+    temp = check_output('ps ax | grep '+filter_string, shell=True).split('\n')
     pids, names = [], []
     for val in temp:
         if val.find('grep') == -1 and val:
@@ -135,7 +168,7 @@ def get_process_info(pid):
     """
     gather all information provided by psutil.Process(pid)
     """
-    node_process_info = psutil.Process(pid)
+    node_process_info = Process(pid)
     return node_process_info.as_dict()
 
 
@@ -167,10 +200,11 @@ def print_to_console_and_monitor(name, pid):
     check for filter options
     define DEFAULT options
     """
+    global cpu_percent
     #get all values belonging to pid
     try:
-        node_process_info = psutil.Process(pid)
-    except psutil._exceptions.NoSuchProcess:
+        node_process_info = Process(pid)
+    except psutil_error as pe:
         #rospy.logerr("No process with pid: " + pid) #THROWS ERROR PLS FIX
         return
     #check if there is a node with the same name in filter config
@@ -200,32 +234,36 @@ def print_to_console_and_monitor(name, pid):
     #iterate over all keys given for node in node_filter
     for key in node_value_filter.get("values"):
         try:
-            if hasattr(node_process_info, key):
-                method_to_call = getattr(node_process_info, key)
-                if callable(method_to_call):
-                    value = method_to_call()
-                else:
-                    value = method_to_call
+            if not VALUE_DICT.has_key(key):
+                continue
 
-                if VALUE_DICT.has_key(key):
-                    #call dedicated function for key which adds relevant monitoring parameters to
-                    #/monitoring topic
+            if key == "cpu_percent":
+
+                if pid in cpu_percent.keys():
+                    value = cpu_percent[pid]
                     VALUE_DICT[key](value, name)
-
+                else:
+                    rospy.logwarn("No CPU Percent for Node: %s", name)
+                    rospy.logwarn("Setting CPU Percent to 0.0")
+                    value = 0.0
+            elif hasattr(node_process_info, key):
+                method_to_call = getattr(node_process_info, key)
+                value = get_value(method_to_call)
+                VALUE_DICT[key](value, name)
             elif hasattr(node_process_info, "get_"+key):
                 method_to_call = getattr(node_process_info, "get_"+key)
-                if callable(method_to_call):
-                    value = method_to_call()
-                else:
-                    value = method_to_call
+                value = get_value(method_to_call)
+                VALUE_DICT[key](value, name)
 
-                if VALUE_DICT.has_key(key):
-                    #call dedicated function for key which adds relevant monitoring parameters to
-                    #/monitoring topic
-                    VALUE_DICT[key](value, name)
         except Exception as e:
             rospy.logdebug("Node: %s (%d) - %s not found", name, pid, key)
             pass
+
+def get_value(method_to_call):
+    if callable(method_to_call):
+        return method_to_call()
+    else:
+        return method_to_call
 
 """
 psutil values to monitor functions
@@ -571,6 +609,10 @@ VALUE_DICT = {
 
 
 if __name__ == '__main__':
+    threads = []
+    shutdown = False
+    cpu_percent = {}
+
     rospy.init_node("node_ressource_monitor", anonymous=True)
     FREQUENCY, FILTER_TYPE_ = init()
     rospy.loginfo(FREQUENCY)
@@ -584,4 +626,8 @@ if __name__ == '__main__':
         except rospy.ROSInterruptException:
             rospy.loginfo("ERROR")
         except Exception:
-            rospy.logerr(traceback.format_exc())
+            rospy.logerr(format_exc())
+    shutdown = True
+    for t in threads:
+        t.join()
+

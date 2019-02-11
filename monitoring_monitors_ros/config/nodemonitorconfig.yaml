@@ -1,5 +1,5 @@
 frequency: 1
-nodes: [/system/cpu_monitor, /system/ram_monitor, /ros/topic_monitor, /ros/node_monitor, /system/network_monitor]
+nodes: [/gui_msg_concat_node, /ros/node_monitor, /ros/node_ressource_monitor, /ros/statistics_monitor, /ros/tf_monitoring, /ros/topic_monitor, /rosout, /system/cpu_frequency_monitor, /system/cpu_monitor, /system/network_monitor, /system/ntp_monitor, /system/ram_monitor, /system/wifi_monitor]
 
 monitoring:
     frequency: 2
