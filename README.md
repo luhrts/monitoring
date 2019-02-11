@@ -1,3 +1,6 @@
+The Devel Branch contains new monitoring component's and functions. These were not tested intensively but
+should work on Ubuntu 16.04.  
+
 # ROS Monitoring
 
 The ROS Monitoring Tools helps to analyse and improve ROS Systems. It collects information about the coputer, operating system and ros environment and filters them. All Values and detected Warnings and Errors can be visualised in a RQT Plugin.
