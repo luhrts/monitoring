@@ -87,11 +87,11 @@ def load_params(topic_names):
             if rospy.has_param(topic+'/destination'):
                 c.destinations = rospy.get_param(topic+'/destination')
             else:
-                c.destinations = [-1]
+                c.destinations = -1
             if rospy.has_param(topic+'/source'):
                 c.sources = rospy.get_param(topic+'/source')
             else:
-                c.sources = [-1]
+                c.sources = -1
             if rospy.has_param(topic+'/frequency'):
                 c.frequency = rospy.get_param(topic+'/frequency')
             else:
@@ -180,7 +180,7 @@ class TopicsStatisticsAnalyzer:
         self.sub = rospy.Subscriber("/statistics",
                                     TopicStatistics, self.statistics_cb)
 
-        self.check_unsubscriberd_topics_timer = rospy.Timer(rospy.Duration(4.0), self.timer_cb)
+        #self.check_unsubscriberd_topics_timer = rospy.Timer(rospy.Duration(4.0), self.timer_cb)
         self.active_topics = []
         self.inactive_topics_new = []
         self.inactive_topics_old =  []
@@ -323,6 +323,7 @@ class TopicsStatisticsAnalyzer:
 
     def calcerror(self, key, topics, value):
         #rospy.loginfo(topic)
+	return 0.0
         topic = topics[0].replace("|","/")
         cval, baseerr = 0.0, 0.0
         if self.inconfig(topic):
