@@ -53,7 +53,7 @@ class TFMonitor
 {
 public:
 
-  TFMonitor();
+  TFMonitor(ros::NodeHandle &nh);
 
   void callback(const ros::MessageEvent<tf::tfMessage const>& msg_evt);
 
