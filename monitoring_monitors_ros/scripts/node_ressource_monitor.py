@@ -128,7 +128,7 @@ def get_node_thread_list():
         node_thread_list.append(t)
         
     rospy.logdebug("=============================")
-    return node_list
+    return node_thread_list
 
 def get_pid_list(base_name):
     temp = check_output('ps ax | grep '+filter_string, shell=True).split('\n')
@@ -181,20 +181,25 @@ def gather_info(node_name):
 
             node = NODE(node_name, pid)
             check_cpu_percent_in_thread(pid)
-            rospy.logdebug("Node_name: " + node_list[j].name + " Node_PID: " + str(node_list[j].pid))
-            j += 1
+            rospy.logdebug("Node_name: " + node.name + " Node_PID: " + str(node.pid))
+            #j += 1
+            try:
+                print_to_console_and_monitor(node.name, node.pid)
+            except Exception as e:
+                if rospy.is_shutdown():
+                    break
+                rospy.logerr("[NodeResourceMonitor ]Node: %s (pid: %d)", node.name, node.pid)
+                rospy.logerr("[NodeResourceMonitor ]%s", str(e))
+
         except socket_error as serr:
                 pass
+	except Exception as e:
+            rospy.logwarn("Cant get Infos API_URI etc: %s",node_name)
+	    rospy.logwarn("Retrying in 1 sec")
+	    #print e
         
         if rospy.is_shutdown():
             break
-        try:
-            print_to_console_and_monitor(node.name, node.pid)
-        except Exception as e:
-            if rospy.is_shutdown():
-                break
-            rospy.logerr("[NodeResourceMonitor ]Node: %s (pid: %d)", node.name, node.pid)
-            rospy.logerr("[NodeResourceMonitor ]%s", str(e))
 
         RATE.sleep()
 
