@@ -171,18 +171,23 @@ def gather_info(node_name):
     #bw_node_list = get_programm_list()
     #node_list += get_programm_list()
 
+    got_api_uri = False
+
     while True:
         try:
-            node_api = get_api_uri(rospy.get_master(), node_name)
-            if gethostname() not in node_api[2] and gethostbyname(gethostname()) not in node_api[2]:   # Only Get Info for Local Nodes
-                continue
+	    if not got_api_uri:
+                node_api = get_api_uri(rospy.get_master(), node_name)
+                if gethostname() not in node_api[2] and gethostbyname(gethostname()) not in node_api[2]:   # Only Get Info for Local Nodes
+                    continue
 
-            code, msg, pid = ServerProxy(node_api[2]).getPid(ID)
+                code, msg, pid = ServerProxy(node_api[2]).getPid(ID)
 
-            node = NODE(node_name, pid)
-            check_cpu_percent_in_thread(pid)
-            rospy.logdebug("Node_name: " + node.name + " Node_PID: " + str(node.pid))
-            #j += 1
+                node = NODE(node_name, pid)
+                check_cpu_percent_in_thread(pid)
+                rospy.logdebug("Node_name: " + node.name + " Node_PID: " + str(node.pid))
+                #j += 1
+	        got_api_uri = True
+
             try:
                 print_to_console_and_monitor(node.name, node.pid)
             except Exception as e:
@@ -194,8 +199,9 @@ def gather_info(node_name):
         except socket_error as serr:
                 pass
 	except Exception as e:
-            rospy.logwarn("Cant get Infos API_URI etc: %s",node_name)
-	    rospy.logwarn("Retrying in 1 sec")
+            pass
+            #rospy.logwarn("Cant get Infos API_URI etc: %s",node_name)
+	    #rospy.logwarn("Retrying in 1 sec")
 	    #print e
         
         if rospy.is_shutdown():
