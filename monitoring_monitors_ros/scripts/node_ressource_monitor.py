@@ -113,31 +113,22 @@ def init():
         filter_type = Filter_type.DEFAULT
     return frequency, filter_type
 
-def get_node_list():
+def get_node_thread_list():
     """
     List all ROS Nodes
     Return: List containing ROS Nodes(name, pid)
     """
     rospy.logdebug("GET_NODE_LIST:")
     node_array_temp = get_node_names()
-    node_list = []
+    node_thread_list = []
     j = 0
     for node_name in node_array_temp:
-        try:
-            node_api = get_api_uri(rospy.get_master(), node_name)
-            if gethostname() not in node_api[2] and gethostbyname(gethostname()) not in node_api[2]:   # Only Get Info for Local Nodes
-                continue
-
-            code, msg, pid = ServerProxy(node_api[2]).getPid(ID)
-
-            node_list.append(NODE(node_name, pid))
-            check_cpu_percent_in_thread(pid)
-            rospy.logdebug("Node_name: " + node_list[j].name + " Node_PID: " + str(node_list[j].pid))
-            j += 1
-        except socket_error as serr:
-             pass
+        t = Thread(target=gather_info, args=(node_name,))
+        rospy.loginfo("Appending node %s", node_name)
+        node_thread_list.append(t)
+        
     rospy.logdebug("=============================")
-    return node_list
+    return node_thread_list
 
 def get_pid_list(base_name):
     temp = check_output('ps ax | grep '+filter_string, shell=True).split('\n')
@@ -172,25 +163,51 @@ def get_process_info(pid):
     return node_process_info.as_dict()
 
 
-def gather_info():
+def gather_info(node_name):
     """
-    obtains list of all running nodes by calling get_node_list()
-    calls print_to_console_and_monitor for each retrieved node
-    calls monitor.publish() after iterating over alle nodes in list
+    calls print_to_console_and_monitor for the retrieved node
     """
-    node_list = get_node_list() #+ get_non_ros_process_list("/home/user/external")
+    #node_list = get_node_list() #+ get_non_ros_process_list("/home/user/external")
     #bw_node_list = get_programm_list()
     #node_list += get_programm_list()
-    for i in node_list:
+
+    got_api_uri = False
+
+    while True:
+        try:
+	    if not got_api_uri:
+                node_api = get_api_uri(rospy.get_master(), node_name)
+                if gethostname() not in node_api[2] and gethostbyname(gethostname()) not in node_api[2]:   # Only Get Info for Local Nodes
+                    continue
+
+                code, msg, pid = ServerProxy(node_api[2]).getPid(ID)
+
+                node = NODE(node_name, pid)
+                check_cpu_percent_in_thread(pid)
+                rospy.logdebug("Node_name: " + node.name + " Node_PID: " + str(node.pid))
+                #j += 1
+	        got_api_uri = True
+
+            try:
+                print_to_console_and_monitor(node.name, node.pid)
+            except Exception as e:
+                if rospy.is_shutdown():
+                    break
+                rospy.logerr("[NodeResourceMonitor ]Node: %s (pid: %d)", node.name, node.pid)
+                rospy.logerr("[NodeResourceMonitor ]%s", str(e))
+
+        except socket_error as serr:
+                pass
+	except Exception as e:
+            pass
+            #rospy.logwarn("Cant get Infos API_URI etc: %s",node_name)
+	    #rospy.logwarn("Retrying in 1 sec")
+	    #print e
+        
         if rospy.is_shutdown():
             break
-        try:
-            print_to_console_and_monitor(i.name, i.pid)
-        except Exception as e:
-            if rospy.is_shutdown():
-                break
-            rospy.logerr("[NodeResourceMonitor ]Node: %s (pid: %d)", i.name, i.pid)
-            rospy.logerr("[NodeResourceMonitor ]%s", str(e))
+
+        RATE.sleep()
 
 
 def print_to_console_and_monitor(name, pid):
@@ -619,15 +636,13 @@ if __name__ == '__main__':
     RATE = rospy.Rate(FREQUENCY)
     # create MONITOR_ object the node had no name ....
     MONITOR_ = Monitor("node_ressource_monitor")
-    while not rospy.is_shutdown():
-        try:
-            gather_info()
-            RATE.sleep()
-        except rospy.ROSInterruptException:
-            rospy.loginfo("ERROR")
-        except Exception:
-            rospy.logerr(format_exc())
-    shutdown = True
+    
+    thread_list = get_node_thread_list()
+    for t in thread_list:
+        t.start()
+
+    rospy.spin()
+
     for t in threads:
         t.join()
 

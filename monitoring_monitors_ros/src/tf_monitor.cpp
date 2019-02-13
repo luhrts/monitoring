@@ -4,13 +4,13 @@ using namespace tf;
 using namespace ros;
 using namespace std;
 
-TFMonitor::TFMonitor()
+TFMonitor::TFMonitor(ros::NodeHandle &nh)
 {
-  ros::NodeHandle nh;
+  
   monitor_ = new Monitor(nh, "tf_monitor");
 
-  subscriber_tf_ = node_.subscribe<tf::tfMessage>("tf", 100, boost::bind(&TFMonitor::callback, this, _1));
-  subscriber_tf_static_ = node_.subscribe<tf::tfMessage>("tf_static", 100, boost::bind(&TFMonitor::static_callback, this, _1));
+  subscriber_tf_ = nh.subscribe<tf::tfMessage>("/tf", 100, boost::bind(&TFMonitor::callback, this, _1));
+  subscriber_tf_static_ = nh.subscribe<tf::tfMessage>("/tf_static", 100, boost::bind(&TFMonitor::static_callback, this, _1));
 }
 
 void TFMonitor::callback(const ros::MessageEvent<tf::tfMessage const>& msg_evt)
@@ -202,7 +202,7 @@ int main(int argc, char ** argv)
 
   ros::NodeHandle local_nh("~");
   local_nh.param<int>("monitor_mode", monitor_mode, 4);
-
+  //ros::NodeHandle n("~");
   switch (monitor_mode){
   case 1 :
     aggregation = AggregationStrategies::LAST;
@@ -222,7 +222,7 @@ int main(int argc, char ** argv)
 
   }
 
-  TFMonitor monitor;
+  TFMonitor monitor(local_nh);
 
   ros::spin();
 
