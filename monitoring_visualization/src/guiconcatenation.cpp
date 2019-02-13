@@ -29,43 +29,51 @@ void GuiConcatenation::error_cb(monitoring_msgs::Error er) {
 }
 
 void GuiConcatenation::monitor_cb(monitoring_msgs::MonitoringArray ma) {
-	for(int j=0; j< ma.info.size(); j++) {
+    for(int j=0; j< ma.info.size(); j++) {
         if (ma.info[j].values.size() == 0)
         {
             continue;
-        }        
+        }
 
+        std::string output;
+        
         monitoring_msgs::MonitoringInfo mi = ma.info[j];
         monitoring_msgs::GuiInfo gi1;
-		gi1.name = mi.name;
-		gi1.value = "";
+        gi1.name = mi.name;
+        gi1.value = "";
+        
+        output += mi.name + ": [";
 
-		float meanerror = 0;
-		for (int i = 0; i < mi.values.size(); i++) {
+        float meanerror = 0;
+        for (int i = 0; i < mi.values.size(); i++) {
                         monitoring_msgs::GuiInfo gi;
                         char name[1000];
-			sprintf(name, "%s/%s", mi.name.c_str(), mi.values[i].key.c_str());
+            sprintf(name, "%s/%s", mi.name.c_str(), mi.values[i].key.c_str());
 
-			gi.name = name;
-			//gi.description = mi.values[i].;
+            gi.name = name;
+            //gi.description = mi.values[i].;
 
-			gi.value = mi.values[i].value;
-			gi.errorlevel = mi.values[i].errorlevel;
-			gi.unit = mi.values[i].unit;
-                        meanerror += mi.values[i].errorlevel;
-                        suit_unit(gi.value, gi.unit);
-			msg.infos.push_back(gi);
+            gi.value = mi.values[i].value;
+            gi.errorlevel = mi.values[i].errorlevel;
+            //printf("Errorlevel: %d", mi.values[i].errorlevel); // TODO Errorlevel for Testtool
+            gi.unit = mi.values[i].unit;                       // Params: name, value, unit, errorlevel
+            meanerror += mi.values[i].errorlevel;
+            suit_unit(gi.value, gi.unit);
+            msg.infos.push_back(gi);
 
-
-		}
-		if(mi.values.size()!=0) {
-			meanerror = meanerror / mi.values.size();
-		}
-    gi1.errorlevel = meanerror;		//TODO ist die reihenfolge wichtig???
+            output += "(" + mi.values[i].value + mi.values[i].unit + ")";
+        }
+        output += "]";
+        ROS_INFO(output.c_str());
+        if(mi.values.size()!=0) {
+            meanerror = meanerror / mi.values.size();
+        }
+    gi1.errorlevel = meanerror;
     gi1.unit = "";
     msg.infos.push_back(gi1);
-	}
+    // TODO Implement ring-buff with monitoring msgs for Testtool
 
+    }
 }
 void GuiConcatenation::suit_unit(std::string& value, std::string& unit){
 //    ROS_INFO("v: %s, u: %s", value.c_str(), unit.c_str());
