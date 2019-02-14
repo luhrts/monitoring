@@ -63,8 +63,8 @@ void GuiConcatenation::monitor_cb(monitoring_msgs::MonitoringArray ma) {
 
             output += "(" + mi.values[i].value + mi.values[i].unit + ")";
         }
-        output += "]";
-        ROS_INFO(output.c_str());
+        output += "]\n";
+        //ROS_INFO(output.c_str());
         if(mi.values.size()!=0) {
             meanerror = meanerror / mi.values.size();
         }
