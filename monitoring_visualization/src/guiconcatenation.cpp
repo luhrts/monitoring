@@ -75,6 +75,10 @@ void GuiConcatenation::monitor_cb(monitoring_msgs::MonitoringArray ma) {
 
     }
 }
+
+//TODO implement service to get data for testtool
+
+
 void GuiConcatenation::suit_unit(std::string& value, std::string& unit){
 //    ROS_INFO("v: %s, u: %s", value.c_str(), unit.c_str());
     double double_value = atof(value.c_str());
@@ -150,6 +154,7 @@ void GuiConcatenation::suit_unit(std::string& value, std::string& unit){
 
    }
 }
+
 std::string GuiConcatenation::int_to_string(int int_value){
     char char_value[1000];
     sprintf(char_value, "%d", int_value);
@@ -157,6 +162,7 @@ std::string GuiConcatenation::int_to_string(int int_value){
     return str;
 
 }
+
 std::string GuiConcatenation::double_to_string(double double_value){
     char char_value[1000];
     sprintf(char_value, "%4.4f", double_value);
@@ -164,6 +170,7 @@ std::string GuiConcatenation::double_to_string(double double_value){
     return str;
 
 }
+
 void GuiConcatenation::Init_Unit_Vector(){
     std::string freq_unit[] = {"Hz","kHz","MHz","GHz"};
     std::string size_unit[] = {"byte","kB","MB","GB","TB"};
@@ -175,43 +182,44 @@ void GuiConcatenation::Init_Unit_Vector(){
 
 
 }
+
 monitoring_msgs::Gui GuiConcatenation::getMsg() {
 
-  monitoring_msgs::Gui ret = msg;
-  monitoring_msgs::Gui newMsg;
-  newMsg.name = "GUI";
-	msg = newMsg;
-	float maxError = 0.0;
-	for (int i = 0; i < ret.infos.size(); i++) {
-		if (maxError < ret.infos[i].errorlevel) {
-			maxError = ret.infos[i].errorlevel;
-		}
-	}
-	ret.errorlevel = maxError;
-	return ret;
+    monitoring_msgs::Gui ret = msg;
+    monitoring_msgs::Gui newMsg;
+    newMsg.name = "GUI";
+    msg = newMsg;
+    float maxError = 0.0;
+    for (int i = 0; i < ret.infos.size(); i++) {
+        if (maxError < ret.infos[i].errorlevel) {
+            maxError = ret.infos[i].errorlevel;
+        }
+    }
+    ret.errorlevel = maxError;
+    return ret;
 }
 
 int main(int argc, char **argv) {
 
-	ros::init(argc, argv, "gui_msg_concatenation");
-	ros::NodeHandle n("~");
-  ros::Publisher gui_pub = n.advertise<monitoring_msgs::Gui>("/monitoring/gui",
-			10);
+    ros::init(argc, argv, "gui_msg_concatenation");
+    ros::NodeHandle n("~");
+    ros::Publisher gui_pub = n.advertise<monitoring_msgs::Gui>("/monitoring/gui",
+            10);
 
-  double freq = 1;
+    double freq = 1;
 
-	if (!n.getParam("frequency", freq)) {
-		ROS_WARN("No frequency supplied. Working with %f Hz.", freq);
-	}
+    if (!n.getParam("frequency", freq)) {
+        ROS_WARN("No frequency supplied. Working with %f Hz.", freq);
+    }
 
-	ros::Rate loop_rate(freq);
+    ros::Rate loop_rate(freq);
         GuiConcatenation gc(n);
 
-	while (ros::ok()) {
-		gui_pub.publish(gc.getMsg());
+    while (ros::ok()) {
+        gui_pub.publish(gc.getMsg());
 
-		ros::spinOnce();
-		loop_rate.sleep();
-	}
+        ros::spinOnce();
+        loop_rate.sleep();
+    }
 
 }
