@@ -69,36 +69,16 @@ def init():
     else:
         print 'no bag_dir supply'
         bag_dir = ''
-    if(rospy.has_param(rospy.get_name()+'/monitor_type')):
-        monitor_type = rospy.get_param(rospy.get_name()+'/monitor_type')
-    else:
-        print 'no monitor_type supply'
-        monitor_type = ''
     if(rospy.has_param(rospy.get_name()+'/photo_path')):
         photo_path = rospy.get_param(rospy.get_name()+'/photo_path')
     else:
         print 'no photo_path supply'
         photo_path = ''
-    if(rospy.has_param(rospy.get_name()+'/blacklist')):
-        blacklist = rospy.get_param(rospy.get_name()+'/blacklist')
-    else:
-        print 'no blacklist supply'
-        blacklist = ''
-    if(rospy.has_param(rospy.get_name()+'/quality_criterion')):
-        quality_criterion_ = rospy.get_param(
-            rospy.get_name()+'/quality_criterion')
-    else:
-        print 'no quality_criterion supply'
-        quality_criterion_ = ''
-    if(rospy.has_param(rospy.get_name()+'/debug_mode')):
-        debug_mode_ = rospy.get_param(rospy.get_name()+'/debug_mode')
-    else:
-        print 'no debug_mode supply'
-        debug_mode_ = False
+
     intervention_times, data = get_bag_data(bag_dir, monitor_type)
     #quality_criterion_function(quality_criterion_)
-    sorted_infos, scale = presort(data)
-    new_plot(photo_path, sorted_infos, intervention_times, scale)
+    #sorted_infos, scale = presort(data)
+    #new_plot(photo_path, sorted_infos, intervention_times, scale)
     #plot(photo_path,blacklist, debug_mode_, intervention_times)
 
 def presort(data):
@@ -137,7 +117,18 @@ def presort(data):
 
                     dd = datas[i] - datas[i - 1]
                     dt = times[i] - times[i - 1]
-                    nd.append(dd / dt)
+
+                    if dt == 0:
+                        print "Data_i: "+str(datas[i])
+                        print "Data_-1: "+str(datas[i-1])
+                        print "time_i: "+str(times[i])
+                        print "time_-1: "+str(times[i-1])
+                        print node
+                        print key
+                        print "\n"
+                        nd.append(0.0)
+                    else:
+                        nd.append(dd / dt)
                 times = times[1:]
             else:
                 nd = datas
@@ -205,54 +196,50 @@ def quality_criterion_function(quality_criterion_):
 def get_bag_data(bag_dir, monitor_type):
     global start_time
     global value_dict
-    start_time = rospy.Time.now()
+    start_time = None
     bag = rosbag.Bag(bag_dir)
     inter_times = []
     data_dict = {}
+    key_list = ['cpu_percent','cpu_times_user', 'cpu_times_system','io_counters_read_count', 'io_counters_write_count','io_counters_read_bytes','io_counters_write_bytes', 'memory_info_rss', 'memory_info_vms', 'num_ctx_switches_voluntary', 'num_ctx_switches_involuntary']
 
     for topic, msg, t in bag.read_messages():
-        if (t-start_time).to_sec() < 0.0:
-            start_time = t
+        if not start_time:
+            start_time = t.to_sec()
 
-
-        if topic == '/E_VEHICLE/id0/E10_driver_intervention':
-            temp = (t-start_time).to_sec()
-            inter_times.append(int(temp))
+        if t.to_sec() - start_time < 0.0:
+            start_time = t.to_sec()
 
         if not topic == "/monitoring":
             continue
 
-        if monitor_type in msg.info[0].description:
-            for element in msg.info[0].values:
-                if  '/' in element.key:
-                    revert_ = element.key[::-1]
-                    num = revert_.find('/')
-                    argument = element.key.replace(
-                        element.key[-num:], '')
-                    if  argument not in value_dict.keys():
-                        value_dict[argument] = OrderedDict()
-                        data_dict[argument] = OrderedDict()
-                    if argument in element.key and element.key not in value_dict[argument].keys():
-                        value_dict[argument][element.key] = {'timestamp':[], 'value':[], 'unit':[], 'errorlevel':[]}
-                        data_dict[argument][element.key] = {'timestamp':[], 'value':[], 'unit':[]}
-                for argument in value_dict.keys():
-                    for key in value_dict[argument].keys():
-                        if element.key == key:
-                            temp_time = (t - start_time).to_sec()
-                            value_dict[argument][key]['timestamp'].append(str(temp_time))
-                            value_dict[argument][key]['value'].append(str(element.value))
-                            value_dict[argument][key]['unit'].append(str(element.unit))
-                            data_dict[argument][key]['timestamp'].append(temp_time)
-                            fail = False
+        if "node_ressource_monitor" in msg.info[0].description:
+            time = msg.header.stamp.to_sec()
+            if time - start_time < 0.0:
+                start_time = time
+            for value in msg.info[0].values:
+                dt = time - start_time
 
-                            try:
-                                data_dict[argument][key]['value'].append(float(element.value))
-                            except Exception as e:
-                                fail = True
-                            if fail:
-                                data_dict[argument][key]['value'].append(str(element.value))
+                temp = value.key
+                if temp.startswith("/"):
+                    temp = temp[1:]
+                revert = temp[::-1]
+                node = revert[revert.find("/"):][::-1]
+                key = temp.split("/")[-1]
 
-                            data_dict[argument][key]['unit'].append(str(element.unit))
+                if node not in data_dict.keys():
+                    data_dict[node] = {}
+                if key not in key_list:
+                    continue
+                if key not in data_dict[node].keys():
+                    data_dict[node][key] = ([],[],[])
+                try:
+                    data_dict[node][key][0].append(float(value.value))
+                    data_dict[node][key][1].append(dt)
+                    if not data_dict[node][key][2]
+                    data_dict[node][key][2].append(value.unit)
+                except Exception as e:
+                    pass
+
     return inter_times, data_dict
 
 def new_plot(photo_path, sorted_infos, intervention_times, scale):
