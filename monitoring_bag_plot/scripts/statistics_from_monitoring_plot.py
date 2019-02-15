@@ -30,66 +30,84 @@ def parse_sys_args():
 
 def get_bag_data(bag_dir):
     temp_list = []
-    d_inter = []
+    start_time = None
     bag = rosbag.Bag(bag_dir)
     for topic, msg, t in bag.read_messages():
-        # t is rospy time: t.secs  t.nsecs
-        if topic == "/statistics":
-            temp_list.append((msg, t))
-        if topic == '/E_VEHICLE/id0/E10_driver_intervention':
-            d_inter.append(t)
-    return temp_list, d_inter
-
-def sort_data(stat_list, inter_stamps):
-    start_time = None
-    last_time = None
-    val_dict = {}
-    times = []
-    for element in stat_list:
-        msg = element[0]
-        time = element[1]
         if not start_time:
-            start_time = time
-        # Get the interesting values
-        name = msg.topic
-        top_sub = msg.node_pub+"--->"+msg.node_sub
-        byte_per_msg = (float(msg.traffic)) / (msg.delivered_msgs)
-        bw = (msg.traffic*8/1000) / (msg.window_stop - msg.window_start).to_sec()
-        delivered = msg.delivered_msgs
-        traffic = msg.traffic * 8/1000
-        dropped = msg.dropped_msgs
-        stamp_mean_age = msg.stamp_age_mean.to_sec()
-        if msg.period_mean.to_sec():
-            freq = 1 / msg.period_mean.to_sec()
-        else:
-            freq = 0
-        #Create dictionary entry if not existent
-        if name not in val_dict.keys():
-            val_dict[name] = {}
-        if top_sub not in val_dict[name].keys():
-            val_dict[name][top_sub] = {'timestamp':[], 'Byte_per_Msg':[],
-                'bandwidth':[], 'Delivered':[], 'Dropped':[], #'Traffic':[],
-                'StampAge':[],'Frequenzy':[]}
-        # safe values in dictionary
-        t = (time - start_time).to_sec()
-        val_dict[name][top_sub]['timestamp'].append(t)
-        val_dict[name][top_sub]['Byte_per_Msg'].append(byte_per_msg)
-        val_dict[name][top_sub]['Delivered'].append(delivered)
-        val_dict[name][top_sub]['Dropped'].append(dropped)
-        #val_dict[name][top_sub]['Traffic'].append(traffic)
-        val_dict[name][top_sub]['StampAge'].append(stamp_mean_age)
-        val_dict[name][top_sub]['Frequenzy'].append(freq)
-        val_dict[name][top_sub]['bandwidth'].append(bw)
-        last_time = time
+            start_time = t.to_sec()
+        if t.to_sec() - start_time < 0.0:
+            start_time = t.to_sec()
+        # t is rospy time: t.secs  t.nsecs
+        if topic == "/monitoring":
+            for info in msg.info:
+                if info.description == "statistics_monitor":
+                    #if info.
+                    #print info
+                    time = info.header.stamp.to_sec()
+                    if time < start_time:
+                        start_time = time
+                    vals = info.values
+                    temp_list.append((vals, time))
+    return temp_list, start_time
 
-    #intervall = (last_time - start_time).to_sec()
-    for t in inter_stamps:
-        temp = (t-start_time).to_sec()
-        times.append(int(temp))
+def sort_data(stat_list, start_time):
+    val_dict = {}
 
-    return val_dict, times
+    for element in stat_list:
+        vals = element[0]
+        time = element[1]
+        ctime = time - start_time
+        for val in vals:
+            l = [pos for pos, c in enumerate(val.key) if c == "/"][-1]
+            s = val.key.find("/")
+            topic = val.key[:s]
+            pub_sub = val.key[s+1:l]
+            key2 = val.key[l+1:]
+            #print val.key
+            #print topic
+            #print pub_sub
+            #print key2
+            #print "\n"
 
-def plot(val_dict, intervention_times, spath):
+            if not pub_sub:
+                continue
+            if topic not in val_dict.keys():
+                val_dict[topic] = {}
+            if pub_sub not in val_dict[topic].keys():
+                val_dict[topic][pub_sub] = {'timestamp':[], 'Byte_per_Msg':([],[]),
+                    'bandwidth':([],[]), 'Delivered':([],[]), 'Dropped':([],[]),
+                    'StampAge':([],[]),'Frequenzy':([],[])}
+            if ctime not in val_dict[topic][pub_sub]['timestamp']:
+                val_dict[topic][pub_sub]['timestamp'].append(ctime)
+
+            if key2 == "current_msg_delivered":
+                val_dict[topic][pub_sub]['Delivered'][0].append(float(val.value))
+                val_dict[topic][pub_sub]['Delivered'][1].append(ctime)
+            elif key2 == "current_msg_dropped":
+                val_dict[topic][pub_sub]['Dropped'][0].append(float(val.value))
+                val_dict[topic][pub_sub]['Dropped'][1].append(ctime)
+            elif key2 == "frequency":
+                val_dict[topic][pub_sub]['Frequenzy'][0].append(float(val.value))
+                val_dict[topic][pub_sub]['Frequenzy'][1].append(ctime)
+            elif key2 == "stamp_age":
+                val_dict[topic][pub_sub]['StampAge'][0].append(float(val.value))
+                val_dict[topic][pub_sub]['StampAge'][1].append(ctime)
+            elif key2 == "avg_bandwidth":
+                val_dict[topic][pub_sub]['bandwidth'][0].append(float(val.value))
+                val_dict[topic][pub_sub]['bandwidth'][1].append(ctime)
+            elif key2 == "byte_per_msg":
+                val_dict[topic][pub_sub]['Byte_per_Msg'][0].append(float(val.value))
+                val_dict[topic][pub_sub]['Byte_per_Msg'][1].append(ctime)
+    #for topic in val_dict.keys():
+    #    for connection in val_dict[topic].keys():
+    #        for key in val_dict[topic][connection].keys():
+    #            if len(val_dict[topic][connection][key]) < 1:
+    #                print topic + ":::"+ connection
+    #                print "\n"
+    #    print "\n\n"
+    return val_dict
+
+def plot(val_dict, spath):
     try:
         if not os.path.exists(spath):
             os.makedirs(spath)
@@ -121,35 +139,33 @@ def plot(val_dict, intervention_times, spath):
                 ax[j].yaxis.offsetText.set_fontsize(4)
                 ax[j].yaxis.set_major_locator(plt.MaxNLocator(8))
                 ax[j].xaxis.set_major_locator(plt.MaxNLocator(8))
-                time_list = val_dict[topic][connection]['timestamp']
-                data_list, unit, title, yscale = get_data_unit(val_dict, topic, connection, j)
+                #time_list = val_dict[topic][connection]['timestamp']
+                data_list, time_list, unit, title, yscale = get_data_unit(val_dict, topic, connection, j)
 
-                if len(val_dict[topic][connection]['timestamp']) > 10:
-                    # 10 is arbitary need to be adjusted depending on time
-                    plt.plot(time_list,data_list, 'black', linestyle='-', linewidth=1)
-                else:
-                    plt.plot(time_list, data_list, marker='o', linestyle='--', color='black')
-                if intervention_times:
-                    for perc_t in intervention_times:
-                        plt.axvline(x=perc_t, ymin=0.0, ymax = 0.99, linewidth=1, color='r')
+                if data_list and len(time_list) == len(data_list):
+                    if len(val_dict[topic][connection]['timestamp']) > 10:
+                        # 10 is arbitary need to be adjusted depending on time
+                        plt.plot(time_list,data_list, 'black', linestyle='-', linewidth=1)
+                    else:
+                        plt.plot(time_list, data_list, marker='o', linestyle='--', color='black')
 
-                ax[j].xaxis.set_major_formatter(FormatStrFormatter('%.1f'))
-                sf = ScalarFormatter(useMathText=True, useOffset = False)
-                sf.set_scientific(True)
-                sf.set_powerlimits((-3, 3))
-                ax[j].yaxis.set_major_formatter(sf)
-                plt.xlabel("time in sec", fontsize = 4, labelpad = 2)
-                plt.tick_params(direction = 'in',pad = 2)
-                plt.xticks(fontsize = 3)
-                plt.title(title, fontsize=4)#,pad=2.0)
-                plt.subplots_adjust(left=0.05,bottom=0.05,top=0.9,right=0.95, wspace = 0.25, hspace = 0.4)
-                plt.grid(True,linestyle=':',c='black')
-                if not unit:
-                    plt.ylabel("")
-                else:
-                    plt.ylabel(unit, fontsize=3,labelpad=2)
+                    ax[j].xaxis.set_major_formatter(FormatStrFormatter('%.1f'))
+                    sf = ScalarFormatter(useMathText=True, useOffset = False)
+                    sf.set_scientific(True)
+                    sf.set_powerlimits((-3, 3))
+                    ax[j].yaxis.set_major_formatter(sf)
+                    plt.xlabel("time in sec", fontsize = 4, labelpad = 2)
+                    plt.tick_params(direction = 'in',pad = 2)
+                    plt.xticks(fontsize = 3)
+                    plt.title(title, fontsize=4)#,pad=2.0)
+                    plt.subplots_adjust(left=0.05,bottom=0.05,top=0.9,right=0.95, wspace = 0.25, hspace = 0.4)
+                    plt.grid(True,linestyle=':',c='black')
+                    if not unit:
+                        plt.ylabel("")
+                    else:
+                        plt.ylabel(unit, fontsize=3,labelpad=2)
 
-                plt.yticks(yscale, fontsize=3)
+                    plt.yticks(yscale, fontsize=3)
 
             name = topic+":"+connection
             name = name.replace('/','_')
@@ -184,7 +200,7 @@ def plot_per_topic(val_dict, intervention_times, spath):
 
             for connection in val_dict[topic].keys():
                 time_list = val_dict[topic][connection]['timestamp']
-                data_list, unit, title, yscale = get_data_unit(val_dict, topic, connection, j)
+                data_list, time_list, unit, title, yscale = get_data_unit(val_dict, topic, connection, j)
 
                 if len(val_dict[topic][connection]['timestamp']) > 10:
                     # 10 is arbitary need to be adjusted depending on time
@@ -219,15 +235,18 @@ def plot_per_topic(val_dict, intervention_times, spath):
 
 def get_data_unit(val_dict, topic, connection, j):
     if j == 0:
-        data_list = val_dict[topic][connection]['Byte_per_Msg']
+        data_list = val_dict[topic][connection]['Byte_per_Msg'][0]
+        times = val_dict[topic][connection]['Byte_per_Msg'][1]
         title = 'Byte_per_Msg'
         unit = 'Byte/Msg'
     elif j == 1:
-        data_list = val_dict[topic][connection]['Delivered']
+        data_list = val_dict[topic][connection]['Delivered'][0]
+        times = val_dict[topic][connection]['Delivered'][1]
         title = 'Delivered'
         unit = ''
     elif j == 2:
-        data_list = val_dict[topic][connection]['Dropped']
+        data_list = val_dict[topic][connection]['Dropped'][0]
+        times = val_dict[topic][connection]['Dropped'][1]
         title = 'Dropped'
         unit = ''
     #elif j == 3:
@@ -235,20 +254,30 @@ def get_data_unit(val_dict, topic, connection, j):
     #    title = 'Traffic'
     #    unit = 'KBit'
     elif j == 3:
-        data_list = val_dict[topic][connection]['StampAge']
+        data_list = val_dict[topic][connection]['StampAge'][0]
+        times = val_dict[topic][connection]['StampAge'][1]
         title = 'StampAge'
         unit = 's'
     elif j == 4:
-        data_list = val_dict[topic][connection]['Frequenzy']
+        data_list = val_dict[topic][connection]['Frequenzy'][0]
+        times = val_dict[topic][connection]['Frequenzy'][1]
         title = 'Frequenzy'
         unit = 'Hz'
     elif j == 5:
-        data_list = val_dict[topic][connection]['bandwidth']
+        data_list = val_dict[topic][connection]['bandwidth'][0]
+        times = val_dict[topic][connection]['bandwidth'][1]
         title = 'bandwidth'
         unit = 'KBit/s'
-    vmin, vmax = min(data_list), max(data_list)
-    span = vmax - vmin
-    scale = [vmin-span, vmin-span/2, vmin, vmin+span/2, vmax, vmax+span/2, vmax+span]
+    if not data_list:
+        print topic
+        print connection
+        print title
+        print "\n"
+        scale = [0,1,2,3]
+    else:
+        vmin, vmax = min(data_list), max(data_list)
+        span = vmax - vmin
+        scale = [vmin-span, vmin-span/2, vmin, vmin+span/2, vmax, vmax+span/2, vmax+span]
     #if span < 0.1:
     #    scale = [vmin-span, vmin, vmax, vmax+span]
     #    return data_list, unit, title, scale
@@ -269,18 +298,18 @@ def get_data_unit(val_dict, topic, connection, j):
     #while vmin < vmax:
     #    scale.append(round(vmin,4))
     #    vmin += dx
-    return data_list, unit, title, scale
+    return data_list, times, unit, title, scale
 
 
 def main():
     bpath, spath = parse_sys_args()
     if not bpath or not spath:
         return
-    stat_data, intervention_stamps = get_bag_data(bpath)
-    value_dict, intervention_times = sort_data(stat_data, intervention_stamps)
-    plot(value_dict, intervention_times, spath)
+    stat_data, start_time = get_bag_data(bpath)
+    value_dict = sort_data(stat_data, start_time)
+    plot(value_dict, spath)
     #plot_per_topic(value_dict, intervention_times, spath)
-    #plot_avg_per_topic(value_dict, intervention_times, spath)
+
 
 
 if __name__=='__main__':

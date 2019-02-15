@@ -149,9 +149,13 @@ class Monitor(object):
 
     def publish(self):
         self.ma.header.stamp = rospy.Time.now()
-        self.ma.info[0].header.stamp = rospy.Time.now()
-        self.pub.publish(self.ma)
-        self.resetMsg()
+        try:
+            self.ma.info[0].header.stamp = rospy.Time.now()
+        except Exception as e:
+            return
+        if self.ma.info[0].values:
+            self.pub.publish(self.ma)
+            self.resetMsg()
 
     def resetMsg(self):
         self.ma = MonitoringArray()

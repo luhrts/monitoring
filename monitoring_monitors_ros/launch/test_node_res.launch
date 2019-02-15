@@ -1,0 +1,22 @@
+<launch>
+    <node pkg="tf" type="static_transform_publisher" name="tf1" args="-0.45 0 0 3.1765 0 3.1415 /base_link /laser 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf2" args="-0.45 0 0 3.1765 0 3.1415 /base_link /laser 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf3" args="-0.45 0 0 3.1765 0 3.1415 /base_link /laser 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf4" args="-0.45 0 0 3.1765 0 3.1415 /base_link /laser 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf5" args="-0.45 0 0 3.1765 0 3.1415 /base_link /laser 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf6" args="-0.45 0 0 3.1765 0 3.1415 /base_link /laser 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf7" args="-0.45 0 0 3.1765 0 3.1415 /base_link /laser 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf8" args="-0.45 0 0 3.1765 0 3.1415 /base_link /laser 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf9" args="-0.45 0 0 3.1765 0 3.1415 /base_link /laser 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf10" args="-0.45 0 0 3.1765 0 3.1415 /base_link /laser 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf11" args="-0.45 0 0 3.1765 0 3.1415 /base_link /laser 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf12" args="-0.45 0 0 3.1765 0 3.1415 /base_link /laser 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf13" args="-0.45 0 0 3.1765 0 3.1415 /base_link /laser 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf14" args="-0.45 0 0 3.1765 0 3.1415 /base_link /laser 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf15" args="-0.45 0 0 3.1765 0 3.1415 /base_link /laser 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf16" args="-0.45 0 0 3.1765 0 3.1415 /base_link /laser 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf17" args="-0.45 0 0 3.1765 0 3.1415 /base_link /laser 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf18" args="-0.45 0 0 3.1765 0 3.1415 /base_link /laser 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf19" args="-0.45 0 0 3.1765 0 3.1415 /base_link /laser 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="tf20" args="-0.45 0 0 3.1765 0 3.1415 /base_link /laser 100"/>
+</launch>

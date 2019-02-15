@@ -20,17 +20,15 @@ from matplotlib.ticker import FormatStrFormatter, ScalarFormatter
 from matplotlib.rcsetup import cycler
 
 def parse_sys_args():
-    if len(sys.argv) > 2:
+    if len(sys.argv) > 1:
         path = sys.argv[1]
-        name = sys.argv[2]
-        spath = sys.argv[3]
-        return path, name, spath
+        spath = sys.argv[2]
+        return path, spath
     else:
-        print "required 3 args"
-        print "1 Arg:   /Path/for/loading"
-        print "2 Arg:   Name_of_bag"
-        print "3 Arg: path/to/safe"
-        return None, None, None
+        print "required 2 args"
+        print "1 Arg:   /Path/for/loading/bag_file.bag"
+        print "2 Arg: path/to/safe/pictures.png"
+        return None, None
 
 def get_bag_data(bag_dir):
     temp_list = []
@@ -451,10 +449,10 @@ def get_time_diffs(data, inter_data):
 
 
 def main():
-    lpath, name, spath = parse_sys_args()
-    if not lpath or not name or not spath:
+    bpath, spath = parse_sys_args()
+    if not bpath or not spath:
         return
-    data, intervention_data, other_data = get_bag_data(lpath+name)
+    data, intervention_data, other_data = get_bag_data(bpath)
     ping_dict, cpu_dict, freq_dict, ram_dict, net_dict, node_dict, ntp_dict, times, hosts = get_infos(data, intervention_data)
     val_dict = sort_data(ping_dict, cpu_dict, freq_dict, ram_dict, net_dict, node_dict, ntp_dict, hosts)
     plot(val_dict, times, spath)

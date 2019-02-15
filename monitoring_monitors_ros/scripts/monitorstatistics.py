@@ -323,7 +323,7 @@ class TopicsStatisticsAnalyzer:
 
     def calcerror(self, key, topics, value):
         #rospy.loginfo(topic)
-	return 0.0
+        return 0.0
         topic = topics[0].replace("|","/")
         cval, baseerr = 0.0, 0.0
         if self.inconfig(topic):

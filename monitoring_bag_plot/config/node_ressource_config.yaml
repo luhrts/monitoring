@@ -1,7 +1,7 @@
-bag_dir: /home/rtros/BilderTest/2019-02-05-11-11-47.bag
-#bag_dir: /home/rtros/2019-01-23-14-04-07.bag
+#bag_dir: /home/rtros/BilderTest/2019-02-05-11-11-47.bag
+bag_dir: /home/rtros/mustang_rosbags/full_system_no_task_with_graphic_tools.bag
 monitor_type: node_ressource_monitor
-photo_path: /home/rtros/BilderTest/node_res/
+photo_path: /home/rtros/mustang_pics/full_system_with_gr/node_res/
 blacklist: ['create_time']
 debug_mode: True
 
