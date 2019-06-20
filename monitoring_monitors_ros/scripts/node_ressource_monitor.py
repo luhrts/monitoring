@@ -3,11 +3,11 @@
    Copyright (c) 2018, University of Hannover
                        Institute for Systems Engineering - RTS
                        Professor Bernardo Wagner
- 
+
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions
    are met:
- 
+
     * Redistributions of source code must retain the above copyright
       notice, this list of conditions and the following disclaimer.
     * Redistributions in binary form must reproduce the above
@@ -17,7 +17,7 @@
     * Neither the name of Willow Garage, Inc. nor the names of its
       contributors may be used to endorse or promote products derived
       from this software without specific prior written permission.
- 
+
    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -30,7 +30,7 @@
    LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
    ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
    POSSIBILITY OF SUCH DAMAGE.
-''' 
+'''
 #import xmlrpclib
 from xmlrpclib import ServerProxy
 #import traceback
@@ -153,12 +153,13 @@ def get_node_thread_list(node_list):
         t = Thread(target=gather_info, args=(node_name,))
         rospy.loginfo("Appending node %s", node_name)
         node_thread_list.append(t)
-        
+
     rospy.logdebug("=============================")
     return node_thread_list
 
+
 def get_pid_list(base_name):
-    temp = check_output('ps ax | grep '+filter_string, shell=True).split('\n')
+    temp = check_output('ps ax | grep '+base_name, shell=True).split('\n')
     pids, names = [], []
     for val in temp:
         if val.find('grep') == -1 and val:
@@ -175,12 +176,14 @@ def get_pid_list(base_name):
                 names.append(name)
     return [names, pids]
 
+
 def get_non_ros_process_list(base_name):
     program_list = []
     temp = get_pid_list(base_name)
     for idx, val in enumerate(temp[0]):
-        program_list.append(NODE(temp[0][idx],temp[1][idx]))
+        program_list.append(NODE(temp[0][idx], temp[1][idx]))
     return program_list
+
 
 def get_process_info(pid):
     """
@@ -296,15 +299,18 @@ def print_to_console_and_monitor(name, pid):
             rospy.logdebug("Node: %s (%d) - %s not found", name, pid, key)
             pass
 
+
 def get_value(method_to_call):
     if callable(method_to_call):
         return method_to_call()
     else:
         return method_to_call
 
+
 """
 psutil values to monitor functions
 """
+
 
 def children_to_monitor(value, name):
     monitor_string = name + "/children"
@@ -314,6 +320,7 @@ def children_to_monitor(value, name):
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
+
 def cmdline_to_monitor(value, name):
     monitor_string = name + "/cmdline"
     monitor_value = str(value)
@@ -321,6 +328,7 @@ def cmdline_to_monitor(value, name):
     monitor_errorlvl = 0
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
+
 
 def connections_to_monitor(value, name):
     monitor_string = name + "/connections"
@@ -330,6 +338,7 @@ def connections_to_monitor(value, name):
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
+
 def cpu_affinity_to_monitor(value, name):
     monitor_string = name + "/cpu_affinity"
     monitor_value = str(value)
@@ -338,6 +347,7 @@ def cpu_affinity_to_monitor(value, name):
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
+
 def cpu_percent_to_monitor(value, name):
     monitor_string = name + "/cpu_percent"
     monitor_value = str(value)
@@ -345,6 +355,7 @@ def cpu_percent_to_monitor(value, name):
     monitor_errorlvl = 0
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
+
 
 def cpu_times_to_monitor(value, name):
     for field, value in value._asdict().iteritems():
@@ -355,14 +366,15 @@ def cpu_times_to_monitor(value, name):
 
         MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
+
 def create_time_to_monitor(value, name):
     monitor_string = name + "/create_time"
     monitor_value = str(value)
     monitor_unit = "ms"
     monitor_errorlvl = 0
 
-
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
+
 
 def cwd_to_monitor(value, name):
     monitor_string = name + "/cwd"
@@ -372,6 +384,7 @@ def cwd_to_monitor(value, name):
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
+
 def exe_to_monitor(value, name):
     monitor_string = name + "/exe"
     monitor_value = str(value)
@@ -380,6 +393,7 @@ def exe_to_monitor(value, name):
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
+
 def gids_to_monitor(value, name):
     monitor_string = name + "/gids"
     monitor_value = str(value)
@@ -387,6 +401,7 @@ def gids_to_monitor(value, name):
     monitor_errorlvl = 0
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
+
 
 def io_counters_to_monitor(value, name):
     """
@@ -407,6 +422,7 @@ def io_counters_to_monitor(value, name):
 
         MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
+
 def ionice_to_monitor(value, name):
     monitor_string = name + "/ionice"
     monitor_value = str(value)
@@ -415,6 +431,7 @@ def ionice_to_monitor(value, name):
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
+
 def is_running_to_monitor(value, name):
     monitor_string = name + "/is_running"
     monitor_value = str(value)
@@ -422,6 +439,7 @@ def is_running_to_monitor(value, name):
     monitor_errorlvl = 0
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
+
 
 def memory_info_to_monitor(value, name):
     """
@@ -442,6 +460,7 @@ def memory_info_to_monitor(value, name):
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
+
 def memory_info_ex_to_monitor(value, name):
     monitor_string = name + "/memory_info_ex"
     monitor_value = str(value)
@@ -449,6 +468,7 @@ def memory_info_ex_to_monitor(value, name):
     monitor_errorlvl = 0
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
+
 
 def memory_maps_to_monitor(value, name):
     monitor_string = name + "/memory_maps"
@@ -458,6 +478,7 @@ def memory_maps_to_monitor(value, name):
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
+
 def memory_percent_to_monitor(value, name):
     monitor_string = name + "/memory_percent"
     monitor_value = str(value)
@@ -465,6 +486,7 @@ def memory_percent_to_monitor(value, name):
     monitor_errorlvl = 0
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
+
 
 def name_to_monitor(value, name):
     monitor_string = name + "/name"
@@ -474,6 +496,7 @@ def name_to_monitor(value, name):
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
+
 def nice_to_monitor(value, name):
     monitor_string = name + "/nice"
     monitor_value = str(value)
@@ -481,6 +504,7 @@ def nice_to_monitor(value, name):
     monitor_errorlvl = 0
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
+
 
 def num_ctx_switches_to_monitor(value, name):
     """
@@ -501,6 +525,7 @@ def num_ctx_switches_to_monitor(value, name):
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
+
 def num_fds_to_monitor(value, name):
     monitor_string = name + "/num_fds"
     monitor_value = str(value)
@@ -508,6 +533,7 @@ def num_fds_to_monitor(value, name):
     monitor_errorlvl = 0
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
+
 
 def num_handles_to_monitor(value, name):
     monitor_string = name + "/num_handles"
@@ -517,6 +543,7 @@ def num_handles_to_monitor(value, name):
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
+
 def num_threads_to_monitor(value, name):
     monitor_string = name + "/num_threads"
     monitor_value = str(value)
@@ -524,6 +551,7 @@ def num_threads_to_monitor(value, name):
     monitor_errorlvl = 0
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
+
 
 def open_files_to_monitor(value, name):
     monitor_string = name + "/open_files"
@@ -533,6 +561,7 @@ def open_files_to_monitor(value, name):
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
+
 def parent_to_monitor(value, name):
     monitor_string = name + "/parent"
     monitor_value = str(value)
@@ -540,6 +569,7 @@ def parent_to_monitor(value, name):
     monitor_errorlvl = 0
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
+
 
 def pid_to_monitor(value, name):
     monitor_string = name + "/pid"
@@ -549,6 +579,7 @@ def pid_to_monitor(value, name):
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
+
 def ppid_to_monitor(value, name):
     monitor_string = name + "/ppid"
     monitor_value = str(value)
@@ -556,6 +587,7 @@ def ppid_to_monitor(value, name):
     monitor_errorlvl = 0
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
+
 
 def rlimit_to_monitor(value, name):
     monitor_string = name + "/rlimit"
@@ -565,6 +597,7 @@ def rlimit_to_monitor(value, name):
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
+
 def status_to_monitor(value, name):
     monitor_string = name + "/status"
     monitor_value = str(value)
@@ -572,6 +605,7 @@ def status_to_monitor(value, name):
     monitor_errorlvl = 0
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
+
 
 def terminal_to_monitor(value, name):
     monitor_string = name + "/terminal"
@@ -581,6 +615,7 @@ def terminal_to_monitor(value, name):
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
 
+
 def threads_to_monitor(value, name):
     monitor_string = name + "/threads"
     monitor_value = str(value)
@@ -588,6 +623,7 @@ def threads_to_monitor(value, name):
     monitor_errorlvl = 0
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl, monitor_mode)
+
 
 def uids_to_monitor(value, name):
     monitor_string = name + "/uids"
@@ -597,6 +633,7 @@ def uids_to_monitor(value, name):
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl,monitor_mode)
 
+
 def username_to_monitor(value, name):
     monitor_string = name + "/username"
     monitor_value = str(value)
@@ -604,6 +641,7 @@ def username_to_monitor(value, name):
     monitor_errorlvl = 0
 
     MONITOR_.addValue(monitor_string, monitor_value, monitor_unit, monitor_errorlvl,monitor_mode)
+
 
 """
 This dictionary maps the keys of node_value_filter to the corrseponding
@@ -644,6 +682,7 @@ VALUE_DICT = {
     'uids': uids_to_monitor,
     'username': username_to_monitor}
 
+
 def shutdown_cb():
     global threads
     global thread_list
@@ -654,6 +693,7 @@ def shutdown_cb():
         t.join()
 
     print "All Threads terminated"
+
 
 if __name__ == '__main__':
     threads = []
@@ -668,11 +708,9 @@ if __name__ == '__main__':
     # create MONITOR_ object the node had no name ....
     MONITOR_ = Monitor("node_ressource_monitor")
 
-    #Needs optimization due to high cpu load
+    # Needs optimization due to high cpu load
     thread_list = get_node_thread_list(node_list)
     for t in thread_list:
         t.start()
     rospy.on_shutdown(shutdown_cb)
     rospy.spin()
-
-
