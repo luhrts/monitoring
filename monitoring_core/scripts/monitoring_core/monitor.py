@@ -37,32 +37,33 @@ from monitoring_msgs.msg import *
 from enum import Enum
 
 class AggregationStrategies(Enum):
-	LAST = 1
-	FIRST = 2
-	MIN = 3
-	MAX = 4
-	AVG = 5
-	
+    LAST = 1
+    FIRST = 2
+    MIN = 3
+    MAX = 4
+    AVG = 5
+
 class Monitor(object):
     def __init__(self, monitorDescription, autoPublishing=True):
         self.ma = MonitoringArray()
         self.description = monitorDescription
-        mi = MonitoringInfo()
         self.host_name = socket.gethostname()
         self.node_name = rospy.get_name()
-        mi.name = self.host_name + self.node_name
-        mi.description = self.description
-        self.ma.info.append(mi)
-
+        self.name = self.host_name + self.node_name
         self.is_initialised = False
         self.autoPublishing = autoPublishing
+        self.pub_count = 1
+        self.reset_agg_dict = False
+        self.aggregation_dict = {}
+        self.aggregation_dict[self.name] = {}
+        self.switcher = {
+                AggregationStrategies.LAST: 1,
+                AggregationStrategies.FIRST: 2,
+                AggregationStrategies.MIN: 3,
+                AggregationStrategies.MAX: 4,
+                AggregationStrategies.AVG: 5,
+                }
 
-
-
-       ##aggregation##
-	self.pub_times = 0
-	self.aggregation_dict = {}
-	self.aggregation_dict[self.host_name + self.node_name] = {}
 
     def init_ros(self):
         self.pub = rospy.Publisher('/monitoring', MonitoringArray, queue_size=1)
@@ -75,91 +76,123 @@ class Monitor(object):
                     rospy.logerr("frequency can not be 0, using 1")
                     frequency = 1
                 duration = 1.0/frequency
-                self.timer = rospy.Timer(rospy.Duration(duration), self.timercallback)    #//DIVISION BY ZERO
+                self.timer = rospy.Timer(rospy.Duration(duration), self.timercallback)
             except KeyError:
                 rospy.logerr("monitoring frequency not set (%s/monitoring/frequency)", rospy.get_name())
                 quit()
 
         self.is_initialised = True
 
+
     def timercallback(self, event):
         self.publish()
 
+
+    def agg_to_int(self, agg):
+        return self.switcher.get(agg, None)
+
+
+    def int_to_agg(self, ival):
+        for key in self.switcher.keys():
+            if ival == self.switcher[key]:
+                return key
+        return None
+
+
     def addValue(self, key, value, unit, errorlevel, monitor_mode=AggregationStrategies.LAST):
-	def aggregation(mode):
-    	    switcher = {
-        	1: AggregationStrategies.LAST,
-        	2: AggregationStrategies.FIRST,
-        	3: AggregationStrategies.MIN,
-        	4: AggregationStrategies.MAX,
-        	5: AggregationStrategies.AVG,
-    	    }
-	    return switcher.get(mode, None)
+        # preparation        
         if not self.is_initialised:
             self.init_ros()
-        # Check if key contains whitespace
+        if self.reset_agg_dict:
+            self.aggregation_dict[self.name] = {}
+            self.reset_agg_dict = False
+        # sanity checks
+        if type(monitor_mode) == int:
+            monitor_mode = self.int_to_agg(monitor_mode)
+        elif type(monitor_mode) == float:
+            monitor_mode = self.int_to_agg(int(monitor_mode))
         if " " in key:
             rospy.logwarn("[%s] whitespaces are not allowed in monitoring keys!", self.node_name)
-	kv = KeyValue()
-	if (self.host_name + self.node_name) in self.aggregation_dict:
-	    if key in self.aggregation_dict[self.host_name + self.node_name]:
-	        if aggregation(monitor_mode) == AggregationStrategies.AVG:
-		    if rospy.get_rostime() - self.aggregation_dict[self.host_name + self.node_name][key]['Duration'] < rospy.Duration(5):
-	                self.aggregatin_dict[self.host_name + self.node_name][key]['num'] += 1
-	                self.aggregation_dict[self.host_name + self.node_name][key]['Sum'] += value
-		    else:
-	                kv.key = str(key)
-	                kv.value = str(self.aggregation_dict[self.host_name + self.node_name][key]['Sum']/(self.aggregation_dict[self.host_name + self.node_name][key]['num'] + 0.001))
-	                kv.unit = str(unit)
-	                kv.errorlevel = errorlevel
-			self.aggregation_dict[self.host_name + self.node_name][key] = {'num' : 0 , 'Value' : 0, 'Sum' : 0, 'Duration' : rospy.get_rostime()}
-	        elif aggregation(monitor_mode) == AggregationStrategies.FIRST and self.pub_times == 0:
-	            kv.key = str(key)
-	            kv.value = str(value)
-	            kv.unit = str(unit)
-	            kv.errorlevel = errorlevel
-	            self.pub_times = 1
-	        elif aggregation(monitor_mode) == AggregationStrategies.MAX:
-	            if value > self.aggregation_dict[self.host_name + self.node_name][key]['Value']:
-	                self.aggregation_dict[self.host_name + self.node_name][key]['Value']= value
-	            kv.key = str(key)
-	            kv.value = str(self.aggregation_dict[self.host_name + self.node_name][key]['Value'])
-	            kv.unit = str(unit)
-	            kv.errorlevel = errorlevel
-	        elif aggregation(monitor_mode) == AggregationStrategies.MIN:
-	            if value < self.aggregation_dict[self.host_name + self.node_name][key]['Value']:
-	                self.aggregation_dict[self.host_name + self.node_name][key]['Value']= value
-	            kv.key = str(key)
-	            kv.value = str(self.aggregation_dict[self.host_name + self.node_name][key]['Value'])
-	            kv.unit = str(unit)
-	            kv.errorlevel = errorlevel
-	        elif aggregation(monitor_mode) == AggregationStrategies.LAST:
-	            kv.key = str(key)
-	            kv.value = str(value)
-	            kv.unit = str(unit)
-	            kv.errorlevel = errorlevel
-	        self.ma.info[0].values.append(kv)
-	    else:
-	        self.aggregation_dict[self.host_name + self.node_name][key] = {'num' : 0 , 'Value' : 0, 'Sum' : 0, 'Duration' : rospy.get_rostime()}
-	        kv.key = str(key)
-	        kv.value = str(value)
-	        kv.unit = str(unit)
-	        kv.errorlevel = errorlevel
-	        self.ma.info[0].values.append(kv)
+        # data aggregation
+        if key in self.aggregation_dict[self.name]:
+            mode = self.aggregation_dict[self.name][key]['Mode']
+            if mode in (5, 4, 3) and type(value) != float:
+                if type(value) != int:
+                    rospy.logwarn("With the current Aggregation Strategy for key: "+key+" your value has wrong type: "+str(type(value)))
+                    rospy.logwarn("It has to be a numerical value in order to function. Doing nothing")
+                    return    
+            if mode == 5:
+                self.aggregation_dict[self.name][key]['Num'] += 1
+                self.aggregation_dict[self.name][key]['Sum'] += value
+                self.aggregation_dict[self.name][key]['Error'] += errorlevel
+            elif mode == 4:
+                if value > self.aggregation_dict[self.name][key]['Value']:
+                    self.aggregation_dict[self.name][key]['Value'] = value
+                    self.aggregation_dict[self.name][key]['Error'] = errorlevel
+            elif mode == 3:
+                if value < self.aggregation_dict[self.name][key]['Value']:
+                    self.aggregation_dict[self.name][key]['Value'] = value
+                    self.aggregation_dict[self.name][key]['Error'] = errorlevel
+            elif mode == 1:
+                self.aggregation_dict[self.name][key]['Value'] = value
+                self.aggregation_dict[self.name][key]['Error'] = errorlevel
+        else:
+            self.aggregation_dict[self.name][key] = {'Num' : 1 , 'Value' : value, 'Sum' : value, 'Mode' : self.agg_to_int(monitor_mode), 'Unit': str(unit), 'Error': errorlevel}
+
 
     def publish(self):
         self.ma.header.stamp = rospy.Time.now()
-        try:
-            self.ma.info[0].header.stamp = rospy.Time.now()
-        except Exception as e:
-            return
-        if self.ma.info[0].values:
-            self.pub.publish(self.ma)
-            self.resetMsg()
+        self.write_data()
+        self.pub.publish(self.ma)
+        self.resetMsg()
+        self.pub_times = 1
+
+
+    def write_data(self):
+        mi = MonitoringInfo()
+        mi.name = self.name
+        mi.description = self.description
+        mi.header.stamp = rospy.Time.now()
+        self.ma.info.append(mi)
+        for key in self.aggregation_dict[self.name].keys():
+            kv = KeyValue()
+            data = self.aggregation_dict[self.name][key]
+            if data['Mode'] == 5:
+                kv.key = str(key)
+                kv.value = str(data['Sum']/(data['Num'] + 0.00001))
+                kv.unit = data['Unit']
+                kv.errorlevel = float(data['Error']/(data['Num']+0.0001))
+                self.ma.info[0].values.append(kv)
+            elif data['Mode'] == 2:
+                kv.key = str(key)
+                kv.value = str(data['Value'])
+                kv.unit = data['Unit']
+                kv.errorlevel = data['Error']
+                self.ma.info[0].values.append(kv)
+            elif data['Mode'] == 3:
+                kv.key = str(key)
+                kv.value = str(data['Value'])
+                kv.unit = data['Unit']
+                kv.errorlevel = data['Error']
+                self.ma.info[0].values.append(kv)
+            elif data['Mode'] == 4:
+                kv.key = str(key)
+                kv.value = str(data['Value'])
+                kv.unit = data['Unit']
+                kv.errorlevel = data['Error']
+                self.ma.info[0].values.append(kv)
+            elif data['Mode'] == 1:
+                kv.key = str(key)
+                kv.value = str(data['Value'])
+                kv.unit = data['Unit']
+                kv.errorlevel = data['Error']
+                self.ma.info[0].values.append(kv)
+            else:
+                rospy.logerr("Key: "+str(key)+" has unknown Aggregation Strategy:" +str(data['Mode']))
+            
 
     def resetMsg(self):
         self.ma = MonitoringArray()
-        mi = MonitoringInfo()
-        mi.name = self.host_name + self.node_name
-        mi.description = self.description
-        self.ma.info.append(mi)
+        self.reset_agg_dict = True
+
+

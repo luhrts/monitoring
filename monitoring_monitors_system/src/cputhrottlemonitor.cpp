@@ -120,7 +120,7 @@ int main(int argc, char **argv)
   ros::Rate loop_rate(freq);
 
   Monitor msg(n, "CPU-Frequency-Monitor" );
-
+  // TODO improve performance !!
   while (ros::ok())
   {
     for(int i=0; i<numCPU; i++) {
@@ -130,7 +130,6 @@ int main(int argc, char **argv)
       msg.addValue("cpu" + std::to_string(i) + "/frequency", freq/1000/1000, "GHz", 0.0);
 
       if(fabs(maxFrequencys[i]-max_freq) > 1.0) { // evaluate to error since max_freq is not a
-
         msg.addValue("cpu" + std::to_string(i) + "/max_freq",  max_freq/1000/1000, "GHz", 0.4,aggregation);
       } else {
         msg.addValue("cpu" + std::to_string(i) + "/max_freq",  max_freq/1000/1000, "GHz", 0.0,aggregation);

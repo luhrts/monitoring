@@ -112,7 +112,7 @@ def get_infos(data, inter_stamps):
                 for value in mon_info.values:
                     if "percentage_used" == value.key:
                         ram_dict[host]['usage'].append(float(value.value))
-            elif 'network' in mon_info.name:
+            elif 'network' in mon_info.name or 'lo_monitor' in mon_info.name:
                 host = mon_info.name.split('/')[0]
                 network = mon_info.name.split('/')[-1].split('_')[-1]
                 if host not in net_dict.keys():

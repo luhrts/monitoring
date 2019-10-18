@@ -1,5 +1,5 @@
 monitoring:
-  frequency: 1   #Publish and calculation frequency
+  frequency: 100   #Publish and calculation frequency
 percent: true   #RAM load in %
 used: true      #RAM load in KB
 

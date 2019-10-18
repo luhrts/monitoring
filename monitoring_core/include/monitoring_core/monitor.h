@@ -48,6 +48,13 @@ enum AggregationStrategies{
 struct Sum{
   float sum;
   int num;
+  float errl;
+};
+
+struct Value{
+    float value;
+    float errl;
+    std::string unit;
 };
 
 class Monitor {
@@ -59,6 +66,9 @@ public:
 
     void addValue(std::string key, std::string value, std::string unit, float errorlevel, AggregationStrategies aggregation = LAST);
     void addValue(std::string key, float value, std::string unit, float errorlevel, AggregationStrategies aggregation = LAST);
+    void addValue(std::string key, int value, std::string unit, float errorlevel, AggregationStrategies aggregation = LAST);
+    void addValue(std::string key, long unsigned int value, std::string unit, float errorlevel, AggregationStrategies aggregation = LAST);
+    void addValue(std::string key, double value, std::string unit, float errorlevel, AggregationStrategies aggregation = LAST);
     void publish();
 
     void resetMsg();
@@ -67,18 +77,21 @@ private:
 
     void init(std::string monitorDescription);
     void initROS(ros::NodeHandle &n, bool autoPublishing);
-
-    ros::Publisher pub;
-    ros::Timer timer;   //takes the publishing frequency
+    void initNewData(std::string key, std::string value, std::string unit, float errorlevel);
+    void initNewNumericalData(std::string key, float value, std::string unit, float errorlevel);
     void timerCallback(const ros::TimerEvent& te);
+    std::string floatToString(float value);
+    void writeDataToMsg();
 
     monitoring_msgs::MonitoringArray ma;
     std::string node_name_;
     std::string monitor_description_;
     int miIndex;
-
+    ros::Publisher pub;
+    ros::Timer timer;   //takes the publishing frequency
     std::string host_name_;
-    std::map<std::string,Sum> values_for_avg_;
+    std::map<std::string, Sum> values_for_avg_;
+    std::map<std::string, Value> current_values_;
 
     ///////////////////Gtest/////////////////////
     FRIEND_TEST(MonitoringCore, addValueString);

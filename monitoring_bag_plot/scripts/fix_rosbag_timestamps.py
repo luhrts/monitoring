@@ -5,7 +5,7 @@ import sys
 
 
 def parse_sys_args():
-    if len(sys.argv) > 2:
+    if len(sys.argv) > 3:
         path = sys.argv[1]
         name = sys.argv[2]
         spath = sys.argv[3]
