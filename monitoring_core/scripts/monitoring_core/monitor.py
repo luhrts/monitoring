@@ -145,7 +145,6 @@ class Monitor(object):
         self.ma.header.stamp = rospy.Time.now()
         self.write_data()
         self.pub.publish(self.ma)
-        
         self.resetMsg()
         self.pub_times = 1
 

@@ -209,7 +209,6 @@ void Monitor::addValue(std::string key, float value, std::string unit, float err
       break;
     }
   }
-
   // if the key is new, add it to the list
   if (!found){
     initNewNumericalData(key, value, unit, errorlevel);

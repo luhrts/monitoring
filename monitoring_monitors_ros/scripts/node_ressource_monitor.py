@@ -31,8 +31,10 @@
    ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
    POSSIBILITY OF SUCH DAMAGE.
 ''' 
+
 _multiprocessing = False
 _use_cpp_interface = False
+
 from xmlrpclib import ServerProxy
 
 from traceback import format_exc
@@ -84,6 +86,7 @@ monitoring_semaphore = None
 RATE = None
 pub_timer = None
 
+
 class NODE(object):
     def __init__(self, name, pid):
         self.pid = pid
@@ -98,6 +101,7 @@ def get_cpu_percent_thread(pid):
     global cpu_percent
     global shutdown
     proc = None
+
 
     while not proc and not shutdown:
         try:
@@ -160,6 +164,7 @@ def get_node_thread_list(node_list, filter_type):
     """
     global active_nodes
     global monitoring_semaphore
+
     rospy.logdebug("GET_NODE_LIST:")
     node_array_temp = get_node_names()
     node_thread_list = []
@@ -257,7 +262,6 @@ def gather_info(node_name):
     calls print_to_console_and_monitor for the retrieved node
     """
     #node_list = get_node_list() #+ get_non_ros_process_list("/home/user/external")
-    #bw_node_list = get_programm_list()
     #node_list += get_programm_list()
     global shutdown
     global monitoring_semaphore
