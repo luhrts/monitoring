@@ -59,7 +59,7 @@ install(TARGETS statistics_monitoring_node tf_monitoring_node topic_value_monito
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-catkin_install_python(PROGRAMS scripts/node_ressource_monitor.py scripts/nodemonitor.py scripts/topicmonitor.py scripts/monitorstatistics.py
+catkin_install_python(PROGRAMS scripts/node_ressource_monitor.py scripts/nodemonitor.py scripts/topicmonitor.py scripts/monitorstatistics.py scripts/new_msg_detection_monitor.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 install(DIRECTORY include/${PROJECT_NAME}/
