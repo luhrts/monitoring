@@ -28,6 +28,11 @@ target_link_libraries(statistics_monitoring_node
   )
 
 
+add_executable(node_ressource_monitor_node src/node_ressource_monitor_node.cpp)
+target_link_libraries(node_ressource_monitor_node
+    ${catkin_LIBRARIES}
+  )
+
 add_executable(tf_monitoring_node src/tf_monitor.cpp)
 target_link_libraries(tf_monitoring_node
   ${catkin_LIBRARIES}
@@ -48,13 +53,13 @@ target_link_libraries(topic_value_monitor
   ${catkin_LIBRARIES}
 )
  
-install(TARGETS statistics_monitoring_node tf_monitoring_node topic_value_monitor
+install(TARGETS statistics_monitoring_node tf_monitoring_node topic_value_monitor node_ressource_monitor_node
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-catkin_install_python(PROGRAMS scripts/node_ressource_monitor.py scripts/nodemonitor.py scripts/topicmonitor.py
+catkin_install_python(PROGRAMS scripts/node_ressource_monitor.py scripts/nodemonitor.py scripts/topicmonitor.py scripts/monitorstatistics.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 install(DIRECTORY include/${PROJECT_NAME}/

@@ -1,7 +1,5 @@
 <launch>
-	
-        <node pkg="monitoring_monitors_system" type="ram_monitoring_node" name="ram_monitor" output="screen" respawn="true">
-                <rosparam command="load" file="$(find monitoring_monitors_system)/config/rammonitorconfig.yaml" />
-	</node>
-	
+    <node pkg="monitoring_monitors_system" type="ram_monitoring_node" name="ram_monitor" output="screen" respawn="true">
+        <rosparam command="load" file="$(find monitoring_monitors_system)/config/rammonitorconfig.yaml" />
+    </node>
 </launch>

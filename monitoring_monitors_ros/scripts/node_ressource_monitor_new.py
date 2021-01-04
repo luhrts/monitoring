@@ -31,47 +31,33 @@
    ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
    POSSIBILITY OF SUCH DAMAGE.
 ''' 
-_multiprocessing = False
-_use_cpp_interface = False
+#import xmlrpclib
 from xmlrpclib import ServerProxy
-
+#import traceback
 from traceback import format_exc
 import rospy
 #import psutil
 from psutil import Process
 from psutil import NoSuchProcess as psutil_error
-
+#import rosnode
 from rosnode import get_node_names
 from rosnode import get_api_uri
-
+#import socket
 from socket import gethostbyname
 from socket import gethostname
-
+#import subprocess
 from subprocess import check_output
-
-if _multiprocessing:
-    from multiprocessing import Process as Thread
-    from multiprocessing import Queue
-else:
-    from threading import Thread
-
-from threading import Semaphore
-from os import environ
+#import threading
+from threading import Thread
 
 from socket import error as socket_error
-if not _use_cpp_interface:
-    from monitoring_core.monitor import Monitor
-else:
-    import monitoring_core.monitor_cpp_py_interface as Monitor
+
+from monitoring_core.monitor import Monitor
 from monitoring_core.monitor import AggregationStrategies
-
-from std_srvs.srv import Empty
-
-import sys
 
 
 ID = "NODEINFO"
-MONITOR_ = None
+MONITOR_ = Monitor("node_ressource_monitor")
 monitor_mode = 1
 cpu_percent = {}
 node_processes = {}
@@ -80,9 +66,6 @@ thread_list = []
 shutdown = False
 active_nodes = []
 config_nodes = []
-monitoring_semaphore = None
-RATE = None
-pub_timer = None
 
 class NODE(object):
     def __init__(self, name, pid):
@@ -99,15 +82,17 @@ def get_cpu_percent_thread(pid):
     global shutdown
     proc = None
 
-    while not proc and not shutdown:
+    while not proc:
         try:
             proc = Process(pid)
         except Exception as e:
             pass
         RATE.sleep()
 
-    while not rospy.is_shutdown() and not shutdown:
+    while not rospy.is_shutdown():
         try:
+            if rospy.is_shutdown():
+                break
             #temp = Process(pid)
             cpu_percent[pid] = proc.cpu_percent(interval=None)
         except Exception as e:
@@ -133,33 +118,63 @@ def init():
     check for filter_type (0 = default (list all), 1 = whitelist, 2 = black list)
     Return: frequency and filter_type
     """
-    node_list = []
+    node_black_list = []
+    proc_list = []
     if rospy.has_param('monitor_mode'):
         monitor_mode = rospy.get_param('monitor_mode')
     else:
         monitor_mode = 1
-    if rospy.has_param('node_ressource_monitor/frequency'):
-        frequency = rospy.get_param('node_ressource_monitor/frequency')
+    if rospy.has_param('monitoring/frequency'):
+        frequency = rospy.get_param('monitoring/frequency')
     else:
         frequency = 10
-    if rospy.has_param('node_ressource_monitor/filter_type'):
-        filter_type = rospy.get_param('node_ressource_monitor/filter_type')
+    if rospy.has_param('node_ressource_monitor/node_list'):
+        node_black_list = rospy.get_param('node_ressource_monitor/node_list')
     else:
-        filter_type = Filter_type.DEFAULT
-    if filter_type != Filter_type.DEFAULT:
-        if rospy.has_param('node_ressource_monitor/node_list'):
-            node_list = rospy.get_param('node_ressource_monitor/node_list')
-        else:
-            node_list = []
-    return frequency, filter_type, node_list
+        node_black_list = []
+    if rospy.has_param('node_ressource_monitor/process_list'):
+        proc_list = rospy.get_param('node_ressource_monitor/process_list')
+    else:
+        proc_list = []
+    return frequency, filter_type, node_black_list, proc_list
 
-def get_node_thread_list(node_list, filter_type):
+
+def get_node_pids(node_black_list):
+    """
+    List all ROS Nodes
+    Return: List of pids for each ROS Nodes
+    """
+    global active_nodes
+    rospy.logdebug("GET_NODE_LIST:")
+    node_array_temp = get_node_names()
+    pids = []
+    names = []
+
+    for node in node_array_temp:
+        if node in node_black_list:
+            continue
+        # else we take all nodes
+        try:
+            node_api = get_api_uri(rospy.get_master(), node)
+            if gethostname() not in node_api[2] and gethostbyname(gethostname()) not in node_api[2]:   # only get info for local nodes
+                continue # no local node 
+            code, msg, pid = ServerProxy(node_api[2]).getPid(ID)
+            active_nodes[node] = pid
+            pids.append(pid)
+            rospy.loginfo("Appending node %s", node_name)
+        except Exception as e:
+            rospy.logwarn("Couldnt get PID of Node: %s", node)
+            rospy.logwarn("Will try it again later")
+    rospy.loginfo("=============================")
+    return pids
+
+
+def get_node_thread_list(node_list):
     """
     List all ROS Nodes
     Return: List of threads for each ROS Nodes
     """
     global active_nodes
-    global monitoring_semaphore
     rospy.logdebug("GET_NODE_LIST:")
     node_array_temp = get_node_names()
     node_thread_list = []
@@ -169,16 +184,15 @@ def get_node_thread_list(node_list, filter_type):
         for node in node_list:
             if node in node_name:
                 found = True
-                # using wildcards in the config
-
-        if filter_type == Filter_type.BLACKLIST and found:
-            rospy.loginfo("The node %s is blacklisted - skipping", node_name)
+        if FILTER_TYPE_ == Filter_type.BLACKLIST:
             # dont take node_names that are in node_list
-            continue
-        elif filter_type == Filter_type.WHITLELIST and not found:
-            rospy.loginfo("The node %s is not in the whitelist - skipping", node_name)
-            # only take nodes that are in node_list
-            continue
+            if found:
+                continue
+        elif FILTER_TYPE_ == Filter_type.WHITLELIST:
+            # only take node_names that are in node_list
+            if not found:
+                continue
+        # else we take all nodes
 
         active_nodes.append(node_name)
         t = Thread(target=gather_info, args=(node_name,))
@@ -202,19 +216,39 @@ def check_for_new_nodes(timer):
         for node in config_nodes:
             if node in node_name:
                 found = True
-                # using wildcards in the config
-
-        if filter_type == Filter_type.BLACKLIST and found:
+        if FILTER_TYPE_ == Filter_type.BLACKLIST:
             # dont take node_names that are in node_list
-            continue
-        elif filter_type == Filter_type.WHITLELIST and not found:
-            # only take nodes that are in node_list
-            continue
-
+            if found:
+                continue
+        elif FILTER_TYPE_ == Filter_type.WHITLELIST:
+            # only take node_names that are in node_list
+            if not found:
+                continue
         active_nodes.append(node_name)
         t = Thread(target=gather_info, args=(node_name,))
         t.start()
         thread_list.append(t)
+
+
+def get_process_pids(process_list):
+    pids, names = [], []
+    for proc in process_list:
+        temp = check_output('ps ax | grep '+proc, shell=True).split('\n')
+        for val in temp:
+            if val.find('grep') == -1 and val:
+                pid = val.split(' ')[0]
+                if not pid:
+                    try:
+                        pid = val.split(' ')[1]
+                    except Exception as e:
+                        pass
+                        # we need this except cause ps ax aslo finds the pid of the grep command itself
+                name = val.split(proc)[1].split(" ")[0]+proc
+                if pid:
+                    pids.append(int(pid))
+                    names.append(name)
+    return [names, pids]
+
 
 def get_pid_list(filter_string):
     temp = check_output('ps ax | grep '+filter_string, shell=True).split('\n')
@@ -257,56 +291,37 @@ def gather_info(node_name):
     calls print_to_console_and_monitor for the retrieved node
     """
     #node_list = get_node_list() #+ get_non_ros_process_list("/home/user/external")
-    #bw_node_list = get_programm_list()
     #node_list += get_programm_list()
-    global shutdown
-    global monitoring_semaphore
-    rospy.loginfo("%s starting monitoring-thread", node_name)
+
     got_api_uri = False
     is_local_node = True
 
-    while not rospy.is_shutdown() and is_local_node and not shutdown:
+    while not rospy.is_shutdown() and is_local_node:
         if not got_api_uri:
             try:
                 node_api = get_api_uri(rospy.get_master(), node_name)
-                if gethostname() not in node_api[2] and gethostbyname(gethostname()) not in node_api[2] and "localhost" not in node_api[2]:   # only get info for local nodes
-                    ros_ip = None
-                    try:
-                        ros_ip = environ["ROS_IP"]
-                    except Exception as e:
-                        pass
-                    if ros_ip and ros_ip in node_api[2]:
-                        pass
-                    else:
-                        is_local_node = False
-                        rospy.logwarn("%s is not a local node", node_name)
-                        break # or better continue ??
+                if gethostname() not in node_api[2] and gethostbyname(gethostname()) not in node_api[2]:   # only get info for local nodes
+                    is_local_node = False
+                    continue # this could be break ??
 
                 code, msg, pid = ServerProxy(node_api[2]).getPid(ID)
 
                 node = NODE(node_name, pid)
                 if pid:
-                    check_cpu_percent_in_thread(pid) # Cpu percent may be blocking
-
+                    check_cpu_percent_in_thread(pid)
                 rospy.logdebug("Node_name: " + node.name + " Node_PID: " + str(node.pid))
                 got_api_uri = True
-                rospy.loginfo("%s got api-uri", node_name)
             except Exception as e:
-                print e
                 RATE.sleep()
                 continue
         else:
             try:
-                #rospy.loginfo("%s send data to monitioring", node_name)
-                while not monitoring_semaphore.acquire(False) and not shutdown:
-                    rospy.sleep(0.01)
                 print_to_console_and_monitor(node.name, node.pid)
-                #rospy.loginfo("%s completed", node_name)
             except Exception as e:
+                if rospy.is_shutdown():
+                    break
                 rospy.logerr("[NodeResourceMonitor ]Node: %s (pid: %d)", node.name, node.pid)
                 rospy.logerr("[NodeResourceMonitor ]%s", str(e))
-            finally:
-                monitoring_semaphore.release()
 
         if rospy.is_shutdown():
             break
@@ -750,46 +765,28 @@ VALUE_DICT = {
     'username': username_to_monitor}
 
 
-def shutdown_cb(req):
+def shutdown_cb():
     global threads
     global thread_list
-    global shutdown
-    global monitoring_semaphore
-    global MONITOR_
-    global pub_timer
-    if _use_cpp_interface:
-        pub_timer.shutdown()
-    shutdown = True
-    now = rospy.Time.now()
-    while (rospy.Time.now() - now).to_sec() < 1.0:
-        monitoring_semaphore.release()
     for t in thread_list:
         t.join()
-    del MONITOR_
     print "Thread List terminated"
     for t in cpu_threads:
         t.join()
 
     print "All Threads terminated"
-    return []
 
-
-def publish_and_reset_timer(ev):
-    global monitoring_semaphore
-    global shutdown
-    while not monitoring_semaphore.acquire(False) and not shutdown:
-        rospy.sleep(0.01)
-    if not shutdown:
-        MONITOR_.publish_and_reset()
-    monitoring_semaphore.release()
-
-
-def main():
-    pass
 
 if __name__ == '__main__':
     #TODO if a node restarte (with a new pid)
     # it is lost for the node_res_mon
+
+    # NEW Approach
+    # Input: node_black_list, process_list
+    # 1. get pids_list
+    # 2. start a process to gather info for each pid
+    # 3. one timer to check for new node / update pids
+    
 
     cpu_threads = []
     thread_list = []
@@ -798,36 +795,23 @@ if __name__ == '__main__':
     node_processes = {}
     active_nodes = []
     config_nodes = []
-    monitoring_semaphore = Semaphore(1)
-    pub_timer = []
 
     rospy.init_node("node_ressource_monitor", anonymous=True)
-    FREQUENCY, FILTER_TYPE_, node_list = init()
-
+    FREQUENCY, FILTER_TYPE_, node_black_list, process_list = init()
     rospy.loginfo("Frequency: "+str(FREQUENCY))
     RATE = rospy.Rate(FREQUENCY)
-    if not _use_cpp_interface:
-        # create MONITOR_ object the node had no name ....??? 
-        MONITOR_ = Monitor("node_ressource_monitor")
-        MONITOR_.init_ros()
-    else:
-        argv = sys.argv
-        argv[1]+='unique'
-        #return
-        MONITOR_ = Monitor.MonitorInterface("node_ressource_monitor_worker", argv, len(argv))
+    # create MONITOR_ object the node had no name ....
+    MONITOR_ = Monitor("node_ressource_monitor")
 
-    config_nodes = node_list
+    pids = get_node_pids(node_black_list)
+    pids += get_process_pids(process_list)
 
     #Needs optimization due to high cpu load
-    thread_list = get_node_thread_list(node_list, FILTER_TYPE_)
-    rospy.loginfo("Starting Threads")
+    thread_list = get_node_thread_list(node_list)
     for t in thread_list:
         t.start()
-    rospy.loginfo("All threads running")
-    #timer = rospy.Timer(rospy.Duration(5.0), check_for_new_nodes)
-    shutdown_srv = rospy.Service('/node_ressource_monitor/request_shutdown', Empty, shutdown_cb)
-    if _use_cpp_interface:
-        pub_timer = rospy.Timer(rospy.Duration(2.0 / FREQUENCY), publish_and_reset_timer) # TODO fix frequency
+    timer = rospy.Timer(rospy.Duration(5.0), check_for_new_nodes)
+    rospy.on_shutdown(shutdown_cb)
     rospy.spin()
 
 

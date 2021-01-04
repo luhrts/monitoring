@@ -26,7 +26,7 @@ StatisticMonitor::~StatisticMonitor() {
 void StatisticMonitor::deleteOldMessages() {
   ros::Time now =ros::Time::now();
   for(int i=statisticData.size()-1;i>=0; i--) {
-    ros::Duration oldness = now-statisticData[i].time;
+    ros::Duration oldness = now - statisticData[i].time;
     if(oldness.toSec() > timeTilDeletingOldMessages) {
       statisticData.erase(statisticData.begin()+i);
     }

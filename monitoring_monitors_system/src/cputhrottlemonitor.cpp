@@ -120,7 +120,7 @@ int main(int argc, char **argv)
   ros::Rate loop_rate(freq);
 
   Monitor msg(n, "CPU-Frequency-Monitor" );
-
+  // TODO improve performance !!
   while (ros::ok())
   {
     for(int i=0; i<numCPU; i++) {

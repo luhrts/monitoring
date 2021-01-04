@@ -107,7 +107,7 @@ def sort_data(stat_list, start_time):
     #    print "\n\n"
     return val_dict
 
-def plot(val_dict, spath):
+def plot(val_dict, spath, s_name):
     try:
         if not os.path.exists(spath):
             os.makedirs(spath)
@@ -169,7 +169,7 @@ def plot(val_dict, spath):
 
             name = topic+":"+connection
             name = name.replace('/','_')
-            plt.savefig(spath+name, bbox_inches='tight', dpi = 400)
+            plt.savefig(spath+name+s_name, bbox_inches='tight', dpi = 400)
             plt.close()
             i+=1
 
@@ -305,9 +305,11 @@ def main():
     bpath, spath = parse_sys_args()
     if not bpath or not spath:
         return
+    name = bpath.split("/")[-1]
+    name = '_' + name.split(".")[0]
     stat_data, start_time = get_bag_data(bpath)
     value_dict = sort_data(stat_data, start_time)
-    plot(value_dict, spath)
+    plot(value_dict, spath, name)
     #plot_per_topic(value_dict, intervention_times, spath)
 
 

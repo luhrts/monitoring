@@ -19,14 +19,28 @@ from matplotlib.ticker import FormatStrFormatter, ScalarFormatter
 
 def parse_sys_args():
     if len(sys.argv) > 1:
+        mode = 0
         path = sys.argv[1]
         spath = sys.argv[2]
-        return path, spath
+        try:
+            mode = int(sys.argv[3])
+        except Exception as e:
+            pass
+        finally:
+            mode = 0
+        if not(type(mode)==int):
+            mode = 0
+            print("3rd arg have to be an int type")
+        if not ((mode == 0) or (mode == 1)):
+            mode = 0
+            print("mode had wrong value --> 0 = normal / 1 = average")
+        return path, spath, mode
     else:
-        print "required 2 args"
+        print "required 2 args + 1 optional arg"
         print "1 Arg:   /Path/for/loading/bagfile.bag"
         print "2 Arg: path/to/safe/pictures.png"
-        return None, None
+        print "3 Arg: Modus(0 = normal plot / 1 = plot averages)"
+        return None, None, None
 
 def get_bag_data(bag_dir):
     temp_list = []
@@ -273,13 +287,16 @@ def get_data_unit(val_dict, topic, connection, j):
 
 
 def main():
-    bpath, spath = parse_sys_args()
+    bpath, spath, mode = parse_sys_args()
     if not bpath or not spath:
         return
     stat_data, intervention_stamps = get_bag_data(bpath)
     value_dict, intervention_times = sort_data(stat_data, intervention_stamps)
-    plot(value_dict, intervention_times, spath)
-    #plot_per_topic(value_dict, intervention_times, spath)
+    if mode == 0:
+        plot(value_dict, intervention_times, spath)
+    elif mode == 1:
+        plot_per_topic(value_dict, intervention_times, spath)
+
     #plot_avg_per_topic(value_dict, intervention_times, spath)
 
 

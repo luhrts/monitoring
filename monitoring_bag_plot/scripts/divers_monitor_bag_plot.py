@@ -112,7 +112,7 @@ def get_infos(data, inter_stamps):
                 for value in mon_info.values:
                     if "percentage_used" == value.key:
                         ram_dict[host]['usage'].append(float(value.value))
-            elif 'network' in mon_info.name:
+            elif 'network' in mon_info.name or 'lo_monitor' in mon_info.name:
                 host = mon_info.name.split('/')[0]
                 network = mon_info.name.split('/')[-1].split('_')[-1]
                 if host not in net_dict.keys():
@@ -215,7 +215,7 @@ def sort_data(ping_dict, cpu_dict, freq_dict, ram_dict, net_dict, node_dict, ntp
         #fig, subplots = plot.subplots(x, y)
 
 
-def plot(val_dict, intervention_times, spath):
+def plot(val_dict, intervention_times, spath, s_name):
     try:
         if not os.path.exists(spath):
             os.makedirs(spath)
@@ -425,7 +425,7 @@ def plot(val_dict, intervention_times, spath):
             plt.yticks(fontsize=3)
         name = host
         name = name.replace('/','_')
-        plt.savefig(spath+name, bbox_inches='tight', dpi = 400)
+        plt.savefig(spath+name+s_name, bbox_inches='tight', dpi = 400)
         plt.close()
 
         i+=1
@@ -452,10 +452,12 @@ def main():
     bpath, spath = parse_sys_args()
     if not bpath or not spath:
         return
+    name = bpath.split("/")[-1]
+    name = name.split(".")[0]
     data, intervention_data, other_data = get_bag_data(bpath)
     ping_dict, cpu_dict, freq_dict, ram_dict, net_dict, node_dict, ntp_dict, times, hosts = get_infos(data, intervention_data)
     val_dict = sort_data(ping_dict, cpu_dict, freq_dict, ram_dict, net_dict, node_dict, ntp_dict, hosts)
-    plot(val_dict, times, spath)
+    plot(val_dict, times, spath, '_'+name)
 
     #times, header_diffs, header_rb_diff, inter_times = get_time_diffs(data, intervention_data)
     #indexs = range(len(header_diffs))

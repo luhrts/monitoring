@@ -285,7 +285,7 @@ int main(int argc, char **argv)
   int numCPU = sysconf(_SC_NPROCESSORS_ONLN);
 
   double freq;
-  n.param<double>("frequency", freq, 1.0);
+  n.param<double>("monitoring/frequency", freq, 1.0);
 
   bool bAvarage;
   n.param<bool>("avarage", bAvarage, true);
@@ -332,7 +332,7 @@ int main(int argc, char **argv)
     break;
 
   }
-
+  ROS_INFO("CPU-Monitor Freq: %f", freq);
   ros::Rate loop_rate(freq);
   CpuMonitor cpum;
 

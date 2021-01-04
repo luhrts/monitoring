@@ -243,8 +243,10 @@ def plot(photo_path, blacklist, debug_mode_, inter_times):
                             color='blue', fontsize=4)
             j = j+1
             photo_name = argument.replace('/','_')
-
-        plt.savefig(photo_path+photo_name, bbox_inches='tight', dpi = 400)
+        try:
+            plt.savefig(photo_path+photo_name, bbox_inches='tight', dpi = 400)
+        except Exception as e:
+            pass
         plt.close()
         i = i + 1
     safe_yaml_to_file(tabell_errors, photo_path)

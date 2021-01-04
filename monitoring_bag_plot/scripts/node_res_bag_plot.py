@@ -62,23 +62,34 @@ key_list = None
 lined = {}
 
 
-def init():
-    rospy.init_node("monitoring_bag_plot")
-    if(rospy.has_param(rospy.get_name()+'/bag_dir')):
-        bag_dir = rospy.get_param(rospy.get_name()+'/bag_dir')
+def parse_sys_args():
+    if len(sys.argv) > 1:
+        path = sys.argv[1]
+        spath = sys.argv[2]
+        return path, spath
     else:
-        print 'no bag_dir supply'
-        bag_dir = ''
-    if(rospy.has_param(rospy.get_name()+'/photo_path')):
-        photo_path = rospy.get_param(rospy.get_name()+'/photo_path')
-    else:
-        print 'no photo_path supply'
-        photo_path = ''
+        print "required 2 args"
+        print "1 Arg:   /Path/for/loading/bag_file.bag"
+        print "2 Arg: path/to/safe/pictures.png"
+        return None, None
 
-    intervention_times, data = get_bag_data(bag_dir, monitor_type)
+def init():
+    bpath, spath = parse_sys_args()
+    if not bpath or not spath:
+        return
+
+    name = bpath.split("/")[-1]
+    name = '_' + name.split(".")[0]
+
+    intervention_times, data = get_bag_data(bpath)
+    for node in data.keys():
+      node_dict = data[node]
+      cpu_vals_list, time_list, unit_list = node_dict["cpu_percent"]
+      print ("AVG CPU: %f",sum(cpu_vals_list)/len(cpu_vals_list))
+      
     #quality_criterion_function(quality_criterion_)
-    #sorted_infos, scale = presort(data)
-    #new_plot(photo_path, sorted_infos, intervention_times, scale)
+    sorted_infos, scale = presort(data)
+    new_plot(spath, sorted_infos, intervention_times, scale, name)
     #plot(photo_path,blacklist, debug_mode_, intervention_times)
 
 def presort(data):
@@ -102,8 +113,8 @@ def presort(data):
             if key not in sorted_d[node].keys():
                 sorted_d[node][key] = {'values':[], 'times':[], 'unit':''}
 
-            datas = data[node][val]['value']
-            times = data[node][val]['timestamp']
+            datas = data[node][val][0]
+            times = data[node][val][1]
             nd = []
             # for some keys calculate value per sec
             if "io_counters" in key or 'ctx_switches' in key:
@@ -135,7 +146,8 @@ def presort(data):
 
             sorted_d[node][key]['values'] = nd
             sorted_d[node][key]['times'] = times
-            unit = data[node][val]['unit'][0]
+            #print data[node][val]
+            unit = data[node][val][1][0]
 
             min_, max_ = min(nd), max(nd)
             if 'cpu_times' in key:
@@ -193,7 +205,7 @@ def quality_criterion_function(quality_criterion_):
                     value_dict[argument][argument_name]['criterion_value'] = judge_func.criterion_value_dict
                    ## print value_dict[argument][argument_name]['criterion_value']
 
-def get_bag_data(bag_dir, monitor_type):
+def get_bag_data(bag_dir):
     global start_time
     global value_dict
     start_time = None
@@ -235,14 +247,14 @@ def get_bag_data(bag_dir, monitor_type):
                 try:
                     data_dict[node][key][0].append(float(value.value))
                     data_dict[node][key][1].append(dt)
-                    if not data_dict[node][key][2]
-                    data_dict[node][key][2].append(value.unit)
+                    if not data_dict[node][key][2]:
+                        data_dict[node][key][2].append(value.unit)
                 except Exception as e:
                     pass
 
     return inter_times, data_dict
 
-def new_plot(photo_path, sorted_infos, intervention_times, scale):
+def new_plot(photo_path, sorted_infos, intervention_times, scale, s_name):
     i = 1
     global legend
     global fig, ax
@@ -410,7 +422,7 @@ def new_plot(photo_path, sorted_infos, intervention_times, scale):
 
             photo_name = node.replace('/','_')
 
-        plt.savefig(photo_path+photo_name, bbox_inches='tight', dpi = 400)
+        plt.savefig(photo_path+photo_name+s_name, bbox_inches='tight', dpi = 400)
         plt.close()
         i = i + 1
 
@@ -518,7 +530,7 @@ def safe_yaml_to_file(dict_, photo_path):
         f.write(f1)
         f.close()
     except Exception as inst:
-        rospy.loginfo('%s',str(inst))
+        print(str(inst))
 
 def suit_unit(data_list, unit):
     byte_unit = ["byte", "kB", "MB", "GB"]

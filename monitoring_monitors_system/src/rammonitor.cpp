@@ -47,7 +47,7 @@ int main(int argc, char **argv)
   ros::NodeHandle n("~");
 
   double freq;
-  n.param<double>("frequency", freq, 1.0);
+  n.param<double>("monitoring/frequency", freq, 1.0);
 
   bool bUsed;
   n.param<bool>("used", bUsed, true);
